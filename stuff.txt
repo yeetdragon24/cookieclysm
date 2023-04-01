@@ -1,0 +1,2 @@
+icons are 48x48 px
+large icons in building menu sidebar are 64x64
