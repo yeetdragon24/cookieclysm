@@ -1,3 +1,4 @@
+
 (function (a)
 {
 	"function" == typeof define && define.amd ? define(a) : a()
@@ -1349,10 +1350,7 @@
 							}), new K("postSave", function ()
 							{
 								Game.WriteSave = ea(Game.WriteSave, "if (type==2 || type==3)", "\n\t\t\t\t\t// Cppkies injection\n\t\t\t\t\tCppkies.hooks.emit(\"postSave\")\n\t\t\t\t\t", "before")
-							}), new K("reset", function ()
-							{
-								Game.Reset = ea(Game.Reset, null, "\n\t\t\t\t\t// Cppkies injection\n\t\t\t\t\tCppkies.hooks.constEmit(\"reset\", hard)\n\t\t\t\t\t", "before")
-							}), new K("getIcon", function ()
+							}),new K("getIcon", function ()
 							{
 								Game.GetIcon = o(Game.GetIcon, [
 									["return [col,Game.Tiers[tier].iconRow];", "// Cppkies Injection\n\t\t\t\t\treturn Cppkies.hooks.emit(\"getIcon\", { icon: [col, Game.Tiers[tier].iconRow], tier: tier, type: type }).icon", "replace"],
@@ -1457,7 +1455,7 @@
 				return Ka
 			})
 		}),
-		e = "https://raw.githubusercontent.com/Cppkies-Team/examples/master/static";
+		e = "https://raw.githubusercontent.com/yeetdragon24/cookieclysm/master/img";
 	d.onLoad.push(function ()
 	{
 		return a(void 0, void 0, void 0, function ()
@@ -1474,12 +1472,12 @@
 						["3d", "krumblor", "milestone1", "milestone2", "milestone3", "level1", "level2"]
 					])];
 				case 1:
-					for (c in b.sent(), d.buildingLink = e + "/buildingBigIcon.png", d.iconLink = e + "/buildingIcons.png", new d.Building("Converter", "converter|converters|converting|[X] more efficient mass converter|[X] more efficient mass converters", "Now you can convert living mass into cookies by harvesting the energy from the very bonds that connect the atoms", [0, 0], [0, 0],
+					for (c in b.sent(), d.buildingLink = "file:///C:/Users/mehta_pl1yxs0/Downloads/cookieclysm%20assets/building.png", d.iconLink = "file:///C:/Users/mehta_pl1yxs0/Downloads/cookieclysm%20assets/convertericon.png", new d.Building("Converter", "converter|converters|converted|[X] more efficient mass converter|[X] more efficient mass converters", "Now you can convert living mass into cookies by harvesting the energy from the very bonds that connect the atoms", [0, 33], [0, 0],
 						{
-							bg: e + "/buildingBg.png",
-							pic: e + "/buildingBrain.png",
-							yV: 64,
-							xV: 16
+							bg: "file:///C:/Users/mehta_pl1yxs0/Downloads/cookieclicker-gh-pages/cookieclicker-gh-pages/img/factoryBackground.png",
+							pic: "file:///C:/Users/mehta_pl1yxs0/Downloads/cookieclysm%20assets/building.png",
+							yV: 0,
+							xV: 20
 						}, d.DEFAULT_CPS, d.DEFAULT_ONBUY,
 						{
 							name: "Volunteer jobs",
@@ -1487,8 +1485,8 @@
 							icon: [0, 0]
 						}, ["Brainstorm", "Brain fart"]), new d.GrandmaSynergy("Elder brains", "A skinless grandma to envision more cookies.", "Converter", e + "/buildingGrandma.png"), a = [
 						{
-							name: "Wrinklier brains",
-							desc: "As everyone knows, the wrinklier something it, the better it is at cookie production"
+							name: "Alien volunteers",
+							desc: "I hope they know what they're volunteering for."
 						},
 						{
 							name: "Memory wipe",
