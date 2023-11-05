@@ -28,6 +28,7 @@ M.launch = function(){
 		
 		M.devTooltip=function(id)
 		{
+			console.log('devtooltip has been called');
 			return function(){
 				var me=M.devsById[id];
 				me.icon=me.icon||[0,0];
@@ -46,6 +47,7 @@ M.launch = function(){
 		}
 		M.slotTooltip=function(id)
 		{
+			console.log('slottooltip has been called');
 			return function(){
 				if (M.slot[id]!=-1)
 				{
@@ -77,6 +79,8 @@ M.launch = function(){
 		}
 		M.slotGod=function(god,slot)
 		{
+			console.log('slotGod has been called');
+			/*
 			if (slot==god.slot) return false;
 			if (slot!=-1 && M.slot[slot]!=-1)
 			{
@@ -87,10 +91,12 @@ M.launch = function(){
 			if (slot!=-1) M.slot[slot]=god.id;
 			god.slot=slot;
 			Game.recalculateGains=true;
+			*/
 		}
 		M.dragging=false;
 		M.dragGod=function(what)
 		{
+			alert('dragGod has been called');
 			M.dragging=what;
 			var div=l('templeGod'+what.id);
 			var box=div.getBoundingClientRect();
@@ -105,6 +111,7 @@ M.launch = function(){
 		}
 		M.dropGod=function()
 		{
+			alert('dropGod has been called');
 			if (!M.dragging) return;
 			var div=l('templeGod'+M.dragging.id);
 			div.className='ready templeGod titleFont';
@@ -242,6 +249,18 @@ M.launch = function(){
 		M.swapsL=l('templeSwaps');
 		div.innerHTML = str;
 		}
+		for (var i in M.developers)
+		{
+			var me=M.developers[i];
+			AddEvent(l('templeGodDrag'+me.id),'mousedown',function(what){return function(e){if (e.button==0){M.dragGod(what);}}}(me));
+			AddEvent(l('templeGodDrag'+me.id),'mouseup',function(what){return function(e){if (e.button==0){M.dropGod(what);}}}(me));
+		}
+		for (var i in M.slot)
+		{
+			var me=M.slot[i];
+			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(what);}}(i));
+			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
+		}
 		M.save=function()
 	{
 		//output cannot use ",", ";" or "|"
@@ -266,8 +285,8 @@ M.launch = function(){
 				if (parseFloat(bit[ii])!=-1)
 				{
 					var god=M.devsById[parseFloat(bit[ii])];
-					M.slotGod(god,ii);
-					l('templeSlot'+god.slot).appendChild(l('templeGod'+god.id));
+					//M.slotGod(god,ii);
+					//l('templeSlot'+god.slot).appendChild(l('templeGod'+god.id));
 				}
 			}
 		M.swaps=parseFloat(spl[i++]||3);
