@@ -16,28 +16,39 @@ M.launch = function(){
 				buff:'Does something idk',
 				debuff:'Does something bad idk',
 				quote:'say something funny here idk'
+			},
+			'sniper':{
+                name:'Stream Sniper',
+                icon:[1,1],
+                buff:'<span class="green">Increases chance of positive effects from golden cookies</span>',
+                debuff:'<span class="red">Decrease effectiveness of Temple Pantheon</span>',
+                quote:'Cookie good. Me no likey <b><u>those</u></b> gods'
 			}
 		}
 		M.devsById=[];var n=0;
-		for (var i in M.developers){M.developers[i].id=n;M.developers[i].slot=-1;M.devsById[n]=M.developers[i];n++;}
-		
+		for (var i in M.developers){M.developers[i].id=n+11;M.developers[i].slot=-1;M.devsById[n+11]=M.developers[i];n++;}
+		console.log(M.devsById);
 		M.slot=[];
-		M.slot[1]=-1;
+		M.slot[0]=-1;
+		M.slot[1]=1;
+		M.slot[2]=-1;
+		//M.slot[3]=-1
 		
 		M.slotNames=['regular'];
 		
 		M.devTooltip=function(id)
 		{
-			console.log('devtooltip has been called');
+			//console.log('devtooltip has been called');
 			return function(){
 				var me=M.devsById[id];
+				//console.log(M.devsById)
 				me.icon=me.icon||[0,0];
 				var str='<div style="padding:8px 4px;min-width:350px;">'+
 				'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
 				'<div class="name">'+me.name+'</div>'+
 				'<div class="line"></div><div class="description"><div style="margin:6px 0px;font-weight:bold;">Effects :</div>'+
 					(me.descBefore?('<div class="templeEffect">'+me.descBefore+'</div>'):'')+
-					(me.buff?('<div class="templeEffect templeEffect1"><div class="usesIcon shadowFilter templeGem templeGem1"></div>'+me.buff+'</div>'):'')+
+					(me.buff?('<div class="templeEffect templeEffect1"><div class="usesIcon shadowFilter templeGem templeGem3"></div>'+me.buff+'</div>'):'')+
 					(me.debuff?('<div class="templeEffect templeEffect2"><div class="usesIcon shadowFilter templeGem templeGem2"></div>'+me.debuff+'</div>'):'')+
 					(me.descAfter?('<div class="templeEffect">'+me.descAfter+'</div>'):'')+
 					(me.quote?('<q>'+me.quote+'</q>'):'')+
@@ -47,7 +58,8 @@ M.launch = function(){
 		}
 		M.slotTooltip=function(id)
 		{
-			console.log('slottooltip has been called');
+			//console.log('L bozo + '+id);
+			//console.log('slottooltip has been called');
 			return function(){
 				if (M.slot[id]!=-1)
 				{
@@ -69,7 +81,7 @@ M.launch = function(){
 						(me.quote?('<q>'+me.quote+'</q>'):'')+
 					'</div>'
 				):
-				('<div class="name templeEffect"><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(id)+1)+'"></div>Developer slot (empty)</div><div class="line"></div><div class="description">'+
+				('<div class="name templeEffect"><div class="usesIcon shadowFilter templeGem templeGem1"></div>Developer slot (empty)</div><div class="line"></div><div class="description">'+
 				((M.slotHovered==id && M.dragging)?'Release to assign <b>'+M.dragging.name+'</b> to this slot.':'Drag a developer onto this slot to assign it.')+
 				'</div>')
 				)+
@@ -79,8 +91,8 @@ M.launch = function(){
 		}
 		M.slotGod=function(god,slot)
 		{
-			console.log('slotGod has been called');
-			/*
+			//console.log('slotGod has been called');
+			
 			if (slot==god.slot) return false;
 			if (slot!=-1 && M.slot[slot]!=-1)
 			{
@@ -91,12 +103,12 @@ M.launch = function(){
 			if (slot!=-1) M.slot[slot]=god.id;
 			god.slot=slot;
 			Game.recalculateGains=true;
-			*/
+			
 		}
 		M.dragging=false;
 		M.dragGod=function(what)
 		{
-			alert('dragGod has been called');
+			//console.log('dragGod has been called');
 			M.dragging=what;
 			var div=l('templeGod'+what.id);
 			var box=div.getBoundingClientRect();
@@ -111,21 +123,24 @@ M.launch = function(){
 		}
 		M.dropGod=function()
 		{
-			alert('dropGod has been called');
+			//console.log('dropGod has been called');
 			if (!M.dragging) return;
 			var div=l('templeGod'+M.dragging.id);
 			div.className='ready templeGod titleFont';
 			div.style.transform='none';
+			console.log('Slot hovered: '+M.slotHovered);
 			if (M.slotHovered!=-1 && (M.swaps==0 || M.dragging.slot==M.slotHovered))//dropping on a slot but no swaps left, or slot is the same as the original
 			{
+				console.log('swaps: '+M.swaps);
 				if (M.dragging.slot!=-1) l('templeSlot'+M.dragging.slot).appendChild(div);
 				else l('templeGodPlaceholder'+(M.dragging.id)).parentNode.insertBefore(div,l('templeGodPlaceholder'+(M.dragging.id)));
 				PlaySound('snd/sell1.mp3',0.75);
 			}
 			else if (M.slotHovered!=-1)//dropping on a slot
 			{
-				M.useSwap(1);
-				M.lastSwapT=0;
+				console.log('trying to drop on a slot');
+				//M.useSwap(1);
+				//M.lastSwapT=0;
 				
 				var prev=M.slot[M.slotHovered];//id of the god already in the slot
 				if (prev!=-1)
@@ -143,6 +158,7 @@ M.launch = function(){
 					}
 				}
 				l('templeSlot'+M.slotHovered).appendChild(div);
+				console.log('attempting to slot god, dragging: '+M.dragging.id+', hovering over: '+M.slotHovered);
 				M.slotGod(M.dragging,M.slotHovered);
 				
 				PlaySound('snd/tick.mp3');
@@ -153,6 +169,7 @@ M.launch = function(){
 			}
 			else//dropping back to roster
 			{
+				console.log('the game believes that you have not hovered on a slot. skill issue.');
 				var other=l('templeGodPlaceholder'+(M.dragging.id));
 				other.parentNode.insertBefore(div,other);
 				other.style.display='none';
@@ -165,11 +182,13 @@ M.launch = function(){
 		M.slotHovered=-1;
 		M.hoverSlot=function(what)
 		{
+			console.log(what);
 			M.slotHovered=what;
 			if (M.dragging)
 			{
 				if (M.slotHovered==-1) l('templeGodPlaceholder'+M.dragging.id).style.display='inline-block';
 				else l('templeGodPlaceholder'+M.dragging.id).style.display='none';
+				//console.log('hoverslot code: '+l('templeGodPlaceholder'+M.dragging.id));
 				PlaySound('snd/clickb'+Math.floor(Math.random()*7+1)+'.mp3',0.75);
 			}
 		}
@@ -231,7 +250,7 @@ M.launch = function(){
 			for (var i in M.slot)
 			{
 				var me=M.slot[i];
-				str+='<div class="ready templeGod templeGod'+(i%4)+' templeSlot titleFont" id="templeSlot'+i+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.slotTooltip('+i+')','this')+'><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(i)+1)+'"></div></div>';
+				str+='<div class="ready templeGod templeGod'+(i%4)+' templeSlot titleFont" id="templeSlot'+i+3+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.slotTooltip('+i+')','this')+'><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(i)+1)+'"></div></div>';
 			}
 			str+='</div>';
 			str+='<div id="templeInfo"><div>lump cooldowns were here</div></div>';
@@ -240,7 +259,7 @@ M.launch = function(){
 			{
 				var me=M.developers[i];
 				var icon=me.icon||[0,0];
-				str+='<div class="ready templeGod templeGod'+(me.id%4)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeGodDrag'+me.id+'"></div></div>';
+				str+='<div class="ready templeGod templeGod'+(me.id%4)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeDevDrag'+me.id+'"></div></div>';
 				str+='<div class="templeGodPlaceholder" id="templeGodPlaceholder'+me.id+'"></div>';
 			}//<div class="usesIcon shadowFilter templeGem templeGem'+(me.id%3+1)+'"></div>
 			str+='</div>';
@@ -248,19 +267,32 @@ M.launch = function(){
 		div.innerHTML=str;
 		M.swapsL=l('templeSwaps');
 		div.innerHTML = str;
-		}
 		for (var i in M.developers)
 		{
 			var me=M.developers[i];
-			AddEvent(l('templeGodDrag'+me.id),'mousedown',function(what){return function(e){if (e.button==0){M.dragGod(what);}}}(me));
-			AddEvent(l('templeGodDrag'+me.id),'mouseup',function(what){return function(e){if (e.button==0){M.dropGod(what);}}}(me));
+			//console.log(me.name)
+			//console.log(i+' '+me.id);
+			//console.log('skill issue:'+l('templeDevDrag'+me.id));
+			AddEvent(l('templeDevDrag'+me.id),'mousedown',function(what){return function(e){if (e.button==0){M.dragGod(what);}}}(me));
+			AddEvent(l('templeDevDrag'+me.id),'mouseup',function(what){return function(e){if (e.button==0){M.dropGod(what);}}}(me));
 		}
 		for (var i in M.slot)
 		{
+			//alert('wasdown brop but this is slot');
 			var me=M.slot[i];
-			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(what);}}(i));
-			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
+			console.log(me+' '+M.slot);
+			console.log('this also');
+			console.log(l('templeSlot'+i));
+			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(what);console.log('but does it know');}}(i));
+			console.log('should work');
+			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);console.log('if it doesnt i freaking swear')}}}(i));
 		}
+		//it didnt know
+		AddEvent(document,'mouseup',M.dropGod);
+		
+		//this curly brace on the next line ends M.init() but copy pasting messed up the indentation
+		}
+		
 		M.save=function()
 	{
 		//output cannot use ",", ";" or "|"
@@ -309,13 +341,14 @@ M.launch = function(){
 	}
 	M.logic=function()
 	{
+		//console.log(M.dragging);
 		//run each frame
 		var t=1000*60*60;
 		if (M.swaps==0) t=1000*60*60*16;
 		else if (M.swaps==1) t=1000*60*60*4;
 		var t2=M.swapT+t-Date.now();
 		if (t2<=0 && M.swaps<3) {M.swaps++;M.swapT=Date.now();}
-		M.lastSwapT++;
+		//M.lastSwapT++;
 	}
 	M.draw=function()
 	{
