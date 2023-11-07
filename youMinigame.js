@@ -30,8 +30,7 @@ M.launch = function(){
 		console.log(M.devsById);
 		M.slot=[];
 		M.slot[0]=-1;
-		M.slot[1]=1;
-		M.slot[2]=-1;
+		//M.slot[3]=-1
 		//M.slot[3]=-1
 		
 		M.slotNames=['regular'];
@@ -139,13 +138,17 @@ M.launch = function(){
 			else if (M.slotHovered!=-1)//dropping on a slot
 			{
 				console.log('trying to drop on a slot');
+
+				//console.log('ba 2'+prev.id);
 				//M.useSwap(1);
 				//M.lastSwapT=0;
-				
+				//console.log('ba but first '+M.slotHovered);
 				var prev=M.slot[M.slotHovered];//id of the god already in the slot
+				//console.log('ba '+M.slot[M.slotHovered]);
 				if (prev!=-1)
 				{
 					prev=M.devsById[prev];
+					console.log('prev: '+l('templeGod'+prev.id));
 					var prevDiv=l('templeGod'+prev.id);
 					if (M.dragging.slot!=-1)//swap with god's previous slot
 					{
@@ -159,7 +162,7 @@ M.launch = function(){
 				}
 				l('templeSlot'+M.slotHovered).appendChild(div);
 				console.log('attempting to slot god, dragging: '+M.dragging.id+', hovering over: '+M.slotHovered);
-				M.slotGod(M.dragging,M.slotHovered);
+				M.slotGod(M.dragging,M.slotHovered+3);
 				
 				PlaySound('snd/tick.mp3');
 				PlaySound('snd/spirit.mp3',0.5);
@@ -169,7 +172,7 @@ M.launch = function(){
 			}
 			else//dropping back to roster
 			{
-				console.log('the game believes that you have not hovered on a slot. skill issue.');
+				//console.log('the game believes that you have not hovered on a slot. skill issue.');
 				var other=l('templeGodPlaceholder'+(M.dragging.id));
 				other.parentNode.insertBefore(div,other);
 				other.style.display='none';
@@ -182,7 +185,7 @@ M.launch = function(){
 		M.slotHovered=-1;
 		M.hoverSlot=function(what)
 		{
-			console.log(what);
+			console.log('CAP'+what);
 			M.slotHovered=what;
 			if (M.dragging)
 			{
@@ -280,14 +283,15 @@ M.launch = function(){
 		{
 			//alert('wasdown brop but this is slot');
 			var me=M.slot[i];
-			console.log(me+' '+M.slot);
+			//console.log(me+' '+M.slot);
 			console.log('this also');
 			console.log(l('templeSlot'+i));
-			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(what);console.log('but does it know');}}(i));
+			AddEvent(l('templeSlot'+i+3),'mouseover',function(what){return function(){M.hoverSlot(what+3);}}(i));
 			console.log('should work');
-			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);console.log('if it doesnt i freaking swear')}}}(i));
+			AddEvent(l('templeSlot'+i+3),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
 		}
 		//it didnt know
+		//it does now
 		AddEvent(document,'mouseup',M.dropGod);
 		
 		//this curly brace on the next line ends M.init() but copy pasting messed up the indentation
