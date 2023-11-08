@@ -27,10 +27,11 @@ M.launch = function(){
 		}
 		M.devsById=[];var n=0;
 		for (var i in M.developers){M.developers[i].id=n+11;M.developers[i].slot=-1;M.devsById[n+11]=M.developers[i];n++;}
-		console.log(M.devsById);
+		//console.log(M.devsById);
 		M.slot=[];
 		M.slot[0]=-1;
-		//M.slot[3]=-1
+		//M.slot[1]=1;
+		//M.slot[2]=-1;
 		//M.slot[3]=-1
 		
 		M.slotNames=['regular'];
@@ -127,7 +128,7 @@ M.launch = function(){
 			var div=l('templeGod'+M.dragging.id);
 			div.className='ready templeGod titleFont';
 			div.style.transform='none';
-			console.log('Slot hovered: '+M.slotHovered);
+			//console.log('Slot hovered: '+M.slotHovered);
 			if (M.slotHovered!=-1 && (M.swaps==0 || M.dragging.slot==M.slotHovered))//dropping on a slot but no swaps left, or slot is the same as the original
 			{
 				console.log('swaps: '+M.swaps);
@@ -137,18 +138,14 @@ M.launch = function(){
 			}
 			else if (M.slotHovered!=-1)//dropping on a slot
 			{
-				console.log('trying to drop on a slot');
-
-				//console.log('ba 2'+prev.id);
+				//console.log('trying to drop on a slot');
 				//M.useSwap(1);
 				//M.lastSwapT=0;
-				//console.log('ba but first '+M.slotHovered);
+				
 				var prev=M.slot[M.slotHovered];//id of the god already in the slot
-				//console.log('ba '+M.slot[M.slotHovered]);
 				if (prev!=-1)
 				{
 					prev=M.devsById[prev];
-					console.log('prev: '+l('templeGod'+prev.id));
 					var prevDiv=l('templeGod'+prev.id);
 					if (M.dragging.slot!=-1)//swap with god's previous slot
 					{
@@ -162,7 +159,7 @@ M.launch = function(){
 				}
 				l('templeSlot'+M.slotHovered).appendChild(div);
 				console.log('attempting to slot god, dragging: '+M.dragging.id+', hovering over: '+M.slotHovered);
-				M.slotGod(M.dragging,M.slotHovered+3);
+				M.slotGod(M.dragging,M.slotHovered);
 				
 				PlaySound('snd/tick.mp3');
 				PlaySound('snd/spirit.mp3',0.5);
@@ -172,7 +169,7 @@ M.launch = function(){
 			}
 			else//dropping back to roster
 			{
-				//console.log('the game believes that you have not hovered on a slot. skill issue.');
+				console.log('the game believes that you have not hovered on a slot. skill issue.');
 				var other=l('templeGodPlaceholder'+(M.dragging.id));
 				other.parentNode.insertBefore(div,other);
 				other.style.display='none';
@@ -185,7 +182,7 @@ M.launch = function(){
 		M.slotHovered=-1;
 		M.hoverSlot=function(what)
 		{
-			console.log('CAP'+what);
+			//console.log(what);
 			M.slotHovered=what;
 			if (M.dragging)
 			{
@@ -253,7 +250,7 @@ M.launch = function(){
 			for (var i in M.slot)
 			{
 				var me=M.slot[i];
-				str+='<div class="ready templeGod templeGod'+(i%4)+' templeSlot titleFont" id="templeSlot'+i+3+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.slotTooltip('+i+')','this')+'><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(i)+1)+'"></div></div>';
+				str+='<div class="ready templeGod templeGod'+parseInt(i)+' templeSlot titleFont" id="templeSlot'+i+3+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.slotTooltip('+i+')','this')+'><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(i)+1)+'"></div></div>';
 			}
 			str+='</div>';
 			str+='<div id="templeInfo"><div>lump cooldowns were here</div></div>';
@@ -262,7 +259,7 @@ M.launch = function(){
 			{
 				var me=M.developers[i];
 				var icon=me.icon||[0,0];
-				str+='<div class="ready templeGod templeGod'+(me.id%4)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeDevDrag'+me.id+'"></div></div>';
+				str+='<div class="ready templeGod templeGod'+parseInt(me.id)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeDevDrag'+me.id+'"></div></div>';
 				str+='<div class="templeGodPlaceholder" id="templeGodPlaceholder'+me.id+'"></div>';
 			}//<div class="usesIcon shadowFilter templeGem templeGem'+(me.id%3+1)+'"></div>
 			str+='</div>';
@@ -283,15 +280,14 @@ M.launch = function(){
 		{
 			//alert('wasdown brop but this is slot');
 			var me=M.slot[i];
-			//console.log(me+' '+M.slot);
+			console.log(me+' '+M.slot);
 			console.log('this also');
 			console.log(l('templeSlot'+i));
-			AddEvent(l('templeSlot'+i+3),'mouseover',function(what){return function(){M.hoverSlot(what+3);}}(i));
+			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(parseInt(what));console.log(what)}}(i));
 			console.log('should work');
-			AddEvent(l('templeSlot'+i+3),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
+			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
 		}
 		//it didnt know
-		//it does now
 		AddEvent(document,'mouseup',M.dropGod);
 		
 		//this curly brace on the next line ends M.init() but copy pasting messed up the indentation
@@ -347,6 +343,7 @@ M.launch = function(){
 	{
 		//console.log(M.dragging);
 		//run each frame
+		if (M.dragging.slot&&M.dragging.slot!=-1) console.log(M.dragging.slot);
 		var t=1000*60*60;
 		if (M.swaps==0) t=1000*60*60*16;
 		else if (M.swaps==1) t=1000*60*60*4;
