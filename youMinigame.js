@@ -1,4 +1,4 @@
-if(Game.Objects['You'].minigame) throw new Error("amogus prevented from loading by already present You minigame.");
+if(Game.Objects['You'].minigame) throw new Error("God Complex prevented from loading by already present You minigame.");
 
 var M = {};
 M.parent = Game.Objects['You'];
@@ -23,6 +23,13 @@ M.launch = function(){
                 buff:'<span class="green">Increases chance of positive effects from golden cookies</span>',
                 debuff:'<span class="red">Decrease effectiveness of Temple Pantheon</span>',
                 quote:'Cookie good. Me no likey <b><u>those</u></b> gods'
+			},
+			'capn':{
+                name:'CaptainCrozier',
+                icon:[0,0],
+                buff:'<span class="green">Greatly increases offline earnings, as well as buffs the Shimmering Veil Greatly, click buffs buff shimmering veil.</span>',
+                debuff:'<span class="red">The Garden does nothing. No touchy the garden. Especcially to not overtake the Potato King.</span>',
+                quote:'The goal that all players share, which is to not have to play anymore - Technoblade'
 			}
 		}
 		M.devsById=[];var n=0;
@@ -81,8 +88,8 @@ M.launch = function(){
 						(me.quote?('<q>'+me.quote+'</q>'):'')+
 					'</div>'
 				):
-				('<div class="name templeEffect"><div class="usesIcon shadowFilter templeGem templeGem1"></div>Developer slot (empty)</div><div class="line"></div><div class="description">'+
-				((M.slotHovered==id && M.dragging)?'Release to assign <b>'+M.dragging.name+'</b> to this slot.':'Drag a developer onto this slot to assign it.')+
+				('<div class="name templeEffect"><div class="usesIcon shadowFilter templeGem templeGem1"></div>God slot (empty)</div><div class="line"></div><div class="description">'+
+				((M.slotHovered==id && M.dragging)?'Release to assign <b>'+M.dragging.name+'</b> to this slot.':'Drag a god onto this slot to assign it.')+
 				'</div>')
 				)+
 				'</div>';
@@ -157,8 +164,8 @@ M.launch = function(){
 						other.parentNode.insertBefore(prevDiv,other);
 					}
 				}
-				l('templeSlot'+M.slotHovered).appendChild(div);
-				console.log('attempting to slot god, dragging: '+M.dragging.id+', hovering over: '+M.slotHovered);
+				l('templeSlot'+M.slotHovered+3).appendChild(div);
+				//console.log('attempting to slot god, dragging: '+M.dragging.id+', hovering over: '+M.slotHovered);
 				M.slotGod(M.dragging,M.slotHovered);
 				
 				PlaySound('snd/tick.mp3');
@@ -169,7 +176,7 @@ M.launch = function(){
 			}
 			else//dropping back to roster
 			{
-				console.log('the game believes that you have not hovered on a slot. skill issue.');
+				//console.log('the game believes that you have not hovered on a slot. skill issue.');
 				var other=l('templeGodPlaceholder'+(M.dragging.id));
 				other.parentNode.insertBefore(div,other);
 				other.style.display='none';
@@ -280,17 +287,29 @@ M.launch = function(){
 		{
 			//alert('wasdown brop but this is slot');
 			var me=M.slot[i];
-			console.log(me+' '+M.slot);
-			console.log('this also');
-			console.log(l('templeSlot'+i));
-			AddEvent(l('templeSlot'+i),'mouseover',function(what){return function(){M.hoverSlot(parseInt(what));console.log(what)}}(i));
-			console.log('should work');
-			AddEvent(l('templeSlot'+i),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
+			//console.log('this also');
+			//console.log(l('templeSlot'+i));
+			AddEvent(l('templeSlot03'),'mouseover',function(what){return function(){M.hoverSlot(parseInt(what));}}(i));
+			//console.log('should work');
+			AddEvent(l('templeSlot03'),'mouseout',function(what){return function(e){if (e.button==0){M.hoverSlot(-1);}}}(i));
 		}
 		//it didnt know
 		AddEvent(document,'mouseup',M.dropGod);
 		
 		//this curly brace on the next line ends M.init() but copy pasting messed up the indentation
+		}
+		
+		//External
+		
+		
+		Game.hasDev=function(what)
+		{
+			var devL=M.developers[what];
+			for (var i=0;i<3;i++)
+			{
+				if (M.slot[i]==devL.id) return (i+1);
+			}
+			return false;
 		}
 		
 		M.save=function()
@@ -361,7 +380,7 @@ M.launch = function(){
 			var y=Game.mouseY-box.top;
 			if (M.slotHovered!=-1)//snap to slots
 			{
-				var box2=l('templeSlot'+M.slotHovered).getBoundingClientRect();
+				var box2=l('templeSlot'+M.slotHovered+3).getBoundingClientRect();
 				x=box2.left-box.left;
 				y=box2.top-box.top;
 			}
@@ -371,7 +390,7 @@ M.launch = function(){
 		if (M.swaps==0) t=1000*60*60*16;
 		else if (M.swaps==1) t=1000*60*60*4;
 		var t2=M.swapT+t-Date.now();
-		M.swapsL.innerHTML='Worship swaps : <span class="titleFont" style="color:'+(M.swaps>0?'#fff':'#c00')+';">'+M.swaps+'/'+(3)+'</span>'+((M.swaps<3)?' (next in '+Game.sayTime((t2/1000+1)*Game.fps,-1)+')':'');
+		//M.swapsL.innerHTML='Worship swaps : <span class="titleFont" style="color:'+(M.swaps>0?'#fff':'#c00')+';">'+M.swaps+'/'+(3)+'</span>'+((M.swaps<3)?' (next in '+Game.sayTime((t2/1000+1)*Game.fps,-1)+')':'');
 	}
 
 	
@@ -384,7 +403,7 @@ M.launcher = function(){
 	var M = Game.Objects['You'].minigame;
 	
 	M.parent.minigameUrl = 'https://yeetdragon24.github.io';
-	M.parent.minigameName = 'amogus';
+	M.parent.minigameName = 'god complex';
 	
 	M.name = M.parent.minigameName;
 	M.savePrefix = 'minigameAmogus';
