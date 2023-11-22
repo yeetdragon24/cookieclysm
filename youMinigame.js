@@ -4,29 +4,29 @@ var M = {};
 M.parent = Game.Objects['You'];
 M.parent.minigame = M;
 
-
+//You minigame
 M.launch = function(){
 	var M = this;
 	M.init = function(div){
 		
 		M.developers={
 			'yeetdragon':{
-				name:'YeetDragon24',
 				icon:[0,0],
+				name:'YeetDragon24',
 				buff:'Does something idk',
 				debuff:'Does something bad idk',
 				quote:'say something funny here idk'
 			},
 			'sniper':{
                 name:'Stream Sniper',
-                icon:[1,1],
-                buff:'<span class="green">Increases chance of positive effects from golden cookies</span>',
+                icon:[1,0],
+                buff:'<span class="green">Increases chance of getting positive effects from golden and wrath cookies by <b>'+3*Game.Objects['You'].level+'</b>%</span>.',
                 debuff:'<span class="red">Decrease effectiveness of Temple Pantheon</span>',
-                quote:'Cookie good. Me no likey <b><u>those</u></b> gods'
+                quote:'Cookie good. Me no likey <b><u>those</u></b> spirits'
 			},
 			'capn':{
                 name:'CaptainCrozier',
-                icon:[0,0],
+                icon:[2,0],
                 buff:'<span class="green">Greatly increases offline earnings, as well as buffs the Shimmering Veil Greatly, click buffs buff shimmering veil.</span>',
                 debuff:'<span class="red">The Garden does nothing. No touchy the garden. Especcially to not overtake the Potato King.</span>',
                 quote:'The goal that all players share, which is to not have to play anymore - Technoblade'
@@ -41,7 +41,7 @@ M.launch = function(){
 		//M.slot[2]=-1;
 		//M.slot[3]=-1
 		
-		M.slotNames=['regular'];
+		M.slotNames=['God'];
 		
 		M.devTooltip=function(id)
 		{
@@ -49,7 +49,7 @@ M.launch = function(){
 			return function(){
 				var me=M.devsById[id];
 				//console.log(M.devsById)
-				me.icon=me.icon||[0,0];
+				me.icon=me.icon||[1,0];
 				var str='<div style="padding:8px 4px;min-width:350px;">'+
 				'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
 				'<div class="name">'+me.name+'</div>'+
@@ -81,9 +81,8 @@ M.launch = function(){
 					'<div class="line"></div><div class="description"><div style="margin:6px 0px;font-weight:bold;">Effects :</div>'+
 						(me.activeDescFunc?('<div class="templeEffect templeEffectOn" style="padding:8px 4px;text-align:center;">'+me.activeDescFunc()+'</div>'):'')+
 						(me.descBefore?('<div class="templeEffect">'+me.descBefore+'</div>'):'')+
-						(me.desc1?('<div class="templeEffect templeEffect1'+(me.slot==0?' templeEffectOn':'')+'"><div class="usesIcon shadowFilter templeGem templeGem1"></div>'+me.desc1+'</div>'):'')+
-						(me.desc2?('<div class="templeEffect templeEffect2'+(me.slot==1?' templeEffectOn':'')+'"><div class="usesIcon shadowFilter templeGem templeGem2"></div>'+me.desc2+'</div>'):'')+
-						(me.desc3?('<div class="templeEffect templeEffect3'+(me.slot==2?' templeEffectOn':'')+'"><div class="usesIcon shadowFilter templeGem templeGem3"></div>'+me.desc3+'</div>'):'')+
+						(me.buff?('<div class="templeEffect templeEffect1"><div class="usesIcon shadowFilter templeGem templeGem1"></div>'+me.buff+'</div>'):'')+
+						(me.debuff?('<div class="templeEffect templeEffect2"><div class="usesIcon shadowFilter templeGem templeGem2"></div>'+me.debuff+'</div>'):'')+
 						(me.descAfter?('<div class="templeEffect">'+me.descAfter+'</div>'):'')+
 						(me.quote?('<q>'+me.quote+'</q>'):'')+
 					'</div>'
@@ -138,9 +137,10 @@ M.launch = function(){
 			//console.log('Slot hovered: '+M.slotHovered);
 			if (M.slotHovered!=-1 && (M.swaps==0 || M.dragging.slot==M.slotHovered))//dropping on a slot but no swaps left, or slot is the same as the original
 			{
-				console.log('swaps: '+M.swaps);
+				//console.log('swaps: '+M.swaps);
 				if (M.dragging.slot!=-1) l('templeSlot'+M.dragging.slot).appendChild(div);
 				else l('templeGodPlaceholder'+(M.dragging.id)).parentNode.insertBefore(div,l('templeGodPlaceholder'+(M.dragging.id)));
+				Game.Win('Put it back');
 				PlaySound('snd/sell1.mp3',0.75);
 			}
 			else if (M.slotHovered!=-1)//dropping on a slot
@@ -266,7 +266,7 @@ M.launch = function(){
 			{
 				var me=M.developers[i];
 				var icon=me.icon||[0,0];
-				str+='<div class="ready templeGod templeGod'+parseInt(me.id)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeDevDrag'+me.id+'"></div></div>';
+				str+='<div class="ready templeGod templeGod'+parseInt(me.id)+' titleFont" id="templeGod'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.devTooltip('+me.id+')','this')+'><div class="devIcon shadowFilter templeIcon" style="background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div class="templeSlotDrag" id="templeDevDrag'+me.id+'"></div></div>';
 				str+='<div class="templeGodPlaceholder" id="templeGodPlaceholder'+me.id+'"></div>';
 			}//<div class="usesIcon shadowFilter templeGem templeGem'+(me.id%3+1)+'"></div>
 			str+='</div>';
@@ -300,6 +300,8 @@ M.launch = function(){
 		}
 		
 		//External
+		
+		new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.<q>You know too much.</q>',[11,8]); //Game.last.pool='shadow';
 		
 		
 		Game.hasDev=function(what)
@@ -336,8 +338,8 @@ M.launch = function(){
 				if (parseFloat(bit[ii])!=-1)
 				{
 					var god=M.devsById[parseFloat(bit[ii])];
-					//M.slotGod(god,ii);
-					//l('templeSlot'+god.slot).appendChild(l('templeGod'+god.id));
+					M.slotGod(god,ii);
+					l('templeSlot'+god.slot+3).appendChild(l('templeGod'+god.id));
 				}
 			}
 		M.swaps=parseFloat(spl[i++]||3);
@@ -362,13 +364,27 @@ M.launch = function(){
 	{
 		//console.log(M.dragging);
 		//run each frame
-		if (M.dragging.slot&&M.dragging.slot!=-1) console.log(M.dragging.slot);
 		var t=1000*60*60;
 		if (M.swaps==0) t=1000*60*60*16;
 		else if (M.swaps==1) t=1000*60*60*4;
 		var t2=M.swapT+t-Date.now();
 		if (t2<=0 && M.swaps<3) {M.swaps++;M.swapT=Date.now();}
 		//M.lastSwapT++;
+		
+		if (Game.hasDev('sniper')) {
+			for (var i in Game.shimmers) {
+				shimmersL=Game.shimmers[i];
+				if (shimmersL.type=='golden'&&Math.random()<0.5){
+					Game.shimmers[i].die();
+					var neShimmer = new Game.shimmer('sniperGold'); //spawn a new cookie to replace it
+				}
+			}
+			if (Game.Objects['Temple'].minigame) {
+				Game.gainBuff('spirit sniped',1,1);
+			}
+		} else {
+			Game.killBuff('Spirits sniped');
+		}
 	}
 	M.draw=function()
 	{
@@ -403,7 +419,7 @@ M.launcher = function(){
 	var M = Game.Objects['You'].minigame;
 	
 	M.parent.minigameUrl = 'https://yeetdragon24.github.io';
-	M.parent.minigameName = 'god complex';
+	M.parent.minigameName = 'God Complex';
 	
 	M.name = M.parent.minigameName;
 	M.savePrefix = 'minigameAmogus';
