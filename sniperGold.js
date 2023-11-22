@@ -10,7 +10,7 @@ initFunc:function(me)
 	if (!this.spawned && Game.chimeType==1 && Game.ascensionMode!=1) PlaySound('snd/chime.mp3');
 	
 	//set image
-	var bgPic='https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/sniperGoldCookie.png';
+	var bgPic='img/goldCookie.png';
 	var picX=0;var picY=0;
 	
 	
@@ -114,20 +114,20 @@ popFunc:function(me)
 	
 	//select an effect
 	var list=[];
-	if (me.wrath>0) list.push('clot','multiply cookies','ruin cookies');
+	if (me.wrath>0&&Math.random()>(1-((Game.Objects['You'].level/100)*3))) list.push('clot','multiply cookies','ruin cookies');
 	else list.push('frenzy','multiply cookies');
 	if (me.wrath>0 && Game.hasGod && Game.hasGod('scorn')) list.push('clot','ruin cookies','clot','ruin cookies');
-	if (me.wrath>0 && Math.random()<0.3) list.push('blood frenzy','chain cookie','cookie storm');
-	else if (Math.random()<0.03 && Game.cookiesEarned>=100000) list.push('chain cookie','cookie storm');
+	if (me.wrath>0 && Math.random()<(0.3*((1+(Game.Objects['You'].level/100)*3)))) list.push('blood frenzy','chain cookie','cookie storm');
+	else if ((Math.random()<0.03*((1+(Game.Objects['You'].level/100)*3))) && Game.cookiesEarned>=100000) list.push('chain cookie','cookie storm');
 	if (Math.random()<0.05 && Game.season=='fools') list.push('everything must go');
 	if (Math.random()<0.1 && (Math.random()<0.05 || !Game.hasBuff('Dragonflight'))) list.push('click frenzy');
-	if (me.wrath && Math.random()<0.1) list.push('cursed finger');
+	if (me.wrath && Math.random()<0.1*((1+(Game.Objects['You'].level/100)*3))) list.push('cursed finger');
+	console.log(list);
+	if (Game.BuildingsOwned>=10 && Math.random()<0.25*((1+(Game.Objects['You'].level/100)*3))) list.push('building special');
 	
-	if (Game.BuildingsOwned>=10 && Math.random()<0.25) list.push('building special');
+	if (Game.canLumps() && Math.random()<0.0005*((1+(Game.Objects['You'].level/100)*3))) list.push('free sugar lump');
 	
-	if (Game.canLumps() && Math.random()<0.0005) list.push('free sugar lump');
-	
-	if ((me.wrath==0 && Math.random()<0.15) || Math.random()<0.05)
+	if ((me.wrath==0 && Math.random()<0.15*((1+(Game.Objects['You'].level/100)*3))) || Math.random()<0.05*((1+(Game.Objects['You'].level/100)*3)))
 	{
 		//if (Game.hasAura('Reaper of Fields')) list.push('dragon harvest');
 		if (Math.random()<Game.auraMult('Reaper of Fields')) list.push('dragon harvest');
@@ -142,7 +142,6 @@ popFunc:function(me)
 	if (this.chain>0) choice='chain cookie';
 	if (me.force!='') {this.chain=0;choice=me.force;me.force='';}
 	if (choice!='chain cookie') this.chain=0;
-	
 	this.last=choice;
 	
 	//create buff for effect
