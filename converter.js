@@ -1,6 +1,6 @@
 if(Converter === undefined) var Converter = {};
 if(typeof GameLoader == 'undefined') Game.LoadMod('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/GameLoader.js', () => {
-	
+	var iconsURL = 'https://klattmose.github.io/CookieClicker/img/customIcons.png';
 	GameLoader.NewBuilding('Converter',
 			'converter|converters|converted|[X]% stuff|[X]% stuff',
 			'stuff.',
