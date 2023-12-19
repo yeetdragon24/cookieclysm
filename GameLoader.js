@@ -285,8 +285,8 @@ GameLoader.launch = function(){
 	}
 
 	GameLoader.InitNote = function(){
-		if(GameLoader.Steam) GameLoader.iconURL = GameLoader.GetModPath('GameLoader') + '/GameLoadericon.png';
-		else GameLoader.iconURL = 'https://klattmose.github.io/CookieClicker/img/GameLoadericon.png';
+		if(GameLoader.Steam) GameLoader.iconURL = GameLoader.GetModPath('GameLoader') + '/CCSEicon.png';
+		else GameLoader.iconURL = 'https://klattmose.github.io/CookieClicker/img/CCSEicon.png';
 		
 		GameLoader.functionsTotal = (
 			141
