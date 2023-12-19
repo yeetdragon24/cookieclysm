@@ -253,7 +253,7 @@ i++;
 	});
 	
 	if(GameLoader.ConfirmGameVersion(Converter.name, Converter.version, Converter.GameVersion)) Converter.init();
-}
+
 
 
 if(!Converter.isLoaded){
