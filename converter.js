@@ -6,7 +6,6 @@ Converter.GameVersion = '2.052';
 
 Converter.launch = function(){
 	Converter.init = function(){
-		var iconsURL = 'https://klattmose.github.io/CookieClicker/img/customIcons.png';
 		
 		GameLoader.NewBuilding('Converter',
 			'converter|converters|converted|[X]% stuff|[X]% stuff',
@@ -14,14 +13,14 @@ Converter.launch = function(){
 			1,
 			2,
 			{
-				base:'stuff.png', //img
+				base:'building.png', //img
 				xV:8,
 				yV:32,
 				w:128,
 				rows:1,
 				x:0,
 				y:0,
-				customBuildingPic:'stuff.png',
+				customBuildingPic:'building.png',
 				customIconsPic:iconsURL
 			},
 			"doesn't matter what you put here",
