@@ -7,14 +7,14 @@ if(typeof GameLoader == 'undefined') Game.LoadMod('https://raw.githubusercontent
 			1,
 			2,
 			{
-				base:'building.png', //img
+				base:'https://github.com/yeetdragon24/cookieclysm/blob/cb1a0a0723132832e60257b10a0f35586c411e4b/img/building.png', //img
 				xV:8,
 				yV:32,
 				w:128,
 				rows:1,
 				x:0,
 				y:0,
-				customBuildingPic:'building.png',
+				customBuildingPic:'https://github.com/yeetdragon24/cookieclysm/blob/cb1a0a0723132832e60257b10a0f35586c411e4b/img/building.png',
 				customIconsPic:iconsURL
 			},
 			"doesn't matter what you put here",
