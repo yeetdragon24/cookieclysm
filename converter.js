@@ -1,13 +1,7 @@
 if(Converter === undefined) var Converter = {};
-if(typeof GameLoader == 'undefined') Game.LoadMod('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/GameLoader.js');
-Converter.name = 'Converter';
-Converter.version = '1.14';
-Converter.GameVersion = '2.052';
-
-Converter.launch = function(){
-	Converter.init = function(){
-		
-		GameLoader.NewBuilding('Converter',
+if(typeof GameLoader == 'undefined') Game.LoadMod('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/GameLoader.js', () => {
+	
+	GameLoader.NewBuilding('Converter',
 			'converter|converters|converted|[X]% stuff|[X]% stuff',
 			'stuff.',
 			1,
@@ -41,6 +35,15 @@ Converter.launch = function(){
 			},
 			['Kugelblitz', 'Spaghettification']
 		);
+});
+Converter.name = 'Converter';
+Converter.version = '1.14';
+Converter.GameVersion = '2.052';
+
+Converter.launch = function(){
+	Converter.init = function(){
+		
+		
 		
 		Game.Objects['Converter'].displayName='<span style="font-size:80%;position:relative;bottom:4px;">Converter</span>'; // Shrink the name since it's so large
 		
