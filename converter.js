@@ -46,9 +46,9 @@ Converter.launch = function(){
 		Game.Objects['Converter'].displayName='<span style="font-size:80%;position:relative;bottom:4px;">Converter</span>'; // Shrink the name since it's so large
 		
 		
-		// Upgrades
-		var last; var i = 0; var order = Converter.getTieredUpgradeOrder();
-		Game.TieredUpgrade('Converter', '<q>Converter</q>', 'Converter', 1);
+// Upgrades
+var last; var i = 0; var order = Converter.getTieredUpgradeOrder();
+Game.TieredUpgrade('Converter', '<q>Converter</q>', 'Converter', 1);
 last = Game.last;
 last.icon[2] = iconsURL;
 last.order = order + i / 100;
