@@ -1,5 +1,6 @@
 if(Converter === undefined) var Converter = {};
 if(typeof GameLoader == 'undefined') Game.LoadMod('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/GameLoader.js');
+Game.LaunchMods();
 Converter.name = 'Converter';
 Converter.version = '1.14';
 Converter.GameVersion = '2.052';
