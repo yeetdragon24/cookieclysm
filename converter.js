@@ -43,7 +43,7 @@ Converter.launch = function(){
 			['Kugelblitz', 'Spaghettification']
 		);
 		Game.Objects['Converter'].displayName='<span style="font-size:80%;position:relative;bottom:4px;">Converter</span>'; // Shrink the name since it's so large
-});
+}});
 
 		
 		
