@@ -10,7 +10,7 @@ Cppkies.onLoad.push(() => {
         [0, 0],
         {
             bg: `https://github.com/yeetdragon24/cookieclysm/blob/main/img/building.png`,
-            pic: `https://github.com/yeetdragon24/cookieclysm/blob/main/img/building.png,
+            pic: `https://github.com/yeetdragon24/cookieclysm/blob/main/img/building.png`,
             yV: 64,
             xV: 16,
         },
