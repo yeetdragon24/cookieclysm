@@ -1,6 +1,6 @@
 Game.LoadMod("https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/OtherGameLoader.js")
 if (!window.CPPKIES_ONLOAD) CPPKIES_ONLOAD = []
-Cppkies.onLoad.push(() => {
+CPPKIES_ONLOAD.onLoad.push(() => {
     Cppkies.buildingLink = `https://github.com/yeetdragon24/cookieclysm/blob/main/img/building.png`
     Cppkies.iconLink = `https://github.com/yeetdragon24/cookieclysm/blob/main/img/building.png`
     new Cppkies.Building(
