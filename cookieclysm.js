@@ -61,6 +61,7 @@ Game.registerHook('logic',function(){
 			}
 		}
 	}
+	checkSpace();
 });
 /*
 new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.',[11,8]); //Game.last.pool='shadow';
@@ -157,9 +158,8 @@ function getBuildingSpace() {
 	var cursorSpace=1;
 	//if (Game.Has('Thousand fingers')) we'll make it work if cursors need to be nerfed more
 	//if (Game.Has('Million fingers')) cursorSpace*=5
+	
 	for (var i in formatLong) {
-		//console.log(formatLong[i].slice(1,2).toUpperCase()+formatLong[i].slice(1));
-		//console.log(i);
 		if (formatLong[i].slice(1)!='thousand') {
 			if (Game.Has('Million fingers')){
 				cursorSpace*=1.5;
@@ -191,6 +191,17 @@ function getBuildingSpace() {
 	buildingSpace+=Game.Objects['You'].amount*10;
 	return buildingSpace;
 }
+function checkSpace(){
+	if (getBuildingSpace()>getMaxBuildingSpace()) {
+		try { var lastClicked=Game.lastClickedEl.childNodes[2].childNodes[1].innerHTML; } catch(err) {}
+		for (i in Game.Objects) {
+			if (Game.Objects[i].name==lastClicked){
+				Game.Objects[i].sacrifice();
+			}
+		}
+	}
+}
+
 //screw em over (never mind)
 spaceDiv=document.createElement('div');
 spaceDiv.id="buildingSpace";
@@ -201,3 +212,4 @@ if (Game.onMenu=='stats'){
 spaceDiv.innerHTML="<br><b>Building space:</b> "+getBuildingSpace()+"/"+getMaxBuildingSpace()+" ("+Math.floor((getBuildingSpace()/getMaxBuildingSpace())*100)+"%)";
 document.getElementById('menu').childNodes[2].appendChild(spaceDiv);
 }});
+Game.ShowMenu();
