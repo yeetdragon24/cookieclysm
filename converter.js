@@ -1,4 +1,4 @@
-import Cppkies from "cppkies"
+import Cppkies from "https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/cppkies.js"
 const prefix = "https://github.com/yeetdragon24/cookieclysm/tree/main/img"
 Cppkies.onLoad.push(() => {
     Cppkies.buildingLink = `${prefix}/buildingBigIcon.png`
