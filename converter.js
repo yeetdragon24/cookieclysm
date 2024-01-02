@@ -1,6 +1,7 @@
-import Cppkies from "https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/gameLoaders/cppkies.js"
 const prefix = "https://github.com/yeetdragon24/cookieclysm/tree/main/img"
-Cppkies.onLoad.push(() => {
+Game.LoadMod("https://unpkg.com/cppkies")
+if (!window.CPPKIES_ONLOAD) CPPKIES_ONLOAD = []
+CPPKIES_ONLOAD.push(() => {
     Cppkies.buildingLink = `${prefix}/buildingBigIcon.png`
     Cppkies.iconLink = `${prefix}/buildingIcons.png`
     new Cppkies.Building(
@@ -98,4 +99,7 @@ Cppkies.onLoad.push(() => {
         "Cppkie Baker"
     )
     */
+   
 })
+
+
