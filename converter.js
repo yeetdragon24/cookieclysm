@@ -1,5 +1,5 @@
 const prefix = "https://github.com/yeetdragon24/cookieclysm/tree/main/img"
-Game.LoadMod("https://unpkg.com/cppkies")
+Game.LoadMod("https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/gameLoaders/cppkies.js")
 if (!window.CPPKIES_ONLOAD) CPPKIES_ONLOAD = []
 CPPKIES_ONLOAD.push(() => {
     Cppkies.buildingLink = `${prefix}/buildingBigIcon.png`
