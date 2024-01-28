@@ -1,6 +1,6 @@
 
 if(Converter === undefined) var Converter = {};
-if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
+if(typeof CCSE == 'undefined') Game.LoadMod('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/gameLoaders/CCSE.js');
 Converter.name = 'Black Hole Inverter';
 Converter.version = '1.14';
 Converter.GameVersion = '2.052';
