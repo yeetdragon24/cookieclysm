@@ -1,105 +1,198 @@
-const prefix = "https://github.com/yeetdragon24/cookieclysm/tree/main/img"
-Game.LoadMod("https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/gameLoaders/cppkies.js")
-if (!window.CPPKIES_ONLOAD) CPPKIES_ONLOAD = []
-CPPKIES_ONLOAD.push(() => {
-    Cppkies.buildingLink = `${prefix}/buildingBigIcon.png`
-    Cppkies.iconLink = `${prefix}/buildingIcons.png`
-    new Cppkies.Building(
-        "Converter", // The Name of your building
-        "Converter|Converters|Convertered|[X] more dense|[X] more dense", // Name of your building in a sentence, and then it plural, then what boosts your building when a sugar lump is added, then it plural
-        "Generates cookies by converting living matter into cookies", // How your building generates cookies
-        [0, 0], // The coordinates for the small, tooltip icon for your building
-        [0, 0], // The coordinates for the big icon in the store for your building
-        {
-            bg: `${prefix}/buildingBg.png`, // The background for your building on the building screen
-            pic: `${prefix}/buildingBake.png`, // The actual building pic on the building screen
-            yV: 64, // The amount your building can move left and right on the building screen in pixels
-            xV: 16, // The amount your building can move up and down on the building screen in pixels
-        },
-        Cppkies.DEFAULT_CPS, // Your building's cps
-        Cppkies.DEFAULT_ONBUY, // The function to call when your building gets bought but don't worry about this
-        {
-            name: "Converter",
-            desc: "The top of your cookie hierarchy",
-            icon: [2, 0],
-        }, // Your building's data on business day
-        ["Motivation!", "Distractions"] // Your building's building buff and building debuff
-    )
-    /* // Other stuff needed later
-    new Cppkies.TieredUpgrade(
-        "Keyboard Toppings", // The name of the upgrade.
-        "Cherry Switches can be used as a replacement for cherries, right? I guess it doesn't really matter, <b>everyone</b> loves clacky keys.", // Your upgrade's quote.
-        "Cppkie Baker", // The building your upgrade is boosting.
-        "1" // Your upgrade's tier in this case, the 1st normal tier, Plain
-    )
 
-    new Cppkies.TieredUpgrade(
-        "Multi Finger Addition Surgery",
-        "Increases your cps by about 128 clicks. MFAS for short, we do lung extensions as well if you're interested.",
-        "Cppkie Baker",
-        "13" // The 13th normal tier, Iridyum
-    )
-    new Cppkies.TieredAchievement(
-        "Cahpuhkies",
-        "An inferior version your Cppkies (Look there isn't really a pronunciation.)",
-        "13", // The 13th normal tier, Iridyum
-        "Cppkie Baker"
-    )
+if(Converter === undefined) var Converter = {};
+if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
+Converter.name = 'Black Hole Inverter';
+Converter.version = '1.14';
+Converter.GameVersion = '2.052';
 
-    // Non-tier upgrades
+Converter.launch = function(){
+	Converter.init = function(){
+		var iconsURL = 'https://klattmose.github.io/CookieClicker/img/customIcons.png';
+		
+		CCSE.NewBuilding('Converter',
+			'converter|converters|converted|[X]% larger event horizon|[X]% larger event horizon',
+			'Inverts the flow of gravity to get the infinitely delicious cookies from an infinitely dense singularity.',
+			1,
+			2,
+			{
+				base:'https://klattmose.github.io/CookieClicker/img/Converter',
+				xV:8,
+				yV:32,
+				w:128,
+				rows:1,
+				x:0,
+				y:0,
+				customBuildingPic:'https://klattmose.github.io/CookieClicker/img/customBuildings.png',
+				customIconsPic:iconsURL
+			},
+			"doesn't matter what you put here",
+			function(me){
+				var mult = 1;
+				mult *= Game.GetTieredCpsMult(me);
+				mult *= Game.magicCpS(me.name);
+				return me.baseCps * mult;
+			},
+			function(){
+				Game.UnlockTiered(this);
+				if(this.amount >= Game.SpecialGrandmaUnlock && Game.Objects['Grandma'].amount > 0) Game.Unlock(this.grandma.name);
+			},
+			{
+				name:'Hypnodrone',
+				desc:'Autonomous aerial brand ambassadors to "encourage" more sales!',
+				icon:1
+			},
+			['Kugelblitz', 'Spaghettification']
+		);
+		
+		Game.Objects['Black hole inverter'].displayName='<span style="font-size:80%;position:relative;bottom:4px;">Black hole inverter</span>'; // Shrink the name since it's so large
+		
+		
+		// Upgrades
+		var last; var i = 0; var order = Converter.getTieredUpgradeOrder();
+		Game.TieredUpgrade('Blacker holes', '<q>Blacker than black!</q>', 'Black hole inverter', 1); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('More Mass', '<q>Big holes.</q>', 'Black hole inverter', 2); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Stronger Pull', '<q>No escape.</q>', 'Black hole inverter', 3); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Dead Space', '<q>You stare into the abyss and the abyss stares back at you.</q>', 'Black hole inverter', 4); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Cookiefication', '<q>Yum!</q>', 'Black hole inverter', 5); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('White Hole Inverters', '<q>How does this one even make sense?</q>', 'Black hole inverter', 6); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Merging', '<q>Combine!</q>', 'Black hole inverter', 7); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Worm holes', '<q>You go in one end, you come out the other. Easy as that.</q>', 'Black hole inverter', 8); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Micro black holes', '<q>Tiny, but deadly.</q>', 'Black hole inverter', 9); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Radio-Rings', '<q>Insanely radioactive, and extremely deadly!</q>', 'Black hole inverter', 10); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Reality-Bending Holes', '<q>Now you can see how close you are to certain doom! Two of them put together!</q>', 'Black hole inverter', 11); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Moving Black Holes', "<q>They can move now.</q>", 'Black hole inverter', 12); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('Permanent Holes', "<q>They'll never disappear!</q>", 'Black hole inverter', 13); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		Game.TieredUpgrade('It has pockets!', "<q>Also known as a pants hole</q>", 'Black hole inverter', 14); last = Game.last; last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		
+		order = Converter.getGrandmaUpgradeOrder();
+		last = Game.GrandmaSynergy('Heavy grandmas', 'A dense grandma to accrete more cookies.', 'Black hole inverter'); last.order = order;
+		
+		order = Converter.getSynergyUpgradeOrder();
+		last = Game.SynergyUpgrade('Daring pilots', "<q>You've never heard of the Millennium Falcon? It's the ship that made the Kessel Run in less than twelve parsecs.</q>", 'Black hole inverter', 'Shipment', 'synergy1'); last.icon[2] = iconsURL; last.order = order;
+		last = Game.SynergyUpgrade('General relativity', '<q>Space is time. Time is space</q>', 'Black hole inverter', 'Time machine', 'synergy2'); last.icon[2] = iconsURL; last.order = order + 0.01;
+		
+		
+		// Achievements
+		order = Converter.getAchievementOrder(); i = 0;
+		last = Game.TieredAchievement('Single singularity', '', 'Black hole inverter', 1); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Penrose diagram', '', 'Black hole inverter', 2); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Schwarzschild', '', 'Black hole inverter', 3); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Holes in holes', '', 'Black hole inverter', 4); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('No-hair theorem', '', 'Black hole inverter', 5); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Photon sphere', '', 'Black hole inverter', 6); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Information paradox', '', 'Black hole inverter', 7); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Gravitaional lensing', '', 'Black hole inverter', 8); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Galactic nuclei', '', 'Black hole inverter', 9); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Sagittarius A*', '', 'Black hole inverter', 10); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Hey now, you\'re a dead star', '', 'Black hole inverter', 11); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Incredibly dense', '', 'Black hole inverter', 12); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Infinitely dense', '', 'Black hole inverter', 13); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.TieredAchievement('Quasi-stellar radio source', '', 'Black hole inverter', 14); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		
+		last = Game.ProductionAchievement('Relativistic jets', 'Black hole inverter', 1); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.ProductionAchievement('Primordial black holes', 'Black hole inverter', 2); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		last = Game.ProductionAchievement('Naked singularity', 'Black hole inverter', 3); last.icon[2] = iconsURL; last.order = order + i / 100; i++;
+		
+		last = CCSE.NewAchievement('M87', 'Reach level <b>10</b> black hole inverters.', [1, 26, iconsURL]); 
+			Game.Objects['Black hole inverter'].levelAchiev10 = last; last.order = order + i / 100; i++;
+		
+		
+		
+		Game.customStatsMenu.push(function(){
+			CCSE.AppendStatsVersionNumber(Converter.name, Converter.version);
+		});
+		
+		// Finish up
+		Converter.isLoaded = 1;
+		if(Converter.postloadHooks){
+			for(var i = 0; i < Converter.postloadHooks.length; ++i) Converter.postloadHooks[i]();
+		}
+		
+		if (Game.prefs.popups) Game.Popup(Converter.name + ' loaded!');
+		else Game.Notify(Converter.name + ' loaded!', '', '', 1, 1);
+	}
+	
+	
+	Converter.getTieredUpgradeOrder = function(){
+		function isNumber(n) {
+			return !isNaN(parseFloat(n)) && isFinite(n);
+		}
+		
+		var res = 0;
+		for(var i = 0; i < Game.ObjectsN; i++){
+			var me = Game.ObjectsById[i];
+			for(var ii in me.tieredUpgrades){
+				if(isNumber(ii)) res = Math.max(me.tieredUpgrades[ii].order, res);
+			}
+		}
+		
+		return res + 0.01;
+	}
+	
+	Converter.getGrandmaUpgradeOrder = function(){
+		var res = 0;
+		for(var i in Game.GrandmaSynergies){
+			res = Math.max(Game.Upgrades[Game.GrandmaSynergies[i]].order, res);
+		}
+		
+		return res + 0.01;
+	}
+	
+	Converter.getSynergyUpgradeOrder = function(){
+		var res = 0;
+		for(var i = 0; i < Game.ObjectsN; i++){
+			var me = Game.ObjectsById[i];
+			for(var ii in me.synergies){
+				res = Math.max(me.synergies[ii].order, res);
+			}
+		}
+		
+		return res + 0.01;
+	}
+	
+	Converter.getAchievementOrder = function(){
+		var res = 0;
+		for(var i = 0; i < Game.ObjectsN-1; i++){
+			var me = Game.ObjectsById[i];
+			
+			for(var ii in me.tieredAchievs){
+				res = Math.max(me.tieredAchievs[ii].order, res);
+			}
+			
+			for(var ii in me.productionAchievs){
+				res = Math.max(me.productionAchievs[ii].achiev.order, res);
+			}
+			
+			if(me.levelAchiev10) res = Math.max(me.levelAchiev10.order, res);
+		}
+		
+		return res + 0.01;
+	}
+	
+	
+	ModLanguage('*',{
+		
+		"%1 black hole inverter": [
+			"%1 black hole inverter",
+			"%1 black hole inverters"
+		],
+		"[Black hole inverter quote]Inverts the flow of gravity to get the infinitely delicious cookies from an infinitely dense singularity.": "Inverts the flow of gravity to get the infinitely delicious cookies from an infinitely dense singularity.",
+		"[Black hole inverter business name]Hypnodrone": "Hypnodrone",
+		'[Black hole inverter business quote]Autonomous aerial brand ambassadors to "encourage" more sales!': 'Autonomous aerial brand ambassadors to "encourage" more sales!',
+		
+	});
+	
+	if(CCSE.ConfirmGameVersion(Converter.name, Converter.version, Converter.GameVersion)) Converter.init();
+}
 
-    // Grandma synergies
-    new Cppkies.GrandmaSynergy(
-        "Sleepy Grandmas",
-        "A nice ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ to ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ʐ̈ you cookies",
-        "Cppkie Baker",
-        `${prefix}/cppkieGrandma.png`
-    )
 
-    // Production achievements (Make _ cookies from only _)
-
-    new Cppkies.ProductionAchievement(
-        "How did he write 518 of these things.",
-        "Cppkie Baker",
-        1 // The tier of the production achievement, unrelated to game tiers, works without modifications for 1 2 and 3
-    )
-
-    new Cppkies.ProductionAchievement(
-        "Like seriously it's kinda crazy, I'm really running out of ideas and references.",
-        "Cppkie Baker",
-        2,
-        "This" // The flavor text of it
-    )
-
-    new Cppkies.ProductionAchievement(
-        "Good job, Orteil.",
-        "Cppkie Baker",
-        3,
-        null, // No flavor text here
-        3 // Additional multiplier for the requirement (Will up the normal req for this by 10^3)
-    )
-
-    new Cppkies.Level10Achievement(
-        "Open Source",
-        "Cppkie Baker",
-        '<a href="https://github.com/Cppkies-Team/Cppkies">https://github.com/Cppkies-Team/Cppkies</a>'
-    )
-
-    // Dragon stuff
-
-    new Cppkies.DragonAura(
-        "Dragonsilk", 
-        "The shimmering veil is unbreakable. You can no longer click golden cookies or the big cookie.",
-        [0, 0]
-    )
-
-    new Cppkies.DragonAuraLevel(
-        "Dragon's Will", 
-        "Grants you a random positive buff every minute. You can only have one buff active at once.", // Just a note here, Reality Bending would not be given the one buff active at once, if someone ever were to implement this
-        "Cppkie Baker"
-    )
-    */
-   
-})
-
-
+if(!Converter.isLoaded){
+	if(CCSE && CCSE.isLoaded){
+		Converter.launch();
+	}
+	else{
+		if(!CCSE) var CCSE = {};
+		if(!CCSE.postLoadHooks) CCSE.postLoadHooks = [];
+		CCSE.postLoadHooks.push(Converter.launch);
+	}
+}
