@@ -101,17 +101,6 @@ CCSE.launch = function(){
 		
 		Game.registerHook('reset', CCSE.reset);
 		
-		//l('versionNumber').innerHTML = 'Game ' + l('versionNumber').innerHTML + '<br>CCSE v. ' + CCSE.version;
-		var versionNumber = l('versionNumber');
-		var versionDiv = document.createElement('p');
-		versionDiv.id = 'CCSEversionNumber';
-		versionDiv.innerHTML = 'CCSE v. ' + CCSE.version;
-		var textDiv = document.createElement('span');
-		textDiv.id = 'CCSEversionGame';
-		textDiv.innerHTML = 'Game ';
-		versionNumber.appendChild(versionDiv);
-		versionNumber.insertBefore(textDiv, versionNumber.firstChild);
-		
 		// Announce completion, set the isLoaded flag, and run any functions that were waiting for this to load
 		CCSE.Note.title = 'CCSE loaded!';
 		CCSE.Note.life = Game.fps;
