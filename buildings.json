@@ -1,1 +1,177 @@
-// Eric promised to make the json
+﻿{
+    "building1": {
+        "name": "Converter",
+        "commonName": "Converter|Converters|Converted|[X] Bigger Nozzles|[X] Bigger Nozzles",
+        "desc": "This building serves as a converter, transforming resources into something else. Its primary function is to facilitate the conversion process efficiently. It is equipped with advanced technology to handle various conversion tasks effectively.",
+        "icon": 1,
+        "iconColumn": 2,
+        "art": {
+            "base": "https://klattmose.github.io/CookieClicker/img/blackholeinverter",
+            "xV": 8,
+            "yV": 32,
+            "w": 128,
+            "rows": 1,
+            "x": 0,
+            "y": 0,
+            "customBuildingPic": "https://klattmose.github.io/CookieClicker/img/customBuildings.png",
+            "customIconsPic": "https://klattmose.github.io/CookieClicker/img/customIcons.png"
+        },
+        "price": "default",
+        "CpsFunction": "default",
+        "buyFunction": "default",
+        "foolObject": {
+            "name": "Hypnodrone",
+            "desc": "Autonomous aerial brand ambassadors to 'encourage' more sales!",
+            "icon": 1
+        },
+        "buildingSpecial": ["Kugelblitz", "Spaghettification"],
+        "fontSize": "100",
+        "upgrades": {
+            "upgrade1": {
+                "name": "Child Labor",
+                "desc": "Hire more children to improve efficiency."
+            },
+            "upgrade2": {
+                "name": "Child Education Program",
+                "desc": "Educate the children for even better productivity."
+            },
+            "upgrade3": {
+                "name": "Child Unionization",
+                "desc": "Allow children to unionize for better working conditions."
+            },
+            "upgrade4": {
+                "name": "Child Automation",
+                "desc": "Automate tasks to reduce child labor."
+            },
+            "upgrade5": {
+                "name": "Child Welfare Initiative",
+                "desc": "Invest in programs to improve the well-being of working children."
+            },
+            "upgrade6": {
+                "name": "Efficient Resource Allocation",
+                "desc": "Optimize resource usage for increased productivity."
+            },
+            "upgrade7": {
+                "name": "Advanced Conversion Techniques",
+                "desc": "Implement cutting-edge techniques for faster conversions."
+            },
+            "upgrade8": {
+                "name": "Environmental Sustainability",
+                "desc": "Adopt eco-friendly practices to minimize environmental impact."
+            },
+            "upgrade9": {
+                "name": "Quality Control Standards",
+                "desc": "Enforce strict standards to ensure high-quality output."
+            },
+            "upgrade10": {
+                "name": "Global Market Integration",
+                "desc": "Expand operations to tap into global markets."
+            },
+            "upgrade11": {
+                "name": "Innovation Research Institute",
+                "desc": "Establish a research institute to drive innovation."
+            },
+            "upgrade12": {
+                "name": "Strategic Partnerships",
+                "desc": "Forge partnerships for mutual growth and success."
+            },
+            "upgrade13": {
+                "name": "Resource Diversification",
+                "desc": "Diversify resources to adapt to changing market demands."
+            },
+            "upgrade14": {
+                "name": "Supply Chain Optimization",
+                "desc": "Streamline supply chains for improved efficiency."
+            },
+            "upgrade15": {
+                "name": "Market Dominance",
+                "desc": "Achieve market dominance through strategic initiatives."
+            }
+        },
+        "achievements": {
+            "achieve1": {
+                "name": "Child Prodigy",
+                "desc": "Achieve high productivity with child labor."
+            },
+            "achieve2": {
+                "name": "Child Advocate",
+                "desc": "Become an advocate for child labor rights."
+            },
+            "achieve3": {
+                "name": "Child Savior",
+                "desc": "Implement reforms to end child labor."
+            },
+            "achieve4": {
+                "name": "Child Exploiter",
+                "desc": "Maximize profits through child labor exploitation."
+            },
+            "achieve5": {
+                "name": "Child Guardian",
+                "desc": "Ensure the safety and well-being of working children."
+            },
+            "achieve6": {
+                "name": "Efficient Converter",
+                "desc": "Maximize conversion efficiency to reach high production levels."
+            },
+            "achieve7": {
+                "name": "Resource Master",
+                "desc": "Master resource management to sustain long-term growth."
+            },
+            "achieve8": {
+                "name": "Sustainable Operations",
+                "desc": "Achieve sustainability goals while maintaining profitability."
+            },
+            "achieve9": {
+                "name": "Quality Assurance Expert",
+                "desc": "Ensure top-notch quality standards for customer satisfaction."
+            },
+            "achieve10": {
+                "name": "Global Expansionist",
+                "desc": "Expand operations globally to become an industry leader."
+            },
+            "achieve11": {
+                "name": "Innovation Pioneer",
+                "desc": "Lead innovation initiatives to stay ahead of the competition."
+            },
+            "achieve12": {
+                "name": "Strategic Visionary",
+                "desc": "Develop and execute strategic plans for sustainable growth."
+            },
+            "achieve13": {
+                "name": "Resource Diversification Master",
+                "desc": "Effectively diversify resources to mitigate risks and seize opportunities."
+            },
+            "achieve14": {
+                "name": "Supply Chain Guru",
+                "desc": "Optimize supply chain operations for maximum efficiency and reliability."
+            },
+            "achieve15": {
+                "name": "Market Dominator",
+                "desc": "Establish dominance in the market through superior products and services."
+            }
+        },
+        "special": {
+            "upgrades": {
+                "grandma": {
+                    "name": "Child Labor Legacy",
+                    "desc": "Benefit from the tradition of child labor passed down by grandmothers."
+                },
+                "synergy1": {
+                    "name": "Efficient Resource Transport",
+                    "desc": "Enhance resource transport efficiency with synergistic upgrades from Shipment."
+                },
+                "synergy2": {
+                    "name": "Market Expansion Assistance",
+                    "desc": "Receive assistance in global market expansion from synergistic upgrades of Shipment."
+                }
+            },
+            "achievements": {
+                "up0": "ProductionAchievementName",
+                "up1": "ProductionAchievementName1",
+                "up2": "ProductionAchievementName2",
+                "name": "Level10",
+                "desc": "Reach level <b>10</b> converters."
+            }
+        }
+    },
+}
