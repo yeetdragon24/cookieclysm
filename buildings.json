@@ -21,7 +21,7 @@
         "buyFunction": "default",
         "foolObject": {
             "name": "Hypnodrone",
-            "desc": "Autonomous aerial brand ambassadors to \"encourage\" more sales!"
+            "desc": "Autonomous aerial brand ambassadors to \"encourage\" more sales!",
             "icon": 1
         },
         "buildingSpecial": ["Kugelblitz", "Spaghettification"],
