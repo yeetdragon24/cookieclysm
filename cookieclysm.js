@@ -2,7 +2,8 @@
 hasGodL=Game.hasGod;
 getPlantDescL=Game.Objects['Farm'].minigame.getPlantDesc;
 capniL=0;
-var numerals=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
+//some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
+function romanize (num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM", "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC", "","I","II","III","IV","V","VI","VII","VIII","IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
 var tUSA=884;
 var transcendMeterPercent=0;
 //Handling all the mod stuff (base cookieclysm.js
@@ -23,7 +24,7 @@ Game.registerHook('logic',function(){
 	}
 	
 	if (Game.hasBuff('Famine')){
-		//Game.Popup('Do not use the garden. You have been warned.',window.innerWidth/2,window.innerHeight/2);
+		//Game.Popup('Do not use the garden. You have been warned.',screen.width/2,window.innerHeight/2);
 		/*for (var i=19;i--;i<0){
 			if (Game.objectsById[2].amount>(0+(i==19))) {
 				while (Game.objectsById[2].amount>0) Game.objectsById[i].sacrifice(1);
@@ -43,7 +44,7 @@ Game.registerHook('logic',function(){
 			}
 		}*/
 		
-		if ((Game.T%(Game.fps/40)==0)) {
+		if ((Game.T%(Game.fps/40)==0)) { //tf does this do the game runs at 30 fps
 			if (Game.ObjectsById[capniL].amount!=0){
 				if (capniL!=19){
 					Game.ObjectsById[capniL].sacrifice(1);
@@ -66,17 +67,26 @@ Game.registerHook('logic',function(){
 	checkSpace();
 	
 	
-	if (Game.transcendReady) {
+	if (Game.OnAscend==2&&Game.transcendReady) { //it said &&Game.Game.transcendReady which was the reason code wasnt working smh
 		transcendMeterPercentT=Math.log10(Game.prestige+1)-Math.floor(Math.log10(Game.prestige+1));
 		//if (Game.T%10==0) console.log(transcendMeterPercent+' '+transcendMeterPercentT);
 		l('transcendMeter').style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
 		l('transcendMeter').style.width=(transcendMeterPercent*100)+'%';
 		transcendMeterPercent+=(transcendMeterPercentT-transcendMeterPercent)*0.1;
+		//what i get for using .cloneNode()
+		transcendMeter[1].style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
+		transcendMeter[1].style.width=(transcendMeterPercent*100)+'%';
+		l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML=dmone;
+		l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
 	}
-	if (Game.OnAscend==1) {
+	if (Game.OnAscend==1&&Game.transcendReady) {
 		l('mone').innerHTML=mone;//find a beter way to do this then checking every frame
 		l('transcendPower').innerHTML=transcendPower;//this too
 		transcendPower=Math.floor(Math.log10(Game.prestige+1));//also this
+		ascendInfoCopy.childNodes[1].childNodes[2].childNodes[0].innerHTML=dmone;
+		ascendInfoCopy.childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
+		transcendMeter[0].style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
+		transcendMeter[0].style.width=(transcendMeterPercent*100)+'%';
 	}
 });
 /*
@@ -96,36 +106,40 @@ upAndAchiev.push(new Game.Achievement('Cutting it close','Use the Garden while C
 upAndAchiev.push(new Game.Achievement('NOOO MY CPS','Activate the famine.<q>You were warned about this.</q>',[30,2]));
 upAndAchiev.push(Game.NewUpgradeCookie({name:'Hard Pasta',desc:'You should probably cook these. Or should you bake them?',icon:[28,32],require:'Box of not cookies',power:5,price:Math.pow(10,45)}));
 
-upAndAchiev.push(new Game.Upgrade('Shed','<b>Doubles</b> your building space.<q>You can\'t live in here, but this will be able to shelter quite a few mice.</q>',500,[0,0]));
-upAndAchiev.push(new Game.Upgrade('House','Multiplies your max space by <b>10</b>.<q>A nice house for grandmas to bake cookies.</q>',500000,[0,1]));
+upAndAchiev.push(new Game.Upgrade('Shed','<b>Doubles</b> your building space.<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>',500,[0,0]));
+upAndAchiev.push(new Game.Upgrade('House','Multiplies your max space by <b>10</b>.<q>A nice house for grandmas to bake cookies in.</q>',500000,[0,1]));
 upAndAchiev.push(new Game.Upgrade('Field','Multiplies your max space by <b>10</b>.<q>Now you can farm and dig all you want.</q>',500000000,[0,2]));
 upAndAchiev.push(new Game.Upgrade('Warehouse','Multiplies your max space by <b>10</b>.<q>A large empty building, ready to be filled with your cookie-creating machines.</q>',500000000000,[0,3]));
 upAndAchiev.push(new Game.Upgrade('Planet','Multiplies your max space by <b>10</b>.<q>It\'s about time you got yourself a place large enough to privately run your business.</q>',500*Math.pow(10,12),[0,4]));
 upAndAchiev.push(new Game.Upgrade('Distant objects','Multiplies your max space by <b>10</b>.<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>',500*Math.pow(10,15),[0,5]));
-upAndAchiev.push(new Game.Upgrade('Quantum optimazation','Multiplies your max space by <b>10</b>.<q>Almost all of an atom is empty. Instead of wasting this space, you can optimize the volume of atoms.</q>',500*Math.pow(10,18),[0,6]));
-upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space by <b>10</b>.<q>This game is running on a computer, so maybe you can give more space to your buildings by increasing your digital storage space.</q>',500*Math.pow(10,21),[0,7]));
+upAndAchiev.push(new Game.Upgrade('Quantum optimazation','Multiplies your max space by <b>10</b>.<q>Almost all of an atom is empty. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>',500*Math.pow(10,18),[0,6]));
+upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space by <b>10</b>.<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>',500*Math.pow(10,21),[0,7]));
 
 //upAndAchiev.push(new Game.Upgrade('Switchblade and bleach','Makes you look different enough to hide from the cops in a church, somehow giving you <b>+10%</b> cookie production.<q>Oh Ponyboy, your hair... your tuff, tuff, hair...</q>',420,[2,2]));
 //upAndAchiev.push(new Game.Upgrade('Cookieclysm','Gain <b>+100%</b> cookie production.<q>The beginninng.</q>',1,[2,2]));
-upAndAchiev.push(new Game.Upgrade('King of the Afterlife',loc('Prestige is <b>%1</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>','saudh'),1,[15,12]));
-upAndAchiev.push(new Game.Upgrade('Twitter account','Opens up Orteil\'s twitter (X).<q>Too many controversies... we need a cookieversy.</q>',41,[17,4]));Game.last.parents=['Cookieclysm'];
+//upAndAchiev.push(new Game.Upgrade('King of the Afterlife',loc('Prestige is <b>%1</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>','saudh'),1,[15,12]));
 
+//upAndAchiev.push(new Game.Upgrade('Twitter account','Opens up Orteil\'s twitter (X).<q>Too many controversies... we need a cookieversy.</q>',41,[17,4]));Game.last.parents=['Cookieclysm'];
+//Game.last.buyFunction=function(){window.open('https://twitter.com/orteil42')}
+
+upAndAchiev.push(new Game.Upgrade('more','Gain <b>%%%</b> CpS, permanently.<q>cookies<br>cookies<br>i need more<br>I NEED MORE</q>',1,[29,6]));//i did not know that zalgo used zero-width characters but ig you learn something new every day
 var transcendentUpgrades=[];
 
 for(let i of upAndAchiev){
 	i.order=100000;
 	if (i.name=='NOOO MY CPS') i.pool='shadow';
-	if (i.id>=884) {
+	if (i.name=='more') tUSA=i.id;
+	if (i.id>=tUSA) {
 		i.pool='prestige'; //dont question my decisions ok
-		i.getPrice=function(){return Math.pow(this.basePrice*(this.tier+1),2)};
+		i.getPrice=function(){return Math.floor(Math.pow(this.basePrice*(this.tier+1),1.5))};
 		transcendentUpgrades.push(i);
 	}
 }
-LocalizeUpgradesAndAchievs()
+LocalizeUpgradesAndAchievs();
 var cookieclysmCss=document.createElement('style');
 cookieclysmCss.type='text/css';
 cookieclysmCss.id='cookieclysmCss';
-cookieclysmCss.innerHTML='.devIcon{background-image:url(https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet-v3.png);}.transcendent.price:before{background:url(\'https://google.com/favicon.ico\')}';
+cookieclysmCss.innerHTML='.devIcon{background-image:url(https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet-v3.png);}.transcendent.price:before{background:url(\'https://google.com/favicon.ico\')}#ascendInfoCopy:before{}#ascendInfoCopy:after{}.ascendCopy:before{}.ascendCopy:after{}';
 document.head.appendChild(cookieclysmCss);
 
 
@@ -143,7 +157,7 @@ new Game.buffType('spirit sniped', function(time,power) {
 new Game.buffType('famine', function(time,power) {
 	return {
 		name:'Famine',
-		desc:'Your god Captain Crozier is angry at your usage of the Garden! You will soon receive punishment!',
+		desc:'Your god Captain Crozier is angry at your usage of the Garden and is punishing you!',
 		icon:[2,0,'https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet-v3.png'],
 		time:time*Game.fps,
 		power:power,
@@ -248,23 +262,44 @@ Game.ShowMenu();
 
 //transcendence
 var mone=0;
+var moneName='Moné';
 var transcendPower=0;
 var lastTranscendP=0;
+var moneSpent=0;
+var dmone=0;
+var transcends=0;
+var transcendModifier=0;
+var transcendModifierTypes={
+	1:{
+		name:'Glitched',
+		desc:'Things seem a little strange, as you\'ve returned to a reality that\'s not quite built right.',
+		icon:[28,12]
+	},
+	2:{
+		name:'Corrupted',
+		desc:'A strange force has taken over this reality, and it is angered by your presence.',
+		icon:[26,12]
+	}
+}
 
 GU=Game.UpgradePositions;
-GU[tUSA+0]=[400,300];
-GU[tUSA+1]=[400,500];
-
+Game.registerHook('check',function(){
+	GU[tUSA+0]=[window.innerHeight/2,window.innerWidth/2];
+	GU[tUSA+1]=[400,500];
+});
 Game.Upgrade.prototype.transcendBuy=function(){
+	if (this.id<tUSA) return false;
 	var price=this.getPrice();
 	if (mone>=price){
-		console.log('caBy');
 		mone-=price;
+		moneSpent+=price;
 		if (!Game.Has[this.name]) {
-			this.unlocked=1;
+			//this.unlocked=1;
 			this.bought=1;
+			buildTranscendTree();
 		}
 		this.tier++;
+		this.ddesc=this.desc.replace('%%',Beautify(Math.pow(3*(this.tier+1),2)));
 		if (this.buyFunction) this.buyFunction();
 		PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75);
 		PlaySound('snd/shimmerClick.mp3');
@@ -272,26 +307,85 @@ Game.Upgrade.prototype.transcendBuy=function(){
 		success=1;
 	}
 }
-
 function transcend(bypass) {
 	if (!bypass) Game.Prompt('<id Transcend><h3>'+loc("Transcend")+'</h3><div class="block">'+loc("Are you ready to leave everything behind and travel to a higher realm?")+'</div>',[[loc("Yes"),'Game.ClosePrompt();transcend(1);'],loc("No")]);
 	else {
 		l('game').appendChild(transcendTransition);
+		transcends++;
 		Game.killBuffs();
 		setTimeout(function(){
-			Game.ascendUpgradesl.innerHTML='';
+			//Game.ascendUpgradesl.innerHTML='';
+			buildTranscendTree();
 			Game.removeClass('ascending');
 			Game.OnAscend=2;
+			l('backgroundCanvas').style.zIndex=90000;
 			l('transcend').style.display='block';
-			lastTranscendP=transcendPower;
-			mone+=Math.floor(transcendPower-lastTranscendP);
+			mone+=transcendPower;
+			transcendModifier=choose([0,0,0,1,1,2,2]);
+			setTimeout(function(){l('transcendTransition').remove()},501)
 		},3500);
 	}
 }
+var leaveTranscend=function(bypass) { //i love writing inconsistent code!!!
+	if (!bypass) {
+	if (Math.seedrandom) Math.seedrandom('prompt '+Game.resets);
+		Game.Prompt('<id Descend><h3>Descend</h3><div class="block">Are you ready to return to reality?'+(Math.random()<0.3?'<div class="line"></div><span class="red">Things might be a little different than what you\'re used to.</span>':'')+'</div>',[['Yes','Game.ClosePrompt();leaveTranscend(1);'],'No']);
+	} else {
+		l('game').appendChild(transcendTransition);
+			setTimeout(()=>{
+				//copied from Game.Ascend() and edited
+				Game.Notify('Descending','Welcome back, '+Game.bakeryName,[20,7]);
+				//Game.addClass('ascendIntro');
+				//trigger the ascend animation (was breaking things because idk what it did)
+				//Game.AscendTimer=1;
+				Game.killShimmers();
+				Game.addClass('ascending');
+				Game.choiceSelectorOn=-1;
+				Game.AscendOffX=0;
+				Game.AscendOffY=0;
+				Game.AscendOffXT=0;
+				Game.AscendOffYT=0;
+				Game.AscendZoomT=1;
+				Game.AscendZoom=0.2;
+				Game.OnAscend=1;
+				l('backgroundCanvas').style.zIndex='';
+				//Game.jukebox.reset();
+				//PlayCue('preascend');
+				l('transcend').style.display='none';
+				setTimeout(function(){l('transcendTransition').remove()},501)
+			},
+		3500);
+		setTimeout(()=>{PlaySound('snd/choir.mp3',0.75)},4500);
+	}
+}
+function unlockTranscend(load) { //debug
+	if (Game.prestige<Math.pow(10,15)) Game.prestige=Math.pow(10,15);
+	if (load) loadTranscend();
+}
+Game.registerHook('cps',function(cps){
+	return cps;//probably the cause of NaN cps
+	if (transcendModifier==2) {
+		Math.seedrandom('cookieclysm/'+Game.seed);
+		var mult=(Math.random()+1)/2;
+		return Math.floor(mult*10)/10;
+	}
+});
 
+moneNameThings={
+	'captain crozier':'',//happy now
+};
 Game.registerHook('check',function(){
+	//Game.Upgrades['King of the Afterlife'].ddesc='Prestige is <b>'+(Math.pow(3*(Game.Upgrades['King of the Afterlife'].tier+1),2))+'%</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>';
+	//before anything is bought and also just to make sure
+	for (var iii of transcendentUpgrades) {
+		iii.ddesc=iii.desc.replace('%%',Math.pow(3*(iii.tier+1),2));
+	} //tf am i doing the game only runs check if Game.OnAscend==0
+	for (var iiii in moneNameThings) {
+		if (Game.hasDev) {
+			if (Game.hasDev(iiii)) moneName=moneNameThings[iiii];
+		} else moneName="Moné";
+	}
 	
-	Game.Upgrades['King of the Afterlife'].ddesc='Prestige is <b>'+(Math.pow(3*(Game.Upgrades['King of the Afterlife'].tier+1),2))+'%</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>';
 });
 //Game.registerHook('reset',function(hard){l('transcendPower').innerHTML=transcendPower;});
 
@@ -1007,7 +1101,7 @@ Game.DrawBackground=function(){
 		}
 	}
 	else if (Game.OnAscend==2) {
-		l('backgroundCanvas').style.zIndex=90000; //make it appear behind the upgrades which are at z index 10mil
+		//l('backgroundCanvas').style.zIndex=90000; //make it appear behind the upgrades which are at z index 10mil
 		Game.Background.clearRect(-1000, -1000, l('backgroundCanvas').width*10, l('backgroundCanvas').height*10);
 		Game.Background.fillStyle='black';
 		
@@ -1016,7 +1110,7 @@ Game.DrawBackground=function(){
 		Game.Background.globalAlpha=1;
 		Game.Background.fillRect(-1000, -1000, 10000, 10000);
 		Game.Background.globalAlpha=0.5;
-		//Game.Background.translate(window.innerWidth/2,window.innerHeight/2);
+		//Game.Background.translate(screen.width/2,window.innerHeight/2);
 		
 		Game.Background.globalCompositeOperation='lighter';
 		
@@ -1045,7 +1139,7 @@ Game.DrawBackground=function(){
 		var y=(b.top+b.bottom)/2;
 		Game.Background.globalAlpha=((Math.cos(Game.T/5000))+1)/10;
 		var s=1*(1+Math.cos(Game.T*0.0027)*0.05);
-		Game.Background.fillPattern(Pic('starbg.jpg'),0,0,w,h,1024*s,1024*s,x*0.125*s,y*0.125*s);
+		Game.Background.fillPattern(Pic('starbg.jpg'),0,0,w,h,1024*s,1024*s,x*0.00125*s,y*0.00125*s);
 		Timer.track('star layer 1');
 		
 		Game.Background.restore();
@@ -1102,7 +1196,7 @@ Game.crateTooltip=function(me,context)
 				{
 					price='<div style="float:right;text-align:right;"><span class="price'+
 						(me.priceLumps>0?(' lump'):'')+
-						(me.pool=='prestige'?(((me.bought || Game.heavenlyChips>=cost))?(me.id>tUSA?' transcendent':' heavenly'):(me.id>tUSA?' transcendent disabled':' heavenly disabled')):'')+
+						(me.pool=='prestige'?(((mone>=cost&&me.id>=tUSA)||(Game.heavenlyChips>=cost||(me.id<tUSA&&me.bought)))?(me.id>=tUSA?' transcendent':' heavenly'):(me.id>=tUSA?' transcendent disabled':' heavenly disabled')):'')+
 						(context=='store'?(canBuy?'':' disabled'):'')+
 					'">'+Beautify(Math.round(cost))+'</span>'+((me.pool!='prestige' && me.priceLumps==0)?Game.costDetails(cost):'')+'</div>';
 					
@@ -1186,7 +1280,7 @@ Game.crateTooltip=function(me,context)
 			return '<div style="position:absolute;left:1px;top:1px;right:1px;bottom:1px;background:linear-gradient(125deg,'+(me.pool=='prestige'?'rgba(15,115,130,1) 0%,rgba(15,115,130,0)':'rgba(50,40,40,1) 0%,rgba(50,40,40,0)')+' 20%);mix-blend-mode:screen;z-index:1;"></div><div style="z-index:10;padding:8px 4px;min-width:350px;position:relative;" id="tooltipCrate">'+
 			'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;'+writeIcon(icon)+'"></div>'+
 			(me.bought && context=='store'?'':price)+
-			'<div class="name">'+(mysterious?'???':me.dname)+((me.id>884)?(' '+numerals[me.tier]):'')+'</div>'+
+			'<div class="name">'+(mysterious?'???':me.dname)+((me.id>=tUSA)?(' '+romanize(me.tier+1)):'')+'</div>'+
 			tagsStr+
 			'<div class="line"></div><div class="description">'+(mysterious?'???':desc)+'</div></div>'+
 			(tip!=''?('<div class="line"></div><div style="font-size:10px;font-weight:bold;color:#999;text-align:center;padding-bottom:4px;line-height:100%;" class="crateTip">'+tip+'</div>'):'')+
