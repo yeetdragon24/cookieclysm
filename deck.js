@@ -1,11 +1,13 @@
 // deck.js
 
 class Deck {
+  // Constructor
   constructor() {
     this.cards = [];
     this.reset();
+    this.testing = false;
   }
-
+  // Main functions
   reset() {
     this.cards = [];
     const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
@@ -32,13 +34,8 @@ class Deck {
   }
 
   shuffle() {
-    for (let i = 0; i < Math.floor(Math.random()*10); i++) {this.oneShuffle()}
-  }
-
-  oneShuffle() {
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
+      this.oneShuffle();
     }
   }
 
@@ -61,40 +58,66 @@ class Deck {
       // Filter out the winning hands
       const winningHands = bestHands.filter(hand => hand.rank === maxRank);
 
-      // If there is only one winning hand, return its index
-      console.log(winningHands[0].rank)
-      console.log(winningHands[0].hand)
+      // If there is only one winning hand
       if (winningHands.length === 1) {
           const winningHand = winningHands[0].hand;
           for (let i = 0; i < hands.length; i++) {
               for (let j = 0; j < hands[i].length; j++) {
                   if (this.isSameCard(winningHand, hands[i][j])) {
-                      return i;
+                      return [i, winningHands[0].rank]; // Return the index of the winning hand and its rank
                   }
               }
           }
       } else {
-          // Handle tie or multiple winners
-          return -1;
+          // Handle tie or multiple winner hands
+          let winnerIndex = -1;
+          let highestKicker = -Infinity;
+          for (let i = 0; i < winningHands[0].hand.length; i++) {
+              const maxKicker = Math.max(
+                  ...winningHands.map(hand => this.cardValueRank(hand.hand[i].value))
+              );
+              if (maxKicker > highestKicker) {
+                  highestKicker = maxKicker;
+                  winnerIndex = hands.findIndex(hand => hand.some(card => this.cardValueRank(card.value) === maxKicker));
+              }
+          }
+          if (winnerIndex !== -1) {
+              return [winnerIndex, winningHands[0].rank]; // Return the index of the winning hand and its rank
+          } else {
+              // If still tied, use suit of highest card to determine the winner
+              let highestCardSuit = '';
+              let highestCardValue = -Infinity;
+              for (const hand of winningHands) {
+                  const highestCard = hand.hand.reduce((prev, curr) => (this.cardValueRank(curr.value) > this.cardValueRank(prev.value)) ? curr : prev);
+                  if (this.cardValueRank(highestCard.value) > highestCardValue) {
+                      highestCardValue = this.cardValueRank(highestCard.value);
+                      highestCardSuit = highestCard.suit;
+                  } else if (this.cardValueRank(highestCard.value) === highestCardValue && highestCard.suit === 'Spades') {
+                      // Spades is the highest suit, so we directly return the index of the hand
+                      return [hands.findIndex(hand => hand === highestCard), winningHands[0].rank];
+                  }
+              }
+              // Return the index of the hand with the highest suit
+              return [hands.findIndex(hand => hand.some(card => card.suit === highestCardSuit)), winningHands[0].rank];
+          }
       }
   }
 
-  isSameCard(hand, card) {
-      return hand.some(handCard => handCard.value === card.value && handCard.suit === card.suit);
-  }
 
-
-  getKicker(hand) {
-    const sortedValues = hand
-      .map((card) => this.cardValueRank(card.value))
-      .sort((a, b) => b - a);
-    // Find the highest card value that is not part of the hand's rank
-    for (let i = 1; i < sortedValues.length; i++) {
-      if (sortedValues[i] !== sortedValues[0]) {
-        return sortedValues[i];
-      }
+  toggleTestingMode(){
+    if (this.testing){
+      this.testing = false;
     }
-    return -Infinity; // If no kicker is found
+    else{
+      this.testing = true;
+    }
+  }
+  // Helper functions for main functions
+  isSameCard(hand, card) {
+    return hand.some(
+      (handCard) =>
+        handCard.value === card.value && handCard.suit === card.suit,
+    );
   }
 
   parseWinner(int) {
@@ -148,18 +171,20 @@ class Deck {
     if (this.isFullHouse(hand)) return 7 * d + this.getFullHouseRank(hand);
     if (this.isFlush(hand)) return 6 * d + this.getFlushRank(hand);
     if (this.isStraight(hand)) return 5 * d + this.getStraightRank(hand);
-    if (this.isThreeOfAKind(hand)) return 4 * d + this.getThreeOfAKindRank(hand);
+    if (this.isThreeOfAKind(hand))
+      return 4 * d + this.getThreeOfAKindRank(hand);
     if (this.isTwoPair(hand)) return 3 * d + this.getTwoPairRank(hand);
     if (this.isPair(hand)) return 2 * d + this.getPairRank(hand);
     return 1 * d + this.getHighCardValue(hand) / d; // High card
   }
 
   getFlushRank(hand) {
-      const sortedValues = hand.map(card => this.cardValueRank(card.value)).sort((a, b) => b - a);
-      return sortedValues[0]; // Return the rank of the highest card in the flush
+    const sortedValues = hand
+      .map((card) => this.cardValueRank(card.value))
+      .sort((a, b) => b - a);
+    return sortedValues[0]; // Return the rank of the highest card in the flush
   }
 
-  
   getFourOfAKindRank(hand) {
     const valueCounts = {};
     for (let card of hand) {
@@ -195,19 +220,19 @@ class Deck {
       .map((card) => card.value)
       .sort((a, b) => {
         const valueMap = {
-          "2": 2,
-          "3": 3,
-          "4": 4,
-          "5": 5,
-          "6": 6,
-          "7": 7,
-          "8": 8,
-          "9": 9,
-          "10": 10,
-          "J": 11,
-          "Q": 12,
-          "K": 13,
-          "A": 14,
+          2: 2,
+          3: 3,
+          4: 4,
+          5: 5,
+          6: 6,
+          7: 7,
+          8: 8,
+          9: 9,
+          10: 10,
+          J: 11,
+          Q: 12,
+          K: 13,
+          A: 14,
         };
         return valueMap[a] - valueMap[b];
       });
@@ -270,25 +295,25 @@ class Deck {
 
   cardValueRank(value) {
     const valueMap = {
-      "A": 14,
-      "K": 13,
-      "Q": 12,
-      "J": 11,
-      "10": 10,
-      "9": 9,
-      "8": 8,
-      "7": 7,
-      "6": 6,
-      "5": 5,
-      "4": 4,
-      "3": 3,
-      "2": 2,
+      A: 14,
+      K: 13,
+      Q: 12,
+      J: 11,
+      10: 10,
+      9: 9,
+      8: 8,
+      7: 7,
+      6: 6,
+      5: 5,
+      4: 4,
+      3: 3,
+      2: 2,
     };
     return valueMap[value];
   }
 
   isRoyalFlush(hand) {
-    return this.isStraightFlush(hand) && this.getHighCardValue(hand) === "A";
+    return this.isStraightFlush(hand) && this.getHighCardValue(hand) === 14;
   }
 
   isStraightFlush(hand) {
@@ -326,19 +351,19 @@ class Deck {
       .map((card) => card.value)
       .sort((a, b) => {
         const valueMap = {
-          "2": 2,
-          "3": 3,
-          "4": 4,
-          "5": 5,
-          "6": 6,
-          "7": 7,
-          "8": 8,
-          "9": 9,
-          "10": 10,
-          "J": 11,
-          "Q": 12,
-          "K": 13,
-          "A": 14,
+          2: 2,
+          3: 3,
+          4: 4,
+          5: 5,
+          6: 6,
+          7: 7,
+          8: 8,
+          9: 9,
+          10: 10,
+          J: 11,
+          Q: 12,
+          K: 13,
+          A: 14,
         };
         return valueMap[a] - valueMap[b];
       });
@@ -398,6 +423,14 @@ class Deck {
     );
   }
 
+  oneShuffle() {
+    this.reset();
+    for (let i = this.cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    }
+  }
+  // in case i need this
   parseHand(handString) {
     const handArray = handString.split(",").map((card) => card.trim());
     return handArray.map((card) => {
@@ -409,8 +442,13 @@ class Deck {
   toString(card) {
     return `${card.value} of ${card.suit}`;
   }
+
+  print(str)  {
+    if (this.testing){
+      console.log(str);
+    }
+  }
 }
 
 // Exporting the Deck class to make it accessible from other files
-//module.exports = Deck;
-//use for node only
+module.exports = Deck;
