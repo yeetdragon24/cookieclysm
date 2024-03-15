@@ -61,18 +61,26 @@ transcendBox1.className='ascendData1 smallFramed prompt';
 //probably less than 15 minutes
 //i got bored and fixed it  (2 days after i removed it) lol
 
-transcendBox2=document.createElement('div');
-transcendBox2.innerHTML='<h3>'+moneName+':</h3><br>'+
+var transcendBox2=document.createElement('div');
+transcendBox2.innerHTML='<h3 id="moneName">Moné:</h3><br>'+
 '<h3 style="all:initial;"><span class="price transcendent" id="mone" style="'+styleWoBA+'">'+69420+'</span></h3><br>';
 transcendBox2.style='margin-top:0px;width:60%;rotate:180deg;margin:auto;top:26px;position:relative';
 transcendBox2.id='transcencionBox1';
 transcendBox2.className='ascendData2 smallFramed prompt';
 
-transcendButton=document.createElement('a');
+var transcendButton=document.createElement('a');
 transcendButton.innerHTML='<span class="fancyText" style="font-size:20px;">Transcend</span>'
 transcendButton.className='option framed large red';
 transcendButton.id='transcendButton';
 transcendButton.style.rotate='180deg';transcendButton.style.top='24px';transcendButton.style.position='relative';
+
+var transcendModIco=document.createElement('div');
+transcendModIco.innerHTML='<div id="transcendModIcon" style="background-image:url(\'img/icons.png\'); background-position:-48px -48px;; width:48px;height:48px"></div>';
+transcendModIco.style.right='0px';
+transcendModIco.style.bottom='25px';
+transcendModIco.style.position='absolute';
+l('sectionLeft').appendChild(transcendModIco);
+
 var transcendHTML=transcendence.innerHTML;
 var ascendInfoCopy=document.createElement('div');ascendInfoCopy.id='ascendInfoCopy';//l('ascendInfo').cloneNode(true);//ascendInfoCopy.style.position='fixed';ascendInfoCopy.style.top=window.innerHeight/1.25+'px';ascendInfoCopy.style.right='0px';ascendInfoCopy.style.margin='auto';ascendInfoCopy.style.left='0px';ascendInfoCopy.style.opacity='50%';ascendInfoCopy.style.backgroundImage='';//what the hell am i doing (putting it all in one line)
 /*screw it im just doing this*/ ascendInfoCopy.innerHTML='<div id="transcencionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 24px; position: relative;"><h3>Transcend Power:</h3><br><h3 style="all:initial"><span id="transcendPower" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">15</span>\x3C!--</h3>--><div class="smallFramed meterContainer" id="transcendMeterContainer" style="width: 70%; margin: auto;"><div id="transcendMeter" class="meter filling" style="background-position: -9519px center; width: 0%;"></div></div></h3></div><div id="transcencionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 26px; position: relative;"><h3>Moné:</h3><br><h3 style="all:initial;"><span class="price transcendent" id="mone" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">0</span></h3><br></div>';
