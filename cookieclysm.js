@@ -76,18 +76,19 @@ Game.registerHook('logic',function(){
 		//what i get for using .cloneNode()
 		transcendMeter[1].style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
 		transcendMeter[1].style.width=(transcendMeterPercent*100)+'%';
-		l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML=dmone;
+		l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML=Math.floor(dmone);
 		l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
 	}
 	if (Game.OnAscend==1&&Game.transcendReady) {
 		l('mone').innerHTML=mone;//find a beter way to do this then checking every frame
 		l('transcendPower').innerHTML=transcendPower;//this too
 		transcendPower=Math.floor(Math.log10(Game.prestige+1));//also this
-		ascendInfoCopy.childNodes[1].childNodes[2].childNodes[0].innerHTML=dmone;
+		ascendInfoCopy.childNodes[1].childNodes[2].childNodes[0].innerHTML=Math.floor(dmone);
 		ascendInfoCopy.childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
 		transcendMeter[0].style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
 		transcendMeter[0].style.width=(transcendMeterPercent*100)+'%';
 	}
+	dmone+=(mone-dmone)*0.3;
 });
 /*
 new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.',[11,8]); //Game.last.pool='shadow';
@@ -270,6 +271,11 @@ var dmone=0;
 var transcends=0;
 var transcendModifier=0;
 var transcendModifierTypes={
+	0:{
+		name:'Regular',
+		desc:'This doesn\'t show up in game, but is just here to prevent errors because i\'m lazy.',
+		icon:[23,0] //empty
+	},
 	1:{
 		name:'Glitched',
 		desc:'Things seem a little strange, as you\'ve returned to a reality that\'s not quite built right.',
@@ -278,8 +284,11 @@ var transcendModifierTypes={
 	2:{
 		name:'Corrupted',
 		desc:'A strange force has taken over this reality, and it is angered by your presence.',
-		icon:[26,12]
+		icon:[18,6]
 	}
+}
+transcendModTooltip=function() {
+	return 'tooltip but '+Beautify(Game.cookies);
 }
 
 GU=Game.UpgradePositions;
@@ -320,8 +329,9 @@ function transcend(bypass) {
 			Game.OnAscend=2;
 			l('backgroundCanvas').style.zIndex=90000;
 			l('transcend').style.display='block';
-			mone+=transcendPower;
-			transcendModifier=choose([0,0,0,1,1,2,2]);
+			mone=transcendPower-lastTranscendP-moneSpent;
+			lastTranscendP=transcendPower;
+			if (transcendPower-lastTranscendP>1) transcendModifier=choose([0,0,0,1,1,2,2]);
 			setTimeout(function(){l('transcendTransition').remove()},501)
 		},3500);
 	}
@@ -334,7 +344,7 @@ var leaveTranscend=function(bypass) { //i love writing inconsistent code!!!
 		l('game').appendChild(transcendTransition);
 			setTimeout(()=>{
 				//copied from Game.Ascend() and edited
-				Game.Notify('Descending','Welcome back, '+Game.bakeryName,[20,7]);
+				Game.Notify('Descending','Welcome back, '+Game.bakeryName,[20,7],5);
 				//Game.addClass('ascendIntro');
 				//trigger the ascend animation (was breaking things because idk what it did)
 				//Game.AscendTimer=1;
@@ -363,16 +373,18 @@ function unlockTranscend(load) { //debug
 	if (load) loadTranscend();
 }
 Game.registerHook('cps',function(cps){
-	return cps;//probably the cause of NaN cps
-	if (transcendModifier==2) {
-		Math.seedrandom('cookieclysm/'+Game.seed);
-		var mult=(Math.random()+1)/2;
-		return Math.floor(mult*10)/10;
+	if (transcendModifier==1) {
+		Math.seedrandom(`cookieclysm/glitched/${Game.seed}/${Math.floor(Game.T/(30*60))}`);
+		return cps*((Math.random()+1)/2);
 	}
+	if (transcendModifier==2) {
+		return cps/((Game.elderWrath+1)/2);
+	}
+	else return cps;
 });
 
 moneNameThings={
-	'captain crozier':'',//happy now
+	'captain crozier':'',
 };
 Game.registerHook('check',function(){
 	//Game.Upgrades['King of the Afterlife'].ddesc='Prestige is <b>'+(Math.pow(3*(Game.Upgrades['King of the Afterlife'].tier+1),2))+'%</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>';
@@ -385,7 +397,13 @@ Game.registerHook('check',function(){
 			if (Game.hasDev(iiii)) moneName=moneNameThings[iiii];
 		} else moneName="Moné";
 	}
+	if (l('moneName')) l('moneName').innerHTML=moneName;
 	
+	if (l('transcendModIcon')) {
+		let tranModIcon=transcendModifierTypes[transcendModifier].icon;
+		l('transcendModIcon').style.backgroundPosition=`${tranModIcon[0]*-48}px ${tranModIcon[1]*-48}px`;
+		
+	}
 });
 //Game.registerHook('reset',function(hard){l('transcendPower').innerHTML=transcendPower;});
 
