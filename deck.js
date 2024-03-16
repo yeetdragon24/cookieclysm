@@ -34,10 +34,29 @@ class Deck {
   }
 
   shuffle() {
-    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
-      this.oneShuffle();
+    const originalDeck = [...this.cards]; // Make a copy of the original deck
+    // Fisher-Yates shuffle algorithm
+    for (let i = this.cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
     }
-  }
+    // Check if the deck has been shuffled properly
+    if (this.isDeckShuffled(originalDeck)) {
+        console.log("Deck shuffled successfully.");
+    } else {
+        console.error("Deck shuffling failed!");
+    }
+}
+
+isDeckShuffled(originalDeck) {
+    // Check if the order of cards in the deck has changed after shuffling
+    for (let i = 0; i < this.cards.length; i++) {
+        if (this.cards[i] !== originalDeck[i]) {
+            return true; // Deck has been shuffled
+        }
+    }
+    return false; // Deck remains in the same order
+}
 
   deal(numCards) {
     const hand = [];
