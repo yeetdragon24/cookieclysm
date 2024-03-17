@@ -34,17 +34,18 @@ class Deck {
   }
 
   shuffle() {
+    this.reset();
     const originalDeck = [...this.cards]; // Make a copy of the original deck
     // Fisher-Yates shuffle algorithm
-    for (let i = this.cards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    for (let i = 0; i<15; i++){
+      this.oneShuffle();
     }
     // Check if the deck has been shuffled properly
     if (this.isDeckShuffled(originalDeck)) {
-        console.log("Deck shuffled successfully.");
+        this.shuffle();
+        this.print("Same deck")
     } else {
-        console.error("Deck shuffling failed!");
+        this.print("Shuffle complete");
     }
 }
 
@@ -443,7 +444,6 @@ isDeckShuffled(originalDeck) {
   }
 
   oneShuffle() {
-    this.reset();
     for (let i = this.cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
