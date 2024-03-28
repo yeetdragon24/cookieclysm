@@ -84,6 +84,7 @@ var NewBuilding = function(name, commonName, desc, icon, iconColumn, art, price,
 		Game.recalculateGains = 1;
 		return me;
 	}
+	initConverter=function(){
 NewBuilding('Converter','converter|converters|converted|[X] extra chamber|[X] extra chambers','Converts living mass into cookies.',21,12,
 {pic:'https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/building.png',bg:'img/factoryBackground.png',xV:8,yV:8,w:64,rows:1,x:0,y:16},"this is two years old",
 			function(me){
@@ -110,7 +111,7 @@ for (let i in Game.Objects) {
 	}
 }
 var converter=Game.Objects['Converter'];
-upAndAchiev.push(Game.GrandmaSynergy('Massive grandmas','A large grandma to be converted into more cookies.','Converter'));Game.last.order=256;
+upAndAchiev.push(Game.GrandmaSynergy('Massive grandmas','A large grandma to be converted into more cookies.','Converter'));Game.last.order=1800;
 upAndAchiev.push(Game.TieredUpgrade('Alien volunteers','<q>They don\'t know what they are volunteering for.</q>','Converter',1));
 upAndAchiev.push(Game.TieredUpgrade('Salty electrons','<q>Electrons are now required to be converted as well instead of retaining their structure, and as a result are salty.</q>','Converter',2));
 upAndAchiev.push(Game.TieredUpgrade('Box hypothesis','<q>(can’t think of one, make new)</q> <span style="right:0;position:absolute;">-Stream Sniper</span>','Converter',3));
@@ -148,3 +149,4 @@ converter.desc='Converts living matter into cookies.'; //right now mod is only e
 converter.grandma=Game.Upgrades['Massive grandmas'];
 converter.l.childNodes[0].style.background=`url('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/converterIcon.png')`;
 converter.l.childNodes[1].style.background=`url('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/converterIcon.png')`;
+	}
