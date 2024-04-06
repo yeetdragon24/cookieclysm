@@ -18,6 +18,7 @@ buildTranscendTree=function(){
 	}
 	for (var ii in i.parents)//create pulsing links
 		{
+			ghosted=0;
 			if (i.parents[ii]!=-1 && (i.canBePurchased || ghosted))
 			{
 				var origX=0;
@@ -115,7 +116,10 @@ var loadTranscend=function(){
 		ascendInfoCopy.childNodes[1].className='prompt';
 		
 		transcendHTML=transcendence.innerHTML;
+		
+		Game.attachTooltip(l('transcendButton'),function(){return '<div style="min-width:300px;text-align:center;font-size:11px;padding:8px;" id="tooltipTranscendButton">Upon transcending, you will gain '+moneName+' based on how much transcend power you gained since your last transcension.<br>'+moneName+' can be spent on Transcendent Upgrades.</div>';},'bottom-right');
+
 		Game.transcendReady=1;
 	}
 }
-Game.registerHook('check',()=>{if (!Game.transcendReady){loadTranscend()}});
+Game.registerHook('logic',()=>{if (Game.T%(Game.fps*5)==0&&!Game.transcendReady){loadTranscend()}});
