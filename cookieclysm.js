@@ -189,7 +189,7 @@ upAndAchiev.push(Game.TieredAchievement('Scientists cookiefied across the plane'
 upAndAchiev.push(Game.TieredAchievement('Cookies matter','','Converter',8));Game.last.icon[1]=8-1;
 upAndAchiev.push(Game.TieredAchievement('Expanding edible expidentures','','Converter',9));Game.last.icon[1]=9-1;
 upAndAchiev.push(Game.TieredAchievement('A matter of cookies','','Converter',10));Game.last.icon[1]=10-1;
-upAndAchiev.push(Game.TieredAchievement('all-star reference','','Converter',11));Game.last.icon[1]-=10;
+upAndAchiev.push(Game.TieredAchievement('Use a little fuel','','Converter',11));Game.last.icon[1]-=10;
 upAndAchiev.push(Game.TieredAchievement('Socially accepted delicacy','','Converter',12));Game.last.icon[1]-=10;
 upAndAchiev.push(Game.TieredAchievement('Atomic chair','','Converter',13));Game.last.icon[1]-=10;
 upAndAchiev.push(Game.TieredAchievement('What\'s the cookie with you','','Converter',14));Game.last.icon[1]-=10;
@@ -218,38 +218,37 @@ upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space 
 //Game.last.buyFunction=function(){window.open('https://twitter.com/orteil42')}
 
 upAndAchiev.push(new Game.Upgrade('more','Gain <b>%%%</b> CpS, permanently.<q>cookies<br>cookies<br>i need more<br>I NEED MORE</q>',1,[29,6]));//i did not know that zalgo used zero-width characters but ig you learn something new every day
-
-upAndAchiev.push(new Game.Upgrade('Unshackle slot #1','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));
-upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));
+tUSA=Game.last.id;
+upAndAchiev.push(new Game.Upgrade('Unshackle slot #1','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['more']];
+upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #1']];
 var slots=['Unshackle slot #1','Unshackle slot #2'];
-Game.last.transcendBuy=function() {
-	var price=this.getPrice();
-	if (mone>=price&&!Game.Has(this.name)){
-		mone-=price;
-		moneSpent+=price;
-		//this.unlocked=1;
-		this.bought=1;
-		buildTranscendTree();
-		//if (this.buyFunction) this.buyFunction();
-		PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75);
-		PlaySound('snd/shimmerClick.mp3');
-		//PlaySound('snd/buyHeavenly.mp3');
-
-		success=1;
-	}
-	this.buyFunction();
-}
-Game.last.notTiered=1;
-Game.last.parents=[Game.Upgrades['more']];
 
 for (var i=0;i<slots.length;i++) {
 	Game.Upgrades[slots[i]].descFunc=function(i){return function(context){
-		if (Game.permanentUpgrades[i]==-1) return this.desc+(context=='stats'?'':'<br><b>'+loc("Click to activate.")+'</b>');
+		if (unshackleSlots[i]==-1) return this.desc+(context=='stats'?'':'<br><b>'+loc("Click to activate.")+'</b>');
 		var upgrade=Game.UpgradesById[unshackleSlots[i]];
 		return '<div style="text-align:center;">'+'Current:'+' '+tinyIcon(upgrade.icon)+' <b>'+upgrade.dname+'</b><div class="line"></div></div>'+this.ddesc+(context=='stats'?'':'<br><b>'+'Click to activate.'+'</b>');
 	};}(i);
+	Game.Upgrades[slots[i]].transcendBuy=function() {
+		for (let i of this.parents) if (!i.bought) return false;
+		var price=this.getPrice();
+		if (mone>=price&&!Game.Has(this.name)){
+			mone-=price;
+			moneSpent+=price;
+			//this.unlocked=1;
+			this.bought=1;
+			buildTranscendTree();
+			//if (this.buyFunction) this.buyFunction();
+			PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75);
+			PlaySound('snd/shimmerClick.mp3');
+			//PlaySound('snd/buyHeavenly.mp3');
+
+			success=1;
+		}
+		if (this.bought) this.buyFunction();
+	}
 	Game.Upgrades[slots[i]].buyFunction=function() {
-		var slot=0;
+		var slot=slots.indexOf(this.name);
 		PlaySound('snd/tick.mp3');
 		Game.tooltip.hide();
 		var list=[];
@@ -285,9 +284,8 @@ for (var i=0;i<slots.length;i++) {
 	}
 }
 
-tUSA=Game.last.id;
-var transcendentUpgrades=[];
 
+var transcendentUpgrades=[];
 for(let i of upAndAchiev){
 	if (!i.order) i.order=100000;
 	if (i.name=='NOOO MY CPS') i.pool='shadow';
@@ -298,7 +296,7 @@ for(let i of upAndAchiev){
 		transcendentUpgrades.push(i);
 	}
 	if ((i.id>=converterStart&&i.id<=converterEnd&&i.type=='upgrade')||(i.id>=converterAStart&&i.id<=converterAEnd&&i.type=='achievement')) {
-		i.icon[1]++;
+		i.icon[1]+=1;
 		i.icon[2]='https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v4.png';
 	}
 }
@@ -472,7 +470,7 @@ var lastTranscendP=0;
 var moneSpent=0;
 var dmone=0;
 var transcends=0;
-var unshackleSlots=[-1];
+var unshackleSlots=[-1,-1];
 var transcendModifier=0;
 var transcendModifierTypes={
 	0:{
@@ -500,9 +498,11 @@ Game.registerHook('check',function(){
 	let h=window.innerHeight;let w=window.innerWidth;
 	GU[tUSA+0]=[h/2,w/2];
 	GU[tUSA+1]=[(h/2)+100,w/2];
+	GU[tUSA+2]=[(h/2)+100+80,(w/2)+80];
 });
 Game.Upgrade.prototype.transcendBuy=function(){
 	if (this.id<tUSA) return false;
+	for (let i of this.parents) if (!i.bought) return false;
 	var price=this.getPrice();
 	if (mone>=price){
 		mone-=price;
@@ -1633,7 +1633,7 @@ Game.crateTooltip=function(me,context)
 			return '<div style="position:absolute;left:1px;top:1px;right:1px;bottom:1px;background:linear-gradient(125deg,'+(me.pool=='prestige'?'rgba(15,115,130,1) 0%,rgba(15,115,130,0)':'rgba(50,40,40,1) 0%,rgba(50,40,40,0)')+' 20%);mix-blend-mode:screen;z-index:1;"></div><div style="z-index:10;padding:8px 4px;min-width:350px;position:relative;" id="tooltipCrate">'+
 			'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;'+writeIcon(icon)+'"></div>'+
 			(me.bought && context=='store'?'':price)+
-			'<div class="name">'+(mysterious?'???':me.dname)+((me.id>=tUSA)?(' '+romanize(me.tier+1)):'')+'</div>'+
+			'<div class="name">'+(mysterious?'???':me.dname)+((me.id>=tUSA)?(' '+romanize(me.tier)):'')+'</div>'+
 			tagsStr+
 			'<div class="line"></div><div class="description">'+(mysterious?'???':desc)+'</div></div>'+
 			(tip!=''?('<div class="line"></div><div style="font-size:10px;font-weight:bold;color:#999;text-align:center;padding-bottom:4px;line-height:100%;" class="crateTip">'+tip+'</div>'):'')+
