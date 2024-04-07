@@ -15,23 +15,24 @@ buildTranscendTree=function(){
 			str+=Game.crate(i,'ascend','Game.Upgrades[\''+i.name+'\'].transcendBuy();',undefined,'top:'+GU[i.id][0]+'px;left:'+GU[i.id][1]+'px;z-index:4534225;opacity:50%');
 			//str+='<div data-id="'+i.id+'" onclick="Game.Upgrades[\''+i.name+'\'].tier++;" class="crate upgrade heavenly" onmouseout="Game.setOnCrate(0);Game.tooltip.shouldHide=1;" onmouseover="if (!Game.mouseDown) {Game.setOnCrate(this);Game.tooltip.dynamic=1;Game.tooltip.draw(this,function(){return function(){return \'<div style=\'position:absolute;left:1px;top:1px;right:1px;bottom:1px;background:linear-gradient(125deg,rgba(15,115,130,1) 0%,rgba(15,115,130,0) 20%);mix-blend-mode:screen;z-index:1;\'></div><div style=\'z-index:10;padding:8px 4px;min-width:350px;position:relative;\' id=\'tooltipCrate\'><div class=\'icon\' style=\'float:left;margin-left:-8px;margin-top:-8px;background-position:-816px -192px;\'></div><div style=\'float:right;text-align:right;\'><span class=\'price heavenly disabled\'>'+i.getPrice()+'</span></div><div class=\'name\'>Twitter account '+i.tier+'</div><div class=\'tag\' style=\'background-color:#efa438;\'>Heavenly</div><div class=\'line\'></div><div class=\'description\'>'+i.desc+'</div></div><div style=\'font-size:9px;\'>Id: '+i.id+' | Order: '+i.order+' | Tier: '+i.tier+' | Icon: ['+i.icon[0]+','+i.icon[1]+']</div>\'}();},\'top\');Game.tooltip.wobble();}" style="background-position:-816px -192px;position:absolute;left:undefinedpx;top:undefinedpx;top:400px;left:500px;z-index:4534225"></div>';
 		//}
-	}
-	for (var ii in i.parents)//create pulsing links
+		for (var ii in i.parents)//create pulsing links
 		{
 			ghosted=0;
-			if (i.parents[ii]!=-1 && (i.canBePurchased || ghosted))
+			if (true||i.parents[ii]!=-1 && (i.canBePurchased || ghosted))
 			{
 				var origX=0;
 				var origY=0;
-				var targX=GU[i.id][0]+28;
-				var targY=GU[i.id][1]+28;
-				if (i.parents[ii]!=-1) {origX=i.parents[ii].posX+28;origY=i.parents[ii].posY+28;}
+				var targX=GU[i.id][1]+28;
+				var targY=GU[i.id][0]+28;
+				if (i.parents[ii]!=-1) {origX=GU[i.parents[ii].id][1]+28;origY=GU[i.parents[ii].id][0]+28;}
 				var rot=-(Math.atan((targY-origY)/(origX-targX))/Math.PI)*180;
 				if (targX<=origX) rot+=180;
 				var dist=Math.floor(Math.sqrt((targX-origX)*(targX-origX)+(targY-origY)*(targY-origY)));
 				str+='<div class="parentLink" id="heavenlyLink'+i.id+'-'+ii+'" style="'+(ghosted?'opacity:0.1;':'')+'width:'+dist+'px;-webkit-transform:rotate('+rot+'deg);-moz-transform:rotate('+rot+'deg);-ms-transform:rotate('+rot+'deg);-o-transform:rotate('+rot+'deg);transform:rotate('+rot+'deg);left:'+(origX)+'px;top:'+(origY)+'px;"></div>';
 			}
 		}
+	}
+	
 	l('transcendContent').innerHTML=str;
 }
 transcendContent.style='z-index:10200000;opacity:100%';
@@ -122,4 +123,4 @@ var loadTranscend=function(){
 		Game.transcendReady=1;
 	}
 }
-Game.registerHook('logic',()=>{if (Game.T%(Game.fps*5)==0&&!Game.transcendReady){loadTranscend()}});
+Game.registerHook('logic',()=>{if (!Game.transcendReady){loadTranscend()}});
