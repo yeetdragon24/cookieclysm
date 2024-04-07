@@ -133,7 +133,7 @@ converter.grandma=Game.Upgrades['Massive grandmas'];
 //store icon, only replaces once, needs fixing
 converter.l.childNodes[0].style.background=`url('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/converterIcon.png')`;
 converter.l.childNodes[1].style.background=`url('https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/converterIcon.png')`;
-
+converter.unshackleUpgrade='Unshackled converters'; //doesnt exist but fixes Game.Has calling undefined for the tooltip
 
 new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.',[11,8]); //Game.last.pool='shadow';
 new Game.Achievement('Cutting it close','Use the Garden while CaptainCrozier is slotted.',[31,1]);
@@ -220,7 +220,8 @@ upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space 
 upAndAchiev.push(new Game.Upgrade('more','Gain <b>%%%</b> CpS, permanently.<q>cookies<br>cookies<br>i need more<br>I NEED MORE</q>',1,[29,6]));//i did not know that zalgo used zero-width characters but ig you learn something new every day
 
 upAndAchiev.push(new Game.Upgrade('Unshackle slot #1','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));
-var slots=['Unshackle slot #1'];
+upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));
+var slots=['Unshackle slot #1','Unshackle slot #2'];
 Game.last.transcendBuy=function() {
 	var price=this.getPrice();
 	if (mone>=price&&!Game.Has(this.name)){
@@ -293,7 +294,7 @@ for(let i of upAndAchiev){
 	if (i.name=='more') tUSA=i.id;
 	if (i.id>=tUSA) {
 		i.pool='prestige'; //dont question my decisions ok
-		if (!i.notTiered) i.getPrice=function(){return Math.floor(Math.pow(this.basePrice*(this.tier+1),1.5))};
+		if (!i.notTiered) i.getPrice=function(){return Math.floor(Math.pow(this.basePrice*(this.tier+1),1.5*(this.priceScaling?this.priceScaling:1)))};
 		transcendentUpgrades.push(i);
 	}
 	if ((i.id>=converterStart&&i.id<=converterEnd&&i.type=='upgrade')||(i.id>=converterAStart&&i.id<=converterAEnd&&i.type=='achievement')) {
@@ -308,7 +309,44 @@ cookieclysmCss.id='cookieclysmCss';
 cookieclysmCss.innerHTML='.devIcon{background-image:url(https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet-v3.png);}.transcendent.price:before{background:url(\'https://google.com/favicon.ico\')}#ascendInfoCopy:before{}#ascendInfoCopy:after{}.ascendCopy:before{}.ascendCopy:after{}';
 document.head.appendChild(cookieclysmCss);
 
-
+//cps multiplier
+new Game.buffType('cclysmCpsMult',function(time,pow){
+	return {
+		name:'Cookieclysm CpS multiplier',
+		desc:'This is used to handle all CpS mults to make sure the display in the building tooltip is accurate.<div class="line"></div>If you\'re seeing this, something bad probably happened. Please contact us.',
+		icon:[0,0,'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v4.png'],
+		time:Math.min(time*Game.fps,Game.fps*Math.pow(10,15)),
+		add:true,
+		multCpS:pow,
+		visible:false
+	}
+});
+Game.gainBuff('cclysmCpsMult',1000000000,1);
+cclysmCpSBuff=Game.buffs['Cookieclysm CpS multiplier'];
+cclysmCpSBuff.l.style.display='none';
+cclysmCpsMult=function(){
+	var mult=1;
+	if (transcendModifier==1) {
+		Math.seedrandom(`cookieclysm/glitched/${Game.seed}/${Math.floor(Game.T/(30*60))}`);
+		mult*=((Math.random()+1)/2);
+	}
+	if (transcendModifier==2) {
+		mult/=((Game.elderWrath+1)/2);
+	}
+	
+	if (Game.Has('more')) {
+		let me=Game.Upgrades['more'];
+		mult*=Math.pow(3*(me.tier+1),2);
+	}
+	
+	cclysmCpSBuff.multCpS=mult;
+}
+Game.registerHook('cps',(cps)=>{
+	//this allows us to run code whenever cps is recalculated by the game
+	//its probably not good practice to not use this the way its intended in case it changes
+	cclysmCpsMult();
+	return cps;
+});
 
 new Game.buffType('spirit sniped', function(time,power) {
 	return {
@@ -539,7 +577,7 @@ function unlockTranscend(load) { //debug
 	if (Game.prestige<Math.pow(10,15)) Game.prestige=Math.pow(10,15);
 	if (load) loadTranscend();
 }
-/* newer and better cps mult system, still figuring it out
+/* newer and better cps mult system, still figuring it out (its below upgrades now)
 new Game.buffType('cclysmCpsMult',function(time,pow){
 	return {
 		name:'Cookieclysm CpS multiplier',
@@ -600,7 +638,7 @@ Game.registerHook('check',function(){
 //Game.registerHook('reset',function(hard){l('transcendPower').innerHTML=transcendPower;});
 
 Game.Has=function(what) {
-	console.log(Game.Has.caller);
+	//console.log(Game.Has.caller);
 	var it=Game.Upgrades[what];
 	if (what.toLowerCase().indexOf('unshackled')>-1) {
 		if (it&&it.buildingTie) return it.bought&&unshackleSlots.indexOf(i.id)>-1;
