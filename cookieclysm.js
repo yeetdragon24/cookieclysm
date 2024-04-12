@@ -74,8 +74,8 @@ Game.registerHook('logic',function(){
 		transcendMeterl.style.width=(transcendMeterPercent*100)+'%';
 		transcendMeterPercent+=(transcendMeterPercentT-transcendMeterPercent)*0.1;
 		//what i get for using .cloneNode()
-		transcendMeter.style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
-		transcendMeter.style.width=(transcendMeterPercent*100)+'%';
+		transcendMeterl.style.backgroundPosition=(-Game.T*0.5-transcendMeterPercent*100)+'px';
+		transcendMeterl.style.width=(transcendMeterPercent*100)+'%';
 		l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML=Math.floor(dmone);
 		l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
 	}
@@ -116,6 +116,7 @@ NewBuilding(
 		icon:1
 	},['Kugelblitz', 'Spaghettification']
 );
+
 for (let i in Game.Objects) {
     if (i!='Cursor') {
 		Game.Objects[i].canvas=l('rowCanvas'+Game.Objects[i].id);
@@ -220,8 +221,9 @@ upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space 
 upAndAchiev.push(new Game.Upgrade('more','Gain <b>%%%</b> CpS, permanently.<q>cookies<br>cookies<br>i need more<br>I NEED MORE</q>',1,[29,6]));//i did not know that zalgo used zero-width characters but ig you learn something new every day
 tUSA=Game.last.id;
 upAndAchiev.push(new Game.Upgrade('Unshackle slot #1','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['more']];
-upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #1']];
-var slots=['Unshackle slot #1','Unshackle slot #2'];
+upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',81,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #1']];
+upAndAchiev.push(new Game.Upgrade('Unshackle slot #3','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',6561,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #2']];
+var slots=['Unshackle slot #1','Unshackle slot #2','Unshackle slot #3'];
 
 for (var i=0;i<slots.length;i++) {
 	Game.Upgrades[slots[i]].descFunc=function(i){return function(context){
@@ -308,6 +310,8 @@ cookieclysmCss.innerHTML='.devIcon{background-image:url(https://raw.githubuserco
 document.head.appendChild(cookieclysmCss);
 
 //cps multiplier
+
+/*
 new Game.buffType('cclysmCpsMult',function(time,pow){
 	return {
 		name:'Cookieclysm CpS multiplier',
@@ -321,7 +325,7 @@ new Game.buffType('cclysmCpsMult',function(time,pow){
 });
 Game.gainBuff('cclysmCpsMult',1000000000,1);
 cclysmCpSBuff=Game.buffs['Cookieclysm CpS multiplier'];
-cclysmCpSBuff.l.style.display='none';
+cclysmCpSBuff.l.style.display='none';*/
 cclysmCpsMult=function(){
 	var mult=1;
 	if (transcendModifier==1) {
@@ -342,7 +346,7 @@ cclysmCpsMult=function(){
 Game.registerHook('cps',(cps)=>{
 	//this allows us to run code whenever cps is recalculated by the game
 	//its probably not good practice to not use this the way its intended in case it changes
-	cclysmCpsMult();
+	//cclysmCpsMult();
 	return cps;
 });
 
@@ -441,10 +445,10 @@ function getBuildingSpace() {
 }
 function checkSpace(){
 	if (getBuildingSpace()>getMaxBuildingSpace()) {
-		try { var lastClicked=Game.lastClickedEl.childNodes[2].childNodes[1].innerHTML; } catch(err) {if (Game.Objects['Chancemaker']>0) Game.Objects['Chancemaker'].sacrifice; else throw new Error("Building space exceeded limit without last input interacting with building.");Game.loop=function(){}}
+		try { var lastClicked=Game.lastClickedEl.childNodes[2].childNodes[1].innerHTML; } catch(err) {if (Game.Objects['Chancemaker']>0) Game.Objects['Chancemaker'].sacrifice(); else if (Game.BuildingsOwned>0) for (let i in Game.Objects) {if (Game.Objects[i].amount>0) Game.Objects[i].sacrifice();} else throw new Error("Building space exceeded limit without last input interacting with building.");Game.loop=function(){}}
 		for (i in Game.Objects) {
 			if (Game.Objects[i].name==lastClicked){
-				Game.Objects[i].sacrifice();
+				for (let i=0;i<3;i++) Game.Objects[i].sacrifice();
 			}
 		}
 	}
@@ -469,8 +473,9 @@ var transcendPower=0;
 var lastTranscendP=0;
 var moneSpent=0;
 var dmone=0;
+var moneMult=1;
 var transcends=0;
-var unshackleSlots=[-1,-1];
+var unshackleSlots=[-1,-1,-1];
 var transcendModifier=0;
 var transcendModifierTypes={
 	0:{
@@ -498,7 +503,8 @@ Game.registerHook('check',function(){
 	let h=window.innerHeight;let w=window.innerWidth;
 	GU[tUSA+0]=[h/2,w/2];
 	GU[tUSA+1]=[(h/2)+100,w/2];
-	GU[tUSA+2]=[(h/2)+100+80,(w/2)+80];
+	GU[tUSA+2]=[(h/2)+100+65,(w/2)+65];
+	GU[tUSA+3]=[(h/2)+100+90,(w/2)+150];
 });
 Game.Upgrade.prototype.transcendBuy=function(){
 	if (this.id<tUSA) return false;
@@ -534,7 +540,7 @@ function transcend(bypass) {
 			Game.OnAscend=2;
 			l('backgroundCanvas').style.zIndex=90000;
 			l('transcend').style.display='block';
-			mone=transcendPower-lastTranscendP-moneSpent;
+			mone+=transcendPower-lastTranscendP;
 			lastTranscendP=transcendPower;
 			if (transcendPower-lastTranscendP>1) transcendModifier=choose([0,0,0,1,1,2,2]);
 			setTimeout(function(){l('transcendTransition').remove()},501)
@@ -612,6 +618,7 @@ Game.registerHook('cps',function(cps){
 	else return cps;
 });
 
+//eval('Game.Ascend='+Game.Ascend.toString().replace('Game.AscendZoom=0.2;','Game.AscendZoom=0.2;if (Game.ascensionMode==2) mone+=Game.HowMuchPrestige(Game.cookiesEarned)*moneMult;'));
 
 moneNameThings={
 	'capn':'',
