@@ -8,7 +8,10 @@ l('game').appendChild(transcendence);
 
 var transcendContent=document.createElement('div');
 transcendContent.id='transcendContent';
-buildTranscendTree=function(){
+
+var transcendBounds = {left:0,right:0,top:0,bottom:0};
+buildTranscendTree=function() {
+	transcendBounds = {left:0,right:0,top:0,bottom:0};
 	var str='';
 	for (var i of transcendentUpgrades) {
 		//if (i.id >= tUSA) {
@@ -18,11 +21,11 @@ buildTranscendTree=function(){
 			//str+='<div data-id="'+i.id+'" onclick="Game.Upgrades[\''+i.name+'\'].tier++;" class="crate upgrade heavenly" onmouseout="Game.setOnCrate(0);Game.tooltip.shouldHide=1;" onmouseover="if (!Game.mouseDown) {Game.setOnCrate(this);Game.tooltip.dynamic=1;Game.tooltip.draw(this,function(){return function(){return \'<div style=\'position:absolute;left:1px;top:1px;right:1px;bottom:1px;background:linear-gradient(125deg,rgba(15,115,130,1) 0%,rgba(15,115,130,0) 20%);mix-blend-mode:screen;z-index:1;\'></div><div style=\'z-index:10;padding:8px 4px;min-width:350px;position:relative;\' id=\'tooltipCrate\'><div class=\'icon\' style=\'float:left;margin-left:-8px;margin-top:-8px;background-position:-816px -192px;\'></div><div style=\'float:right;text-align:right;\'><span class=\'price heavenly disabled\'>'+i.getPrice()+'</span></div><div class=\'name\'>Twitter account '+i.tier+'</div><div class=\'tag\' style=\'background-color:#efa438;\'>Heavenly</div><div class=\'line\'></div><div class=\'description\'>'+i.desc+'</div></div><div style=\'font-size:9px;\'>Id: '+i.id+' | Order: '+i.order+' | Tier: '+i.tier+' | Icon: ['+i.icon[0]+','+i.icon[1]+']</div>\'}();},\'top\');Game.tooltip.wobble();}" style="background-position:-816px -192px;position:absolute;left:undefinedpx;top:undefinedpx;top:400px;left:500px;z-index:4534225"></div>';
 		//}
 		var parentsOwned=0;
-		console.log(i.name);
 		for (let ii in i.parents) if (i.parents[ii].bought) parentsOwned++;
-		console.log('parents owned '+parentsOwned);
 		if (parentsOwned==i.parents.length) i.canBePurchased=1;
-		console.log('parent length '+i.parents.length+'\n============================================');
+		if (i.canBePurchased) str+=Game.crate(i,'ascend','Game.Upgrades[\''+i.name+'\'].transcendBuy();',undefined,'top:'+GU[i.id][0]+'px;left:'+GU[i.id][1]+'px;z-index:4534225;opacity:'+(shown?50:5)+'%');
+		//orteil doesnt like it but it works because game.crate doesnt yet support this
+		else str+='<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade'+i.id+'" style="position:absolute;left:'+i.posX+'px;top:'+i.posY+'px;'+writeIcon(i.icon)+'"></div>';
 		for (var ii in i.parents)//create pulsing links
 		{
 			ghosted=i.canBePurchased;
@@ -43,6 +46,77 @@ buildTranscendTree=function(){
 	
 	l('transcendContent').innerHTML=str;
 }
+
+var [transcendOffX,transcendOffY,transcendOffXT,transcendOffYT,transcendZoom,transcendZoomT] = [0,0,0,0,1,1];
+var [transcendDragX,transcendDragY,transcendDragging] = [0,0,0];
+
+updateTranscend = function() {
+	if (Game.keys[37]) transcendOffXT+=16*(1/transcendZoomT);
+	if (Game.keys[38]) transcendOffYT+=16*(1/transcendZoomT);
+	if (Game.keys[39]) transcendOffXT-=16*(1/transcendZoomT);
+	if (Game.keys[40]) transcendOffYT-=16*(1/transcendZoomT);
+	
+	if (transcendOffXT>-transcendBounds.left) transcendOffXT=-transcendBounds.left;
+	if (transcendOffXT<-transcendBounds.right) transcendOffXT=-transcendBounds.right;
+	if (transcendOffXT>-transcendBounds.top) transcendOffYT=-transcendBounds.top;
+	if (transcendOffYT<-transcendBounds.bottom) transcendOffYT=-transcendBounds.bottom;
+	transcendOffX+=(transcendOffXT-transcendOffX)*0.5;
+	transcendOffY+=(transcendOffYT-transcendOffY)*0.5;
+	transcendZoom+=(transcendZoomT-transcendZoom)*0.25;
+	if (Math.abs(transcendZoomT-transcendZoom)<0.005) transcendZoom=transcendZoomT;
+	if (Math.abs(transcendOffXT-transcendOffX)<0.005) transcendOffX=transcendOffXT;
+	if (Math.abs(transcendOffYT-transcendOffY)<0.005) transcendOffY=transcendOffYT;
+	
+	
+	if (Game.mouseDown && !Game.promptOn)
+	{
+		if (!transcendDragging)
+		{
+			transcendDragX=Game.mouseX;
+			transcendDragY=Game.mouseY;
+		}
+		transcendDragging=1;
+		
+		if (!Game.SelectedHeavenlyUpgrade)
+		{
+			transcendOffXT+=(Game.mouseX-transcendDragX);
+			transcendOffYT+=(Game.mouseY-transcendDragY);
+		}
+		transcendDragX=Game.mouseX;
+		transcendDragY=Game.mouseY;
+	}
+	else
+	{
+		transcendDragging=0;
+		//Game.SelectedHeavenlyUpgrade=0;
+	}
+	if (Game.Click || Game.promptOn)
+	{
+		transcendDragging=0;
+	}
+	let transcendUl = l('transcendContent');
+	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px';
+	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px,'+Math.floor(Game.AscendOffX/4)+'px '+Math.floor(Game.AscendOffY/4)+'px';
+	//transcendUl.style.left=Math.floor(Game.AscendOffX)+'px';
+	//transcendUl.style.top=Math.floor(Game.AscendOffY)+'px';
+	transcendUl.style.webkitTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
+	transcendUl.style.msTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
+	transcendUl.style.oTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
+	transcendUl.style.mozTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
+	transcendUl.style.transform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
+	transcendUl.style.webkitTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	transcendUl.style.marginLeft=(Game.windowW/2)+'px';
+	transcendUl.style.marginTop=(Game.windowH/2)+'px';
+	transcendUl.style.msTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	transcendUl.style.oTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	transcendUl.style.mozTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	transcendUl.style.transform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	
+	//if (Game.Scroll!=0) Game.ascendContentl.style.transformOrigin=Math.floor(Game.windowW/2-Game.mouseX)+'px '+Math.floor(Game.windowH/2-Game.mouseY)+'px';
+	if (Game.Scroll<0 && !Game.promptOn) {transcendZoomT=0.5;}
+	if (Game.Scroll>0 && !Game.promptOn) {transcendZoomT=1;}
+}
+
 transcendContent.style='z-index:10200000;opacity:100%';
 l('transcend').appendChild(transcendContent);
 
