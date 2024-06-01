@@ -78,6 +78,7 @@ Game.registerHook('logic',function(){
 		transcendMeterl.style.width=(transcendMeterPercent*100)+'%';
 		l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML=Math.floor(dmone);
 		l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML=transcendPower;
+		updateTranscend();
 	}
 	if (Game.OnAscend==1&&Game.transcendReady) {
 		let transcendMeterl=l('ascendInfo').childNodes[0].childNodes[2].childNodes[2].childNodes[0];
@@ -118,14 +119,15 @@ NewBuilding(
 );
 
 for (let i in Game.Objects) {
+	let me = Game.Objects[i];
     if (i!='Cursor') {
-		Game.Objects[i].canvas=l('rowCanvas'+Game.Objects[i].id);
-		Game.Objects[i].ctx=l('rowCanvas'+Game.Objects[i].id).getContext('2d');
+		me.canvas=l('rowCanvas'+me.id);
+		me.ctx=l('rowCanvas'+me.id).getContext('2d');
 	}
-	if (Game.Objects[i].minigame) {
-		let save=Game.Objects[i].minigame.save();
-		Game.Objects[i].minigame.init(l('rowSpecial'+Game.Objects[i].id));
-		Game.Objects[i].minigame.load(save);
+	if (me.minigame&&Game.Objects[i].minigame.save) {
+		let save=me.minigame.save();
+		me.minigame.init(l('rowSpecial'+Game.Objects[i].id));
+		me.minigame.load(save);
 	}
 }
 var converter=Game.Objects['Converter'];
@@ -144,7 +146,7 @@ new Game.Achievement('NOOO MY CPS','Activate the famine.<q>You were warned about
 //Local function so it has to be redefined
 var getCookiePrice=function(level){return 999999999999999999999999999999999999999*Math.pow(10,(level-1)/2);};//idk if its even needed since idk how it works
 
-//modified version of Extra Content Mod (ECM) (https://glander.club/asjs/fPgjj9n0/) [i probably shouldnt get involved in this but whatever: say no to ecm]
+//modified version of Extra Content Mod (ECM) (https://glander.club/asjs/fPgjj9n0/)
 upAndAchiev = []
 //upgrades.push(new Game.Upgrade('SHADOW Dragon claw','NOPE',999,[31,14])); Test
 order=70000;
@@ -211,6 +213,8 @@ upAndAchiev.push(new Game.Upgrade('Distant objects','Multiplies your max space b
 upAndAchiev.push(new Game.Upgrade('Quantum optimazation','Multiplies your max space by <b>10</b>.<q>Almost all of an atom is empty. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>',500*Math.pow(10,18),[0,6]));
 upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space by <b>10</b>.<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>',500*Math.pow(10,21),[0,7]));
 
+upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground','Contains... stuff.<q>I don\'t think these are edible.</q>',400*Math.pow(10,15),[0,0]));
+
 //upAndAchiev.push(new Game.Upgrade('Switchblade and bleach','Makes you look different enough to hide from the cops in a church, somehow giving you <b>+10%</b> cookie production.<q>Oh Ponyboy, your hair... your tuff, tuff, hair...</q>',420,[2,2]));
 //upAndAchiev.push(new Game.Upgrade('Cookieclysm','Gain <b>+100%</b> cookie production.<q>The beginninng.</q>',1,[2,2]));
 //upAndAchiev.push(new Game.Upgrade('King of the Afterlife',loc('Prestige is <b>%1</b> more effective.<q>Why worship God when you can buy him for 823,543 heavenly chips?</q>','saudh'),1,[15,12]));
@@ -220,6 +224,8 @@ upAndAchiev.push(new Game.Upgrade('More hard drives','Multiplies your max space 
 
 upAndAchiev.push(new Game.Upgrade('more','Gain <b>%%%</b> CpS, permanently.<q>cookies<br>cookies<br>i need more<br>I NEED MORE</q>',1,[29,6]));//i did not know that zalgo used zero-width characters but ig you learn something new every day
 tUSA=Game.last.id;
+upAndAchiev.push(new Game.Upgrade('Transcendent kittens','Kittens are <b>%%%</b> more powerful.<q>We are not meow mortals.</q>',90,[18,35]));
+
 upAndAchiev.push(new Game.Upgrade('Unshackle slot #1','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',9,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['more']];
 upAndAchiev.push(new Game.Upgrade('Unshackle slot #2','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',81,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #1']];
 upAndAchiev.push(new Game.Upgrade('Unshackle slot #3','Choosing an Unshackle upgrade to put it this slot allows you to unshackle the building.',6561,[10,35]));Game.last.notTiered=1;Game.last.parents=[Game.Upgrades['Unshackle slot #2']];
@@ -286,6 +292,18 @@ for (var i=0;i<slots.length;i++) {
 	}
 }
 
+//idle
+upAndAchiev.push(new Game.Upgrade('Eternal engagement','Gain <b>+%%%</b> offline CpS',14,[30,20]));
+upAndAchiev.push(new Game.Upgrade('Oversweetened rest','Your offline CpS gain is increased by <b>+%%%</b> per sugar lump, up to 555 sugar lumps.',25,[25,15]));
+upAndAchiev.push(new Game.Upgrade('Glimmering hope','The shimmering veil gains an extra <b>%%% chance</b> not to break.',42,[29,6]));
+upAndAchiev.push(new Game.Upgrade('Dedication evasion','Holobore, Spirit of Asceticism gains a chance to not unslot when clicking a golden cookie.',67,[29,6]));
+upAndAchiev.push(new Game.Upgrade('Locked in','After no activity for 5 minutes, cookie production rapidly increases up to <b>+%%%</b>.<q>Can\'t move. Can\'t talk. Can only blink.</q>',128,[29,2]));
+upAndAchiev.push(new Game.Upgrade('A light in the dark','Brightens the Shimmering Veil, giving an additional <b>+%%%</b> CpS while the Shimmering Veil is active.',150,[9,10]));
+
+//active
+upAndAchiev.push(new Game.Upgrade('Dark momentum','Every 1000 clicks in one ascension grants a <b>+%%% CpS</b>.<br><div class="warning">Resets on ascension.</div><q>This strange force compels you go further, through the pain.</q>',600,[11,36]));
+upAndAchiev.push(new Game.Upgrade('Emotionless','By truly becoming a master of asceticism, Holobore increases its connection with you.<q>Vomitrax looks at you, disgusted, but knowing that you have gone too far.</q>',999,[29,6]));
+
 
 var transcendentUpgrades=[];
 for(let i of upAndAchiev){
@@ -308,47 +326,6 @@ cookieclysmCss.type='text/css';
 cookieclysmCss.id='cookieclysmCss';
 cookieclysmCss.innerHTML='.devIcon{background-image:url(https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet-v3.png);}.transcendent.price:before{background:url(\'https://google.com/favicon.ico\')}#ascendInfoCopy:before{}#ascendInfoCopy:after{}.ascendCopy:before{}.ascendCopy:after{}';
 document.head.appendChild(cookieclysmCss);
-
-//cps multiplier
-
-/*
-new Game.buffType('cclysmCpsMult',function(time,pow){
-	return {
-		name:'Cookieclysm CpS multiplier',
-		desc:'This is used to handle all CpS mults to make sure the display in the building tooltip is accurate.<div class="line"></div>If you\'re seeing this, something bad probably happened. Please contact us.',
-		icon:[0,0,'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v4.png'],
-		time:Math.min(time*Game.fps,Game.fps*Math.pow(10,15)),
-		add:true,
-		multCpS:pow,
-		visible:false
-	}
-});
-Game.gainBuff('cclysmCpsMult',1000000000,1);
-cclysmCpSBuff=Game.buffs['Cookieclysm CpS multiplier'];
-cclysmCpSBuff.l.style.display='none';*/
-cclysmCpsMult=function(){
-	var mult=1;
-	if (transcendModifier==1) {
-		Math.seedrandom(`cookieclysm/glitched/${Game.seed}/${Math.floor(Game.T/(30*60))}`);
-		mult*=((Math.random()+1)/2);
-	}
-	if (transcendModifier==2) {
-		mult/=((Game.elderWrath+1)/2);
-	}
-	
-	if (Game.Has('more')) {
-		let me=Game.Upgrades['more'];
-		mult*=Math.pow(3*(me.tier+1),2);
-	}
-	
-	cclysmCpSBuff.multCpS=mult;
-}
-Game.registerHook('cps',(cps)=>{
-	//this allows us to run code whenever cps is recalculated by the game
-	//its probably not good practice to not use this the way its intended in case it changes
-	//cclysmCpsMult();
-	return cps;
-});
 
 new Game.buffType('spirit sniped', function(time,power) {
 	return {
@@ -498,13 +475,31 @@ transcendModTooltip=function() {
 	return 'tooltip but '+Beautify(Game.cookies);
 }
 
+getEffects = function(upgrade) {
+	upgrade = Game.Upgrades[upgrade];
+	return upgrade.effScaling?Math.pow(upgrade.effScaling[0]*(upgrade.tier+1),upgrade.effScaling[1]):Math.pow(3*(upgrade.tier+1),2);
+}
+
 GU=Game.UpgradePositions;
 Game.registerHook('check',function(){
+	//wow this is terrible
 	let h=window.innerHeight;let w=window.innerWidth;
-	GU[tUSA+0]=[h/2,w/2];
-	GU[tUSA+1]=[(h/2)+100,w/2];
-	GU[tUSA+2]=[(h/2)+100+65,(w/2)+65];
-	GU[tUSA+3]=[(h/2)+100+90,(w/2)+150];
+	let c1 = h/2, c2 = w/2;
+	let setPos = (id,posX,posY) => GU[tUSA+id] = [c1+posY,c2+posX];
+	setPos(0,0,0); //more
+	setPos(1,0,-100); //kittens
+	setPos(2,0,100); //unshackle #1
+	setPos(3,65,165); //unshackle #2
+	setPos(4,150,190); //unshackle #3
+	setPos(5,-600,14); //eternal engagement
+	setPos(6,-800,-224); //Oversweetened rest
+	setPos(7,-900,-100); //glimmering hope
+	setPos(8,-1100,333); //dedicated evasion
+	setPos(9,-1400,0); //locked in
+	setPos(10,-1400,120); //a light in the dark
+	setPos(12,-1150,150); //Emotionless
+	
+	setPos(11,0,-290); //Dark momentum
 });
 Game.Upgrade.prototype.transcendBuy=function(){
 	if (this.id<tUSA) return false;
@@ -519,7 +514,7 @@ Game.Upgrade.prototype.transcendBuy=function(){
 			buildTranscendTree();
 		}
 		this.tier++;
-		this.ddesc=this.desc.replace('%%',Beautify(Math.pow(3*(this.tier+1),2)));
+		this.ddesc=this.desc.replace('%%',Beautify(getEffects(this)));
 		if (this.buyFunction) this.buyFunction();
 		PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75);
 		PlaySound('snd/shimmerClick.mp3');
@@ -540,6 +535,7 @@ function transcend(bypass) {
 			Game.OnAscend=2;
 			l('backgroundCanvas').style.zIndex=90000;
 			l('transcend').style.display='block';
+			l('products').style.display='none';
 			mone+=transcendPower-lastTranscendP;
 			lastTranscendP=transcendPower;
 			if (transcendPower-lastTranscendP>1) transcendModifier=choose([0,0,0,1,1,2,2]);
@@ -570,6 +566,7 @@ var leaveTranscend=function(bypass) { //i love writing inconsistent code!!!
 				Game.AscendZoom=0.2;
 				Game.OnAscend=1;
 				l('backgroundCanvas').style.zIndex='';
+				l('products').style.display='block';
 				//Game.jukebox.reset();
 				//PlayCue('preascend');
 				l('transcend').style.display='none';
@@ -606,7 +603,7 @@ Game.registerHook('check',()=>{
 		return cps/((Game.elderWrath+1)/2);
 	}
 });*/
-
+/*
 Game.registerHook('cps',function(cps){
 	if (transcendModifier==1) {
 		Math.seedrandom(`cookieclysm/glitched/${Game.seed}/${Math.floor(Game.T/(30*60))}`);
@@ -616,7 +613,47 @@ Game.registerHook('cps',function(cps){
 		return cps/((Game.elderWrath+1)/2);
 	}
 	else return cps;
+});*/
+
+//alright this is probably the best cps thing (and everything else i guess)
+Game.registerHook('check', () => {
+	let effs = Game.Objects['You'].minigame?Game.Objects['You'].minigame.effs:{};
+	effs['milk'] = 1+(getEffects(Game.Upgrades['Transcendent kittens'])/100);
+	effs['cps'] = 1+(getEffects(Game.Upgrades['more'])/100);
 });
+//Renamed to "Eternal engagement" and smth else i forgor (it was Oversweetened rest)
+eval('Game.LoadSave='+Game.LoadSave.toString().replace(`if (Game.Has('Fortune #102')) percent+=1;`,`if (Game.Has('Fortune #102')) percent+=1;\n\t\tpercent*=1+(getEffects(Game.Upgrades['Eternal engagement'])/100);\n\t\tpercent*=1+(Game.lumps*getEffects(Game.Upgrades['Oversweetened rest'])/100);`));
+
+//Relaxed asceticism (also renamed and also forgot name)
+eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`if (Game.forceUnslotGod('asceticism')) Game.useSwap(1000000);`,`if (Game.Objects['Temple'].minigame.gods['asceticism'].slot>-1 && Math.random()<getEffects(Game.Upgrades['Dedicated evasion'])) {\n\t\t\tif (Game.forceUnslotGod('asceticism')) Game.useSwap(1000000); \n\t\t} else Game.Notify('Not so dedicated','Your <b>Relaxed Asceticism</b> prevented Holobore from being yeeted from your pantheon.',[21,18]);`));
+//maybe balance this next one a little
+//eval(`Game.CalculateGains=`+Game.CalculateGains.toString().replace(`else if (godLvl==3) mult*=1.05;`,`else if (godLvl==3) mult*=1.05;\n\t\t\t\tmult*=1+(getEffects(Game.Upgrades['Relaxed asceticism'])*godLvl/2);`));
+
+//Locked in
+if (Date.now()-Game.lastActivity > 1000*300) {
+  afkTime = (Game.inactiveTime - (1000*300))/1000/60;
+  effs['cps'] *= getEffects(Game.Upgrades['Locked in']) - (220*Math.pow(1.1,-0.2*afkTime)); //amazing equation, made on desmos
+}
+
+//salt, stone, jar, and chunk (will split probably)
+eval(`Game.getVeilDefense=`+Game.getVeilDefense.toString().replace(`if (Game.Has('Glittering edge')) n+=0.1;`,`if (Game.Has('Glittering edge')) n+=0.1;\n\t\t\ n += getEffects(Game.Upgrades['Glimmering hope'])/100;`));
+
+upAndAchiev.push(new Game.Achievement('Armored','Have a <b>100% chance</b> (or more) for the Reinforced Membrane to protect the Shimmering Veil.'));
+//put in check hook somewhere
+Game.registerHook('check',() => { if (Game.getVeilDefense90 > 1) Game.Win('Armored'); });
+
+//hopefully will make high percentages less annoying (maybe make a pref that is default on for this)
+eval(`Game.loseShimmeringVeil=`+Game.loseShimmeringVeil.toString().replace(`Game.Notify(loc(`,`if (Game.getVeilDefense() < 0.7 || Date.now()-Game.lastClick > 4*Game.getVeilDefense()) Game.Notify(loc(`));
+
+Game.getVeilBoost=function() {
+	var n=0.5;
+	if (Game.Has('Reinforced membrane')) n+=0.1;
+	if (Game.Has('Delicate touch')) n+=0.05;
+	if (Game.Has('Steadfast murmur')) n+=0.05;
+	if (Game.Has('Glittering edge')) n+=0.05;
+	if (Game.Has('A light in the dark')) n += getEffects(Game.Upgrades['A light in the dark']);
+	return n;
+}
 
 //eval('Game.Ascend='+Game.Ascend.toString().replace('Game.AscendZoom=0.2;','Game.AscendZoom=0.2;if (Game.ascensionMode==2) mone+=Game.HowMuchPrestige(Game.cookiesEarned)*moneMult;'));
 
@@ -745,6 +782,45 @@ Game.registerHook('reset',(hard)=>{
 		transcendModifier=0;
 	}
 });
+
+//quicktime events, maybe implement
+var currentQuicktime = {};
+
+QuicktimeEvent = function(sequence,time,condition) {
+	this.sequence = sequence;
+	this.time = time;
+	this.condition = condition;
+	this.active = 1;
+	Game.Prompt('<id QuicktimeEvent><h3>Quicktime event</h3>'+
+	'<div class="block">Type out "<span id="QuicktimeSequence"></span>" within <span id="QuicktimeTime"></span><textarea id="textareaPrompt" style="width:100%;height:32px;"></textarea></div>',
+	[['Done','console.log(checkQuicktimeEvent());Game.ClosePrompt();']]);
+}
+checkQuicktimeEvent = function(quicktime,condition) {
+	quicktime = quicktime || currentQuicktime;
+	let promptText = quicktime.text;
+	condition = condition || currentQuicktime.condition;
+	if (!promptText) return false;
+	condition(promptText == quicktime.sequence);
+}
+updateQuicktimeEvent = function() {
+	//spawn one
+	/*
+		add stuff here
+	*/
+	
+	if (currentQuicktime.active) {
+		if (currentQuicktime.time <= 0 || !Game.promptOn) {
+			Game.ClosePrompt();
+			currentQuicktime = {active:0};
+		} else {
+			currentQuicktime.text = l('textareaPrompt').value;
+			l('QuicktimeSequence').innerHTML = currentQuicktime.sequence;
+			l('QuicktimeTime').innerHTML = Game.sayTime(currentQuicktime.time+Game.fps);
+			currentQuicktime.time--;
+		}
+	}
+}
+Game.registerHook('logic',updateQuicktimeEvent);
 
 //its a large function and i only need to change 2 parts but i have to have the whole thing
 Game.DrawBackground=function(){
