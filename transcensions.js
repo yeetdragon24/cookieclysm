@@ -6,6 +6,10 @@ transcendence.id='transcend';
 transcendence.style='width:'+Game.bounds.width+'px;height:'+window.innerHeight+'px;display:none;z-index:5000000;position:fixed;color:#000000;opacity:100%';
 l('game').appendChild(transcendence);
 
+var transcendZoomable = document.createElement('div');
+transcendZoomable.id = 'transcendZoomable';
+l('transcend').appendChild(transcendZoomable);
+
 var transcendContent=document.createElement('div');
 transcendContent.id='transcendContent';
 
@@ -25,7 +29,7 @@ buildTranscendTree=function() {
 		if (parentsOwned==i.parents.length) i.canBePurchased=1;
 		if (i.canBePurchased) str+=Game.crate(i,'ascend','Game.Upgrades[\''+i.name+'\'].transcendBuy();',undefined,'top:'+GU[i.id][0]+'px;left:'+GU[i.id][1]+'px;z-index:4534225;opacity:'+(shown?50:5)+'%');
 		//orteil doesnt like it but it works because game.crate doesnt yet support this
-		else str+='<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade'+i.id+'" style="position:absolute;left:'+i.posX+'px;top:'+i.posY+'px;'+writeIcon(i.icon)+'"></div>';
+		else str+='<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade'+i.id+'" style="position:absolute;left:'+GU[i.id][1]+'px;top:'+GU[i.id[0]]+'px;opacity:0.1;'+writeIcon(i.icon)+'"></div>';
 		for (var ii in i.parents)//create pulsing links
 		{
 			ghosted=i.canBePurchased;
@@ -56,10 +60,10 @@ updateTranscend = function() {
 	if (Game.keys[39]) transcendOffXT-=16*(1/transcendZoomT);
 	if (Game.keys[40]) transcendOffYT-=16*(1/transcendZoomT);
 	
-	if (transcendOffXT>-transcendBounds.left) transcendOffXT=-transcendBounds.left;
-	if (transcendOffXT<-transcendBounds.right) transcendOffXT=-transcendBounds.right;
-	if (transcendOffXT>-transcendBounds.top) transcendOffYT=-transcendBounds.top;
-	if (transcendOffYT<-transcendBounds.bottom) transcendOffYT=-transcendBounds.bottom;
+	//if (transcendOffXT>-transcendBounds.left) transcendOffXT=-transcendBounds.left;
+	//if (transcendOffXT<-transcendBounds.right) transcendOffXT=-transcendBounds.right;
+	//if (transcendOffXT>-transcendBounds.top) transcendOffYT=-transcendBounds.top;
+	//if (transcendOffYT<-transcendBounds.bottom) transcendOffYT=-transcendBounds.bottom;
 	transcendOffX+=(transcendOffXT-transcendOffX)*0.5;
 	transcendOffY+=(transcendOffYT-transcendOffY)*0.5;
 	transcendZoom+=(transcendZoomT-transcendZoom)*0.25;
@@ -75,7 +79,7 @@ updateTranscend = function() {
 			transcendDragX=Game.mouseX;
 			transcendDragY=Game.mouseY;
 		}
-		transcendDragging=1;
+		if (document.elementFromPoint(Game.mouseX,Game.mouseY) && !document.elementFromPoint(Game.mouseX,Game.mouseY).getAttribute('data-id')) transcendDragging=1;
 		
 		if (!Game.SelectedHeavenlyUpgrade)
 		{
@@ -94,31 +98,32 @@ updateTranscend = function() {
 	{
 		transcendDragging=0;
 	}
-	let transcendUl = l('transcendContent');
+	let transcendContent = l('transcendContent');
+	let transcendZoomable = l('transcendZoomable');
 	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px';
 	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px,'+Math.floor(Game.AscendOffX/4)+'px '+Math.floor(Game.AscendOffY/4)+'px';
 	//transcendUl.style.left=Math.floor(Game.AscendOffX)+'px';
 	//transcendUl.style.top=Math.floor(Game.AscendOffY)+'px';
-	transcendUl.style.webkitTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
-	transcendUl.style.msTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
-	transcendUl.style.oTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
-	transcendUl.style.mozTransform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
-	transcendUl.style.transform='translate('+Math.floor(Game.AscendOffX)+'px,'+Math.floor(Game.AscendOffY)+'px)';
-	transcendUl.style.webkitTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
-	transcendUl.style.marginLeft=(Game.windowW/2)+'px';
-	transcendUl.style.marginTop=(Game.windowH/2)+'px';
-	transcendUl.style.msTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
-	transcendUl.style.oTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
-	transcendUl.style.mozTransform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
-	transcendUl.style.transform='scale('+(Game.AscendZoom)+','+(Game.AscendZoom)+')';
+	transcendContent.style.webkitTransform='translate('+Math.floor(transcendOffX)+'px,'+Math.floor(transcendOffY)+'px)';
+	transcendContent.style.msTransform='translate('+Math.floor(transcendOffX)+'px,'+Math.floor(transcendOffY)+'px)';
+	transcendContent.style.oTransform='translate('+Math.floor(transcendOffX)+'px,'+Math.floor(transcendOffY)+'px)';
+	transcendContent.style.mozTransform='translate('+Math.floor(transcendOffX)+'px,'+Math.floor(transcendOffY)+'px)';
+	transcendContent.style.transform='translate('+Math.floor(transcendOffX)+'px,'+Math.floor(transcendOffY)+'px)';
+	transcendZoomable.style.webkitTransform='scale('+(transcendZoom)+','+(transcendZoom)+')';
+	transcendZoomable.style.marginLeft=(Game.windowW/2)+'px';
+	transcendZoomable.style.marginTop=(Game.windowH/2)+'px';
+	transcendZoomable.style.msTransform+=' scale('+(transcendZoom)+','+(transcendZoom)+')';
+	transcendZoomable.style.oTransform+=' scale('+(transcendZoom)+','+(transcendZoom)+')';
+	transcendZoomable.style.mozTransfor+=' scale('+(transcendZoom)+','+(transcendZoom)+')';
+	transcendZoomable.style.transform+=' scale('+(transcendZoom)+','+(transcendZoom)+')';
 	
 	//if (Game.Scroll!=0) Game.ascendContentl.style.transformOrigin=Math.floor(Game.windowW/2-Game.mouseX)+'px '+Math.floor(Game.windowH/2-Game.mouseY)+'px';
-	if (Game.Scroll<0 && !Game.promptOn) {transcendZoomT=0.5;}
+	if (Game.Scroll<0 && !Game.promptOn) {transcendZoomT=0.8;}
 	if (Game.Scroll>0 && !Game.promptOn) {transcendZoomT=1;}
 }
 
 transcendContent.style='z-index:10200000;opacity:100%';
-l('transcend').appendChild(transcendContent);
+transcendZoomable.appendChild(transcendContent);
 
 var transcendOverlay=document.createElement('div');
 transcendOverlay.id='transcendOverlay';
