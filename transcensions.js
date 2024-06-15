@@ -43,7 +43,7 @@ buildTranscendTree=function() {
 				var rot=-(Math.atan((targY-origY)/(origX-targX))/Math.PI)*180;
 				if (targX<=origX) rot+=180;
 				var dist=Math.floor(Math.sqrt((targX-origX)*(targX-origX)+(targY-origY)*(targY-origY)));
-				str+='<div class="parentLink" id="heavenlyLink'+i.id+'-'+ii+'" style="opacity'+(ghosted?'0.25;':'0.05;')+'width:'+dist+'px;-webkit-transform:rotate('+rot+'deg);-moz-transform:rotate('+rot+'deg);-ms-transform:rotate('+rot+'deg);-o-transform:rotate('+rot+'deg);transform:rotate('+rot+'deg);left:'+(origX)+'px;top:'+(origY)+'px;"></div>';
+				str+='<div class="parentLink" id="heavenlyLink'+i.id+'-'+ii+'" style="opacity:'+(ghosted?'0.25;':'0.05;')+'width:'+dist+'px;-webkit-transform:rotate('+rot+'deg);-moz-transform:rotate('+rot+'deg);-ms-transform:rotate('+rot+'deg);-o-transform:rotate('+rot+'deg);transform:rotate('+rot+'deg);left:'+(origX)+'px;top:'+(origY)+'px;"></div>';
 			}
 		}
 	}
@@ -133,7 +133,8 @@ transcendAnimation.innerHTML='@keyframes example { from {opacity:0%;} to {opacit
 document.body.appendChild(transcendAnimation);
 var transcendTransition=document.createElement('div');
 transcendTransition.id='transcendTransition';//hopefully this works
-transcendTransition.style='width:'+Game.bounds.width+'px;height:'+window.innerHeight+'px;background-color:#000000;opacity:0%;animation-name:example;animation-duration:4s;position:fixed;z-index:5000000';
+transcendAnimationStyle = () => { transcendTransition.style='width:'+Game.bounds.width+'px;height:'+Game.bounds.height+'px;background-color:#000000;opacity:0%;animation-name:example;animation-duration:4s;position:fixed;z-index:5000000'; }
+transcendAnimationStyle();
 
 //i think this is style without background but idk
 //name your variables properly kids
