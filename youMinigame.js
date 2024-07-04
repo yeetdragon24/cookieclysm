@@ -13,9 +13,9 @@ M.launch = function(){
 			'yeetdragon':{
 				icon:[0,0],
 				name:'YeetDragon24',
-				buff:'Does something idk',
-				debuff:'Does something bad idk',
-				quote:'say something funny here idk'
+				buff:'???',
+				debuff:'???',
+				quote:'free me'
 			},
 			'sniper':{
                 name:'Stream Sniper',
@@ -28,7 +28,7 @@ M.launch = function(){
                 name:'CaptainCrozier',
                 icon:[2,0],
                 buff:'<span class="green">Greatly increases offline earnings, as well as buffs the Shimmering Veil Greatly, click buffs buff shimmering veil.</span>',
-                debuff:'<span class="red">The Garden does nothing. No touchy the garden. Especcially to not overtake the Potato King.</span>',
+                debuff:'<span class="red">The Garden does nothing. No touchy the garden. Especially to not overtake the Potato King.</span>',
                 quote:'The goal that all players share, which is to not have to play anymore - Technoblade'
 			}
 		}
@@ -51,7 +51,7 @@ M.launch = function(){
 				//console.log(M.devsById)
 				me.icon=me.icon||[1,0];
 				var str='<div style="padding:8px 4px;min-width:350px;">'+
-				'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
+				'<div class="icon devIcon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
 				'<div class="name">'+me.name+'</div>'+
 				'<div class="line"></div><div class="description"><div style="margin:6px 0px;font-weight:bold;">Effects :</div>'+
 					(me.descBefore?('<div class="templeEffect">'+me.descBefore+'</div>'):'')+
@@ -76,7 +76,7 @@ M.launch = function(){
 				var str='<div style="padding:8px 4px;min-width:350px;">'+
 				(M.slot[id]!=-1?(
 					'<div class="name templeEffect" style="margin-bottom:12px;"><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(id)+1)+'"></div>'+M.slotNames[id]+' slot</div>'+
-					'<div class="icon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
+					'<div class="icon devIcon" style="float:left;margin-left:-8px;margin-top:-8px;background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;"></div>'+
 					'<div class="name">'+me.name+'</div>'+
 					'<div class="line"></div><div class="description"><div style="margin:6px 0px;font-weight:bold;">Effects :</div>'+
 						(me.activeDescFunc?('<div class="templeEffect templeEffectOn" style="padding:8px 4px;text-align:center;">'+me.activeDescFunc()+'</div>'):'')+
@@ -301,7 +301,7 @@ M.launch = function(){
 		
 		//External
 		
-		new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.<q>You know too much.</q>',[11,8]); //Game.last.pool='shadow';
+		//new Game.Achievement('Put it back','Move a God from the God Complex into a slot from the Pantheon.<q>You know too much.</q>',[11,8]); //Game.last.pool='shadow';
 		
 		
 		Game.hasDev=function(what)
@@ -375,8 +375,8 @@ M.launch = function(){
 			for (var i in Game.shimmers) {
 				shimmersL=Game.shimmers[i];
 				if (shimmersL.type=='golden'&&Math.random()<0.5){
+					var newShimmer = new Game.shimmer('sniperGold'); //spawn a new cookie to replace it
 					Game.shimmers[i].die();
-					var neShimmer = new Game.shimmer('sniperGold'); //spawn a new cookie to replace it
 				}
 			}
 			if (Game.Objects['Temple'].minigame) {
@@ -418,12 +418,14 @@ M.launch = function(){
 M.launcher = function(){
 	var M = Game.Objects['You'].minigame;
 	
-	M.parent.minigameUrl = 'https://yeetdragon24.github.io';
+	M.parent.minigameUrl = 'https://yeetdragon24.github.io/';
 	M.parent.minigameName = 'God Complex';
+	M.parent.minigameLoaded = 1;
+	M.parent.switchMinigame(!M.parent.onMinigame);
 	
 	M.name = M.parent.minigameName;
 	M.savePrefix = 'minigameAmogus';
-	
+	M.launch();
 	
 	
 	
