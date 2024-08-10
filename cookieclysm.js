@@ -4,7 +4,7 @@ let getPlantDescL = Game.Objects['Farm'].minigame ? Game.Objects['Farm'].minigam
 let capniL = 0;
 let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v5.png';
 let Kaizo = Game.mods['Kaizo Cookies'];
-if (typeof CrumbsEngineLoaded === 'undefined') Game.LoadMod('https://raw.githack.com/CursedSliver/Crumbs-engine/main/Crumbs.js');
+if (typeof CrumbsEngineLoaded === 'undefined') Game.LoadMod('https://raw.githack.com/CursedSliver/Crumbs-engine/main/Crumbs.js', function() { updateDrawBackground() });
 //some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
 function romanize(num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
 var tUSA = 884;
@@ -52,19 +52,20 @@ Game.registerHook('logic', function() {
 	/*======TRANSCEND========*/
 	if (Game.transcendReady) {
 		if (Game.OnAscend == 2) { //it said &&Game.Game.transcendReady which was the reason code wasnt working smh
-			let transcendMeterl = l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[2].childNodes[0];
-			transcendMeterPercentT = Math.log10(Game.prestige + 1) - Math.floor(Math.log10(Game.prestige + 1));
-			transcendMeterl.style.backgroundPosition = (-Game.T * 0.5 - transcendMeterPercent * 100) + 'px';
-			transcendMeterl.style.width = (transcendMeterPercent * 100) + '%';
-			transcendMeterPercent += (transcendMeterPercentT - transcendMeterPercent) * 0.1;
-			//what i get for using .cloneNode()
-			transcendMeterl.style.backgroundPosition = (-Game.T * 0.5 - transcendMeterPercent * 100) + 'px';
-			transcendMeterl.style.width = (transcendMeterPercent * 100) + '%';
-			l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML = Beautify(dmone);
-			l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML = transcendPower;
+			if (Game.transcendUnlocked) {
+				let transcendMeterl = l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[2].childNodes[0];
+				transcendMeterPercentT = Math.log10(Game.prestige + 1) - Math.floor(Math.log10(Game.prestige + 1));
+				transcendMeterl.style.backgroundPosition = (-Game.T * 0.5 - transcendMeterPercent * 100) + 'px';
+				transcendMeterl.style.width = (transcendMeterPercent * 100) + '%';
+				transcendMeterPercent += (transcendMeterPercentT - transcendMeterPercent) * 0.1;
+				//what i get for using .cloneNode()
+				transcendMeterl.style.backgroundPosition = (-Game.T * 0.5 - transcendMeterPercent * 100) + 'px';
+				transcendMeterl.style.width = (transcendMeterPercent * 100) + '%';
+				l('ascendInfoCopy').childNodes[1].childNodes[2].childNodes[0].innerHTML = Beautify(dmone);
+				l('ascendInfoCopy').childNodes[0].childNodes[2].childNodes[0].innerHTML = transcendPower;
+			}
 			updateTranscend();
-			Game.Background.shadowColor = 'transparent';
-		} else if (Game.OnAscend == 1) {
+		} else if (Game.OnAscend == 1 && Game.transcendUnlocked) {
 			let transcendMeterl = l('ascendInfo').childNodes[0].childNodes[2].childNodes[2].childNodes[0];
 			l('mone').innerHTML = Beautify(mone);//find a beter way to do this then checking every frame
 			l('transcendPower').innerHTML = transcendPower;//this too
@@ -74,10 +75,6 @@ Game.registerHook('logic', function() {
 			ascendInfoCopy.style.margin = 'auto';
 			transcendMeterl.style.backgroundPosition = (-Game.T * 0.5 - transcendMeterPercent * 100) + 'px';
 			transcendMeterl.style.width = (transcendMeterPercent * 100) + '%';
-			Game.Background.shadowColor = transcendModifierTypes[transcendModifier];
-		} else if (Game.OnAscend == 0) {
-			Game.Background.shadowColor = 'transparent';
-			Game.LeftBackground.shadowColor = transcendModifierTypes[transcendModifier];
 		}
 	}
 
@@ -533,13 +530,15 @@ var transcendModTooltip = function() {
 	return 'tooltip but ' + Beautify(Game.cookies);
 }
 
-GU = Game.UpgradePositions;
+GU = Game.UpgradePositions; //i can't spell
 //Game.registerHook('check',function(){
 //wow this is terrible
+let getPos;
 (function() {
-	let h = window.innerHeight; let w = window.innerWidth;
+	let h = Game.bounds.height; let w = Game.bounds.width;
 	let c1 = h / 2, c2 = w / 2;
-	let setPos = (name, posX, posY) => GU[Game.Upgrades[name].id] = [c1 + (posY * 3), c2 + (posX * 3)];
+	getPos = function(posX, posY) { return [c1 + (posY * 3), c2 + (posX * 3)] }
+	let setPos = (name, posX, posY) => GU[Game.Upgrades[name].id] = getPos(posY, posX);
 	setPos('more', 0, 0); //more
 	setPos('Transcendent kittens', -60, -100); //kittens
 	setPos('Unshackle slot #1', 0, 100); //unshackle #1
@@ -594,18 +593,17 @@ function transcend(bypass) {
 	else {
 		l('game').appendChild(transcendTransition);
 		transcendAnimationStyle();
-		transcends++;
-		Game.killBuffs();
 		setTimeout(function() {
 			//Game.ascendUpgradesl.innerHTML='';
 			buildTranscendTree();
+			transcendOnResize();
+
 			Game.removeClass('ascending');
 			Game.OnAscend = 2;
-			l('backgroundCanvas').style.zIndex = 90000;
+			transcends++;
+			
 			l('transcend').style.removeProperty('display');
-			if (!transcendUnlocked) l('ascendInfoCopy').style.display = 'none';
-			else l('ascendInfoCopy').style.removeProperty('display'); 
-			l('products').style.display = 'none';
+
 			mone += transcendPower - lastTranscendP;
 			lastTranscendP = transcendPower;
 			transcendOffXT = -Game.bounds.width / 2;
@@ -615,10 +613,10 @@ function transcend(bypass) {
 		}, 3500);
 	}
 }
-var leaveTranscend = function(bypass) { //i love writing inconsistent code!!!
+let leaveTranscend = function(bypass) {
 	if (!bypass) {
-		if (Math.seedrandom) Math.seedrandom('prompt ' + Game.resets);
-		Game.Prompt('<id Descend><h3>Descend</h3><div class="block">Are you ready to return to reality?' + (Math.random() < 0.3 ? '<div class="line"></div><span class="red">Things might be a little different than what you\'re used to.</span>' : '') + '</div>', [['Yes', 'Game.ClosePrompt();leaveTranscend(1);'], 'No']);
+		if (Math.seedrandom) Math.seedrandom('prompt ' + Game.transcends);
+		Game.Prompt('<id Descend><h3>Descend</h3><div class="block">Are you ready to return to reality?' + (Math.random() < (transcendModifier != 0 ? 0.8 : 0.3) ? '<div class="line"></div><span class="red">Things might be a little different than what you\'re used to.</span>' : '') + '</div>', [['Yes', 'Game.ClosePrompt();leaveTranscend(1);'], 'No']);
 	} else {
 		l('game').appendChild(transcendTransition);
 		transcendAnimationStyle();
@@ -635,18 +633,19 @@ var leaveTranscend = function(bypass) { //i love writing inconsistent code!!!
 			Game.AscendZoomT = 1;
 			Game.AscendZoom = 0.2;
 			Game.OnAscend = 1;
-			l('backgroundCanvas').style.zIndex = '';
-			l('products').style.removeProperty('display');
+			PlaySound('snd/choir.mp3', 0.75)
+			
 			l('transcend').style.display = 'none';
+
 			setTimeout(function() { l('transcendTransition').remove() }, 501)
 		},
 			3500);
-		setTimeout(() => { PlaySound('snd/choir.mp3', 0.75) }, 4500);
+		setTimeout(() => {  }, 4500);
 	}
 }
 function unlockTranscend(load) { //debug
-	if (Game.prestige < Math.pow(10, 15)) Game.prestige = Math.pow(10, 15);
-	if (load) loadTranscend();
+	Game.transcendUnlocked = 1;
+	onUnlockTranscend();
 }
 
 Game.registerHook('logic', () => {
@@ -764,10 +763,6 @@ Game.registerHook('check', function() {
 	}
 });
 
-Game.WriteSave = Function(`
-	if (Game.OnAscend != 2) (${Game.WriteSave.toString()}).call(arguments);
-`);
-
 //Game.registerHook('reset',function(hard){l('transcendPower').innerHTML=transcendPower;});
 
 Game.Has = function(what) {
@@ -789,10 +784,7 @@ let unlockCloneWorld = function() {
 		Game.ascensionModes[2] = {
 			name: 'Clone world',
 			dname: 'Clone world',
-			desc: 'This is a strange copy of a world, where many of your Heavenly Upgrades will not work.' +
-				'<div class="line"></div>' +
-				'You will be able to earn <b>' + moneName + '</b> in this world.' +
-				(Game.Has(moneName + ' buff') ? '<div class="line"></div>The ' + moneName + ' that you earn here will be affected by your <b>' + moneName + ' multiplier.</b>' : ''),
+			desc: `This is a strange copy of a world, where many of your Heavenly Upgrades will not work.<div class="line"></div>You will be able to earn <b>${moneName}</b> in this world.`,
 			icon: [10, 21]
 		}
 	}
@@ -850,46 +842,51 @@ Game.Logic = new Function(getFuncDef(Game.Logic).replace('var cookiesToNext=Game
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`(EN?'Ascending! ':(loc("Ascending")+' | '))`,`(Game.OnAscend == 1?(EN?'Ascending! ':(loc("Ascending")+' | ')):'Transcending | ')`));
 //now that i think about it, all of this code couldve been made in a better well but its too late now i guess
 
+let drawTranscend = function(ctx) {
+	Game.Background.clearRect(-1000, -1000, l('backgroundCanvas').width * 10, l('backgroundCanvas').height * 10);
+	Game.Background.fillStyle = 'black';
+
+	Game.Background.save();
+
+	ctx.globalAlpha = 1;
+	ctx.fillRect(-1000, -1000, 10000, 10000);
+	ctx.globalAlpha = 0.5;
+	ctx.globalCompositeOperation = 'lighter';
+
+	var w = ctx.canvas.width;
+	var h = ctx.canvas.height;
+	var b = Game.ascendl.getBounds();
+	var x = (b.left + b.right) / 2;
+	var y = (b.top + b.bottom) / 2;
+	ctx.globalAlpha = (0.35 * Math.sin((Math.PI * Game.drawT) / 2800)) + 0.5; 
+	var s = 1 * (1 + Math.cos(Game.T * 0.0027) * 0.05);
+	ctx.fillPattern(Pic('starbg.jpg'), 0, 0, w, h, 1024 * s, 1024 * s, x * 0.00125 * s, y * 0.00125 * s);
+	Timer.track('star layer 1');
+
+	//updateTranscendObjects(ctx);
+
+	Game.Background.restore();
+}
+
 var transcendentObjects = [];
 var TranscendentObject = function(obj) {
-	for (let i in obj) {
-		this[i] = obj[i];
-	}
-	transcendentObjects.push(this);
-}
-var updateTranscendObjects = function(ctx) {
-	let oldGlobalAlpha = ctx.globalAlpha;
-	for (let me of transcendentObjects) {
-		if (me.changeAngle) me.angle += me.changeAngle;
-		if (me.changeY) me.y += me.changeY;
-		if (me.changeX) me.x += me.changeX;
-
-		//thanks to helloperson for explaining how this works to me
-		me.hovered = inRect(Game.mouseX - (transcendOffX + (me.x + (me.width/2))), Game.mouseY - (transcendOffY + (me.y + me.height/2)), {w:me.width, h:me.height, r:me.angle * Math.PI / 180, o:me.height/2});
-		ctx.globalAlpha = me.opacity;
-		if (me.hovered) {
-			if (me.clickFunc) {
-				ctx.shadowBlur = 10;
-				ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-			}
-			if (me.hoverFunc) me.hoverFunc.bind(me)(ctx);
+	let object = new Crumbs.object(obj);
+	object.baseX = object.x;
+	object.baseY = object.y;
+	object.baseScaleX = object.scaleX;
+	object.baseScaleY = object.scaleY;
+	object.behaviors.unshift(new Crumbs.behaviorInstance(
+		function() {
+			this.x = (this.baseX + transcendOffX) * transcendZoom;
+			this.y = (this.baseY + transcendOffY) * transcendZoom;
+			this.scaleX = this.baseScaleX * transcendZoom;
+			this.scaleY = this.baseScaleY * transcendZoom;
 		}
-		let x = transcendOffX*transcendZoom + me.x + me.width/2;
-		let y = transcendOffY*transcendZoom + me.y + me.height/2;
-		ctx.translate(transcendOffX + me.x + me.width/2, transcendOffY + me.y + me.height/2);
-		ctx.rotate(me.angle * Math.PI / 180);
-		ctx.drawImage(Pic(me.img), -me.width/2, -me.height/2, me.width, me.height);
-		ctx.rotate(-me.angle * Math.PI / 180);
-		ctx.translate(-(transcendOffX + me.x + me.width/2), -(transcendOffY + me.y + me.height/2));
-		ctx.shadowColor = "transparent";
-	}
-	ctx.globalAlpha = oldGlobalAlpha;
+	));
 }
-addEventListener('click', (event) => {
-	if (Game.OnAscend != 2) return;
-	for (let me of transcendentObjects) {
-		if (me.clickFunc && me.hovered) me.clickFunc.bind(me)();
-	}
+
+Game.registerHook('draw', function() {
+	if (Game.OnAscend == 2) drawTranscend(Crumbs.getCanvasByScope('transcend'));
 });
 
 //youpocalypse
@@ -924,14 +921,69 @@ let youpocCclysmBuy = function() {
 	youWrath = 2;
 
 	new TranscendentObject({
-		img: 'https://yeetdragon24.github.io/cookieclysm/img/puck.png',
-		x: 0,
-		y: 100,
-		opacity: 1,
-		height: 96,
-		width: 96,
-		updateFunc: () => { this.opacity = 0.5*(Math.sin(Game.drawT/10)+1.5) },
-		clickFunc: () => { youWrath = 3; transcendModifier = 2 }
+		imgs: ['https://yeetdragon24.github.io/cookieclysm/img/puck.png'],
+		x: 1920,
+		y: 1100,
+		alpha: 1,
+		height: 48,
+		width: 48,
+		scaleX: 2,
+		scaleY: 2,
+		id: 'puck',
+		scope: 'transcend',
+		behaviors: [
+			function() {
+				if (this.components[0].hovered) {
+					this.alpha = 1;
+					l('transcend').style.cursor = 'pointer';
+				} else {
+					this.alpha = 0.25 * Math.sin(Game.drawT/20) + 0.75;
+					l('transcend').style.removeProperty('cursor');
+				}
+			},
+			function() {
+				if (this.components[0].click && this.components[0].hovered) {
+					this.children[0].enabled = true;
+					this.offsetX = (Math.random() - 0.5) * ((this.clicked * 7/130)+2);
+					this.offsetY = (Math.random() - 0.5) * ((this.clicked * 7/180)+2);
+					this.clicked++;
+					if (this.clicked >= 150) {
+						this.explodeT = Game.drawT;
+						this.children[0].behaviors = [new Crumbs.behaviorInstance(function() {
+							this.scaleX = this.scaleY = ((Game.drawT - this.parent.explodeT) * 0.5) + 0.5;
+						})];
+						this.behaviors = [];
+						this.order = -1;
+						youWrath++;
+						leaveTranscend(1);
+						transcendModifier = 1;
+						setTimeout(function() {
+							Crumbs.findObject('puck', 'transcend').die();
+						}, 4000);
+					}
+				} else {
+					this.clicked = 0;
+					this.children[0].enabled = false;
+					this.children[0].scaleX = this.children[0].scaleY = 0;
+					this.offsetX = 0;
+					this.offsetY = 0;
+				}
+			}
+		],
+		components: [new Crumbs.component.pointerInteractive()],
+		init: function() {
+			this.spawnChild({
+				imgs: ['shineRed.png'], x: 0, y: 0, alpha: 1, height:128, width: 128, scaleX: 0, scaleY: 0, id: 'puckAura', scope: 'transcend',
+				behaviors: [
+					function() {
+						this.scaleX = this.scaleY = (this.parent.clicked / 150) * 0.375 * 2;
+						this.rotation = (Game.drawT * Math.PI / 180) * 5;
+					}
+				],
+				enabled: false, auraPoints: 10000 //i'm sorry but it's called puckAura and i need to make fun of the aura meme
+			});
+		},
+		clicked: 0 //draw frames that he's been clicked for, for my own purposes and not a Crumbs thing
 	});
 }
 
@@ -1127,32 +1179,6 @@ new Game.buffType('silver finger', function(time, pow) {
 	}
 });
 
-let drawTranscend = function(ctx) {
-	Game.Background.clearRect(-1000, -1000, l('backgroundCanvas').width * 10, l('backgroundCanvas').height * 10);
-	Game.Background.fillStyle = 'black';
-
-	Game.Background.save();
-
-	Game.Background.globalAlpha = 1;
-	Game.Background.fillRect(-1000, -1000, 10000, 10000);
-	Game.Background.globalAlpha = 0.5;
-	Game.Background.globalCompositeOperation = 'lighter';
-
-	var w = Game.Background.canvas.width;
-	var h = Game.Background.canvas.height;
-	var b = Game.ascendl.getBounds();
-	var x = (b.left + b.right) / 2;
-	var y = (b.top + b.bottom) / 2;
-	Game.Background.globalAlpha = (((Math.cos(Game.T / 1000)) + 1) / 7) + 0.1;
-	var s = 1 * (1 + Math.cos(Game.T * 0.0027) * 0.05);
-	Game.Background.fillPattern(Pic('starbg.jpg'), 0, 0, w, h, 1024 * s, 1024 * s, x * 0.00125 * s, y * 0.00125 * s);
-	Timer.track('star layer 1');
-
-	updateTranscendObjects(Game.Background);
-
-	Game.Background.restore();
-}
-
 let Dialogue = function(obj) {
 	Game.Prompt(`
 		<id Dialogue>
@@ -1163,22 +1189,13 @@ let Dialogue = function(obj) {
 	`, obj.promptOptions);
 }
 
-Game.Background.shadowBlur = 100;
-Game.LeftBackground.shadowBlur = 100;
-Game.DrawBackground = Function(
-	`(${
-		Game.DrawBackground.toString().replace(
-			`if (Game.OnAscend)`,
-			`if (Game.OnAscend == 1)`
-		).replace(
-			`}\n\t\t\telse\n\t\t\t{\n\t\t\t\n\t\t\t\tvar goodBuff=0;`,
-			`}\n\t\t\telse if (Game.OnAscend == 0)\n\t\t\t{\n\t\t\t\n\t\t\t\tvar goodBuff=0;`
-		).replace(
-			`if (goodBuff && Game.prefs.fancy) ctx.globalCompositeOperation='source-over';\n\t\t\t\t}\n\t\t\t}\n\t\t}`,
-			`if (goodBuff && Game.prefs.fancy) ctx.globalCompositeOperation = 'source-over';\n\t\t}\n\t}\n\telse if (Game.OnAscend == 2) {\n\t\tdrawTranscend();\n\t}\n}`
-		)
-	})();`
-);
+let updateDrawBackground = function () {
+	Game.DrawBackground = Function(
+		`(${
+			Game.DrawBackground.toString().replace(`Crumbs.drawObjects();`,`if (Game.OnAscend == 2) drawTranscend(Crumbs.getCanvasByScope('transcend'));\n\tCrumbs.drawObjects();`
+		)})();
+	`);
+}
 
 Game.crateTooltip = function(me, context) {
 	var tags = [];
