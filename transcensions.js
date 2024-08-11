@@ -228,10 +228,13 @@ addEventListener('resize', transcendOnResize);
 
 Game.transcendUnlocked = 0;
 
-Game.registerHook('check', function() {
-	if (Game.prestige >= 1e15) {
+Game.registerHook('logic', function() {
+	if (Game.T % 2 == 0 || Game.transcendUnlocked) return;
+	if(!Game.transcendReady) {
+		loadTranscend();
+	}
+	if (Game.transcendReady && Game.prestige >= 1e15) {
 		Game.transcendUnlocked = true;
 		onUnlockTranscend();
 	}
 });
-Game.registerHook('logic', () => !Game.transcendReady && loadTranscend());
