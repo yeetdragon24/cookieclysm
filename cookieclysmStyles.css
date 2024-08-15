@@ -1,3 +1,18 @@
-.devIcon{
-  background-image:url(https://raw.githubusercontent.com/yeetdragon24/cookieclysm/main/img/iconSheet.png);
+.devIcon {
+	background-image:url('https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v5.png')!important;
+}
+.transcendent.price:before {
+	background-image:url('https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v5.png');
+	background-position:-48px 0px;
+	background-size: 1000%;
+}
+#ascendInfoCopy:before{}
+#ascendInfoCopy:after{}
+.ascendCopy:before{}
+.ascendCopy:after{}
+.devQuote q:before{
+  content:""!important;
+}
+.devQuote q:after{
+  content:""!important;
 }
