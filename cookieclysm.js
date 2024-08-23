@@ -316,6 +316,7 @@ upAndAchiev.push(new Game.Upgrade('Efficient mana', 'Casting spells uses <b>%%% 
 Game.Upgrades['Useless treasure'].parents = [Game.Upgrades['Efficient mana']];
 upAndAchiev.push(new Game.Upgrade('Cheese', 'Muridal gains some buffs.<q>Swiss cheese, to be exact.</q>', 40, [1, 2, icons])); Game.last.parents = [Game.Upgrades['Efficient mana'], Game.Upgrades['Dark momentum']]; Game.last.scaling = 'medium'; Game.last.increment = 0.1;
 upAndAchiev.push(new Game.Upgrade('Finally, some rest', 'Lengthens Selebrak\'s party blower.<q>More festivity, more regret, more cookies.</q>', 331, [8, 1, icons])); Game.last.parents = [Game.Upgrades['Cheese']]; Game.last.scaling = 'soft'; Game.last.increment = 1;
+upAndAchiev.push(new Game.Upgrade('Fiery storm', 'Wrinklers spawn <b>+%%% ➡ %%%</b> faster.<q>Within this lapis cookie lies the flames of ambition.</q>', 200, [19, 6])); Game.last.parents = [Game.Upgrades['No hesitation']]; Game.last.scaling = 'medium'; Game.last.increment = 66;
 
 var getEffects = function(upgrade, tier) {
 	upgrade = Game.Upgrades[upgrade];
@@ -563,6 +564,8 @@ let getPos;
 	setPos('Efficient mana', 25, -250); //Efficient mana
 	setPos('Cheese', 50, -400); //cheese
 	setPos('Finally, some rest', 160, -410); //finally, some rest
+
+	setPos('Fiery storm', -100, 150);
 })();
 //});
 Game.Upgrade.prototype.transcendBuy = function() {
@@ -716,6 +719,8 @@ Game.registerHook('check', () => {
 eval(`Game.mouseCps=` + Game.mouseCps.toString().replaceAll(`add+=Game.cookiesPs*0.01`, `add+=Game.cookiesPs*0.01*(Game.Has('Denser minerals')?getEffects('Denser minerals'):1)`));
 
 eval(`Game.shimmerTypes['golden'].getTimeMod=` + Game.shimmerTypes['golden'].getTimeMod.toString().replace(`if (Game.Has('Green yeast digestives')) m*=0.99;`,`if (Game.Has('Green yeast digestives')) m*=0.99;\n\t\t\t\t\tif (Game.Has('No hesitation')) m *= 1 - (getEffects('No hesitation')/100);`));
+
+eval(`Game.UpdateWrinklers=` + Game.UpdateWrinklers.toString().replace(`chance*=Game.eff('wrinklerSpawn');`, `chance*=Game.eff('wrinklerSpawn'); if (Game.Has('Fiery storm')) { chance = 1 - Math.pow(1 - chance, 1 + getEffects('Fiery storm') / 100); }`));
 
 Game.registerHook('click', () => {
 	if (!Game.Has('Flexible')) return false;
