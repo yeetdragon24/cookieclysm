@@ -2,7 +2,7 @@
 let hasGodL = Game.hasGod;
 let getPlantDescL = Game.Objects['Farm'].minigame ? Game.Objects['Farm'].minigame.getPlantDesc : function() {};
 let capniL = 0;
-let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-v6.png';
+let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c0.6.png';
 let Kaizo = Game.mods['Kaizo Cookies'];
 //some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
 function romanize(num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
@@ -463,7 +463,6 @@ for (var i = 0; i < slots.length; i++) {
 
 //new effect scaling (not terrible and hopefully balanced [please no mhur v2])
 
-//idle
 C.upAndAchiev.push(C.transcendentUpgrade('Eternal engagement', 'Gain <b>+%%% ➡ +%%%</b> offline CpS.<q>You work faster if you\'re being watched.</q>', 14, Game.season == 'cookieclysm' ? [30, 20] : [1, 5, icons])); Game.last.parents = [Game.Upgrades['more']]; Game.last.scaling = 'soft'; Game.last.increment = 1;
 C.upAndAchiev.push(C.transcendentUpgrade('Oversweetened rest', 'Your offline CpS gain is increased by <b>+%%% ➡ +%%%</b> per sugar lump, up to 555 sugar lumps.', 25, [1, 2, icons])); Game.last.parents = [Game.Upgrades['Eternal engagement']]; Game.last.scaling = 'medium'; Game.last.increment = 0.05;
 C.upAndAchiev.push(C.transcendentUpgrade('Glimmering hope', 'The shimmering veil gains an extra <b>%%% ➡ %%% chance</b> not to break.', 42, [3, 2, icons])); Game.last.parents = [Game.Upgrades['Oversweetened rest']]; Game.last.scaling = 'medium'; Game.last.increment = 0.5;
@@ -472,23 +471,20 @@ C.upAndAchiev.push(C.transcendentUpgrade('Locked in', 'After no activity for 5 m
 C.upAndAchiev.push(C.transcendentUpgrade('A light in the dark', 'Brightens the Shimmering Veil, giving an additional <b>+%%% ➡ +%%%</b> CpS while the Shimmering Veil is active.', 150, [2, 1, icons])); Game.last.parents = [Game.Upgrades['Glimmering hope']]; Game.last.scaling = 'medium'; Game.last.increment = 2;
 C.upAndAchiev.push(C.transcendentUpgrade('Multitasking', 'You can stay <b>Locked in</b> while doing everything except clicking the cookie.<q>You can\'t move, yet you are.</q>', 100000, [12,31])); Game.last.parents = [Game.Upgrades['Locked in']]; Game.last.notTiered = 1;
 
-//active
 C.upAndAchiev.push(C.transcendentUpgrade('Dark momentum', 'Every 1000 clicks grants <b>+%%% ➡ +%%% CpS</b>.<br><div class="warning">Resets on ascension.</div><q>This strange force compels you go further, through the pain.</q>', 60, [2, 4, icons])); Game.last.parents = [Game.Upgrades['more']]; Game.last.scaling = 'medium'; Game.last.increment = 0.5;
-C.upAndAchiev.push(C.transcendentUpgrade('Emotionless', 'By truly becoming a master of asceticism, Holobore increases its connection with you.<q>Vomitrax looks at you, disgusted, but knowing that you have gone too far.</q>', 99, [1, 1, icons])); Game.last.parents = [Game.Upgrades['Eternal engagement'], Game.Upgrades['Glimmering hope']]; Game.last.scaling = 'hard'; Game.last.increment = 0.2;
+C.upAndAchiev.push(C.transcendentUpgrade('Emotionless', 'not implemented', 99, [1, 1, icons])); Game.last.parents = [Game.Upgrades['Eternal engagement'], Game.Upgrades['Glimmering hope']]; Game.last.scaling = 'hard'; Game.last.increment = 0.2;
 Game.Upgrades['Locked in'].parents = [Game.Upgrades['Emotionless']]; Game.Upgrades['Dedicated evasion'].parents = [Game.Upgrades['Emotionless']];
 C.upAndAchiev.push(C.transcendentUpgrade('Denser minerals', 'All mouse upgrades are buffed by <b>%%% ➡ %%%</b>.<q>Apply more force to the cookie. Maybe then it\'ll comply.</q>', 150, [0, 1, icons])); Game.last.parents = [Game.Upgrades['Dark momentum']]; Game.last.scaling = 'hard'; Game.last.increment = 0.1;
 C.upAndAchiev.push(C.transcendentUpgrade('Flexible', 'Gain <b>%%% ➡ %%%</b> <span style="color:#00FFFF">double click chance</span>.<q>Don\'t limit yourself to two fingers.</q>', 100, [2, 3, icons])); Game.last.parents = [Game.Upgrades['Denser minerals']]; Game.last.scaling = 'hard'; Game.last.increment = 2;
 C.upAndAchiev.push(C.transcendentUpgrade('No hesitation', `Reduces the time it takes for a golden cookie to spawn by <b>%%% ➡ %%%</b>.<q>${Math.random() < 0.01 ? 'When you see a chance, you gotta take it and run.' : 'Hesitation is defeat.'}</q>`, 17, [6, 1, icons])); Game.last.parents = [Game.Upgrades['more']]; Game.last.scaling = 'hard'; Game.last.increment = 0.1; 
 
-//general
 C.upAndAchiev.push(C.transcendentUpgrade('Useless treasure', 'Turns that useless silver into white chocolate, granting <b>+%%% ➡ +%%% Alchemy lab CpS</b>.<q>Silver found to also be transmutable into white chocolate!</q>', 3, [6, 30])); Game.last.scaling = 'hard'; Game.last.increment = 1000;
 C.upAndAchiev.push(C.transcendentUpgrade('Efficient mana', 'Casting spells uses <b>%%% ➡ %%% less magic</b>.<q>Casting spells is a breeze to you now.</q>', 4, [0, 4, icons])); Game.last.parents = [Game.Upgrades['Transcendent kittens']]; Game.last.scaling = 'hard'; Game.last.increment = 0.01;
 Game.Upgrades['Useless treasure'].parents = [Game.Upgrades['Efficient mana']];
-C.upAndAchiev.push(C.transcendentUpgrade('Cheese', 'Muridal gains some buffs.<q>Swiss cheese, to be exact.</q>', 40, [0, 2, icons])); Game.last.parents = [Game.Upgrades['Efficient mana'], Game.Upgrades['Dark momentum']]; Game.last.scaling = 'medium'; Game.last.increment = 0.1;
-C.upAndAchiev.push(C.transcendentUpgrade('Finally, some rest', 'Lengthens Selebrak\'s party blower.<q>More festivity, more regret, more cookies.</q>', 331, [1, 4, icons])); Game.last.parents = [Game.Upgrades['Cheese']]; Game.last.scaling = 'soft'; Game.last.increment = 1;
+C.upAndAchiev.push(C.transcendentUpgrade('Cheese', 'not implemented<q>Swiss cheese, to be exact.</q>', 40, [0, 2, icons])); Game.last.parents = [Game.Upgrades['Efficient mana']]; Game.last.scaling = 'medium'; Game.last.increment = 0.1;
+C.upAndAchiev.push(C.transcendentUpgrade('Finally, some rest', 'not fully implemented<q>More festivity, more regret, more cookies.</q>', 331, [1, 4, icons])); Game.last.parents = [Game.Upgrades['Cheese']]; Game.last.scaling = 'soft'; Game.last.increment = 1;
 C.upAndAchiev.push(C.transcendentUpgrade('Fiery storm', 'Wrinklers spawn <b>+%%% ➡ %%%</b> faster.<q>Within this lapis cookie lies the flames of ambition.</q>', 200, [19, 6])); Game.last.parents = [Game.Upgrades['No hesitation']]; Game.last.scaling = 'medium'; Game.last.increment = 66;
-
-let tUEA = Game.last.id; //transcend Upgrades End At
+C.upAndAchiev.push(C.transcendentUpgrade(C.moneName + ' buff', 'Gain +%%% ➡ +%%% more ' + C.moneName + ' from Clone worlds.<q>To climb the mountain faster.</q>', 122, [0, 0])); 
 
 C.getEffects = function(upgrade, tier) {
 	upgrade = Game.Upgrades[upgrade];
