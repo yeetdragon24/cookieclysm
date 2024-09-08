@@ -88,7 +88,7 @@ Game.registerHook('logic', function() {
 	if (Game.T % 3 == 0) calcDynamicTUEffs();
 
 	if (C.toLoad) {
-		if (Game.Objects['You'].minigame) {
+		if (Game.Objects['You'].minigame && window.CookieclysmLoadStr) {
 			C.load(window.CookieclysmLoadStr);
 		}
 	}
@@ -107,6 +107,20 @@ for (let i in Game.Objects) {
 		C.achievsToBackupSave.push(Game.Objects[i].productionAchievs[ii].achiev);
 	}
 }
+
+if (typeof isv !== 'function') { 
+	function isv(str) { //stolen from kaizo
+		if (typeof str === 'string') { 
+			if (str.includes('NaN') || str.includes('undefined') || str === '') {
+				return false;
+			}
+		}
+		if (typeof str !== 'string' && isNaN(str)) { return false; }
+		if (typeof str === 'undefined') { return false; }
+		return true;
+	}
+}
+
 C.saveBackupStats = function() {
 	let str = '';
 	str += Game.cookiesEarned + '_' + Game.cookies + '_' + Game.lumps + '_' + Game.lumpsTotal + '_';
@@ -172,6 +186,7 @@ C.save = function() {
 
 	//youpocalypse
 	str += C.youWrath;
+	str += '/';
 
 	//backup
 	str += C.saveBackupStats();
@@ -207,7 +222,7 @@ C.load = function(str) {
 	C.moneSpent = parseFloat(transcendData[4]);
 	C.transcends = parseFloat(transcendData[5]);
 	C.transcendModifier = parseInt(transcendData[6]);
-	Game.ascensionMode = parseInt(transcendData[8]);
+	Game.ascensionMode = parseInt(transcendData[7]);
 
 	C.unshackleSlots = spl[5].split(',').map(x => parseInt(x));
 	let tuTiers = spl[6].split(',');
