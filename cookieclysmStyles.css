@@ -15,7 +15,7 @@
   content:""!important;
 }
 
-.puck {
+#puck {
 	transform: scale(2);
 	background-position: -96px -96px;
 	background-image:url('https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c0.6.png')!important;
