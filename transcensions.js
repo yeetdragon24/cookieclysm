@@ -6,7 +6,9 @@ transcendence.id = 'transcend';
 transcendence.style = 'width:' + Game.bounds.width + 'px;height:' + window.innerHeight + 'px;display:none;z-index:5000000;position:fixed;color:#000000;opacity:100%';
 l('game').appendChild(transcendence);
 
-new Crumbs.canvas(l('transcend'), 'transcend', 'transcendCanvas', `position: absolute; top: 0; left: 0;`);
+if (typeof CrumbsEngineLoaded !== 'undefined') {
+	new Crumbs.canvas(l('transcend'), 'transcend', 'transcendCanvas', `position: absolute; top: 0; left: 0;`);
+}
 
 let transcendZoomable = document.createElement('div');
 transcendZoomable.id = 'transcendZoomable';
@@ -74,9 +76,10 @@ C.buildTranscendTree = function() {
 		let parentsOwned = 0;
 		for (let ii of i.parents) if (ii.bought) parentsOwned++;
 		if (parentsOwned == i.parents.length) i.canBePurchased = 1;
-		if (i.canBePurchased) str += Game.crate(i, 'ascend', 'Game.Upgrades[\'' + i.name + '\'].transcendBuy();', undefined, 'position:absolute;top:' + GU[i.id][1] + 'px;left:' + GU[i.id][0] + 'px;z-index:4534225;opacity:' + (shown ? 50 : 5) + '%');
-		//orteil doesnt like it but it works because game.crate doesnt yet support this
-		else str += '<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade' + i.id + '" style="position:absolute;left:' + GU[i.id][0] + 'px;top:' + GU[i.id][1] + 'px;opacity:0.1;' + writeIcon(i.icon) + '"></div>';
+		if (i.canBePurchased) str += Game.crate(i, 'ascend', 'Game.Upgrades[\'' + i.name + '\'].transcendBuy();', `heavenlyUpgrade${i.id}`, `position:absolute; top: ${GU[i.id][1]}px; left: ${GU[i.id][0]}px; z-index: 4534225;opacity: ${(shown ? 0.5 : 0.05)};`);
+		//orteil doesnt like it but it works because game.crate doesnt yet support custom classes and lack of tooltips
+		else str += `<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade${i.id}" style="position:absolute; left: ${GU[i.id][0]}px; top: ${GU[i.id][1]}px;opacity:0.1; background: url('https://orteil.dashnet.org/cookieclicker/img/icons.png'); ${writeIcon(i.icon)}"></div>`;
+		i.l = l(`heavenlyUpgrade${i.id}`);
 		for (var ii in i.parents)//create pulsing links
 		{
 			ghosted = i.canBePurchased;
@@ -89,7 +92,7 @@ C.buildTranscendTree = function() {
 				var rot = -(Math.atan((targY - origY) / (origX - targX)) / Math.PI) * 180;
 				if (targX <= origX) rot += 180;
 				var dist = Math.floor(Math.sqrt((targX - origX) * (targX - origX) + (targY - origY) * (targY - origY)));
-				str += '<div class="parentLink" id="heavenlyLink' + i.id + '-' + ii + '" style="opacity:' + (ghosted ? '0.25;' : '0.05;') + 'width:' + dist + 'px;-webkit-transform:rotate(' + rot + 'deg);-moz-transform:rotate(' + rot + 'deg);-ms-transform:rotate(' + rot + 'deg);-o-transform:rotate(' + rot + 'deg);transform:rotate(' + rot + 'deg);left:' + (origX) + 'px;top:' + (origY) + 'px;"></div>';
+				str += '<div class="parentLink" id="heavenlyLink' + i.id + '-' + ii + '" style="opacity:' + (ghosted ? '0.25;' : '0.05; ') + 'width:' + dist + 'px;-webkit-transform:rotate(' + rot + 'deg);-moz-transform:rotate(' + rot + 'deg);-ms-transform:rotate(' + rot + 'deg);-o-transform:rotate(' + rot + 'deg);transform:rotate(' + rot + 'deg);left:' + (origX) + 'px;top:' + (origY) + 'px;"></div>';
 			}
 		}
 	}
@@ -172,7 +175,7 @@ C.onUnlockTranscend = function() {
 	//'<div style="background-image:url(img/icons.png);background-position:528px 1200px;"></div>'
 	l('transcendMeterContainer').style.width = '70%'; l('transcendMeterContainer').style.margin = 'auto';
 	Game.attachTooltip(l('transcendButton'), function() {
-		return `<div style="min-width:300px;text-align:center;font-size:11px;padding:8px;" id="tooltipTranscendButton">Upon transcending, you will gain ${moneName} based on how much transcend power you gained since your last transcension.<br>${moneName} can be spent on Transcendent Upgrades.</div>`;
+		return `<div style="min-width:300px;text-align:center;font-size:11px;padding:8px;" id="tooltipTranscendButton">Upon transcending, you will gain ${C.moneName} based on how much transcend power you gained since your last transcension.<br>${C.moneName} can be spent on Transcendent Upgrades.</div>`;
 	}, 'top-right');
 	AddEvent(l('transcendButton'), 'click', function() {
 		PlaySound('snd/tick.mp3');
@@ -190,7 +193,7 @@ C.onUnlockTranscend = function() {
 	///*screw it im just doing this*/ ascendInfoCopy.innerHTML='<div id="transcensionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 24px; position: relative;"><h3>Transcend Power:</h3><br><h3 style="all:initial"><span id="transcendPower" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">15</span>\x3C!--</h3>--><div class="smallFramed meterContainer" id="transcendMeterContainer" style="width: 70%; margin: auto;"><div id="transcendMeter" class="meter filling" style="background-position: -9519px center; width: 0%;"></div></div></h3></div><div id="transcensionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 26px; position: relative;"><h3>Moné:</h3><br><h3 style="all:initial;"><span class="price transcendent" id="mone" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">0</span></h3><br></div>';
 	l('transcend').appendChild(ascendInfoCopy);
 	Game.attachTooltip(l('transcensionBox1'), function() {
-		return `<div style="min-width:300px;text-align:center;font-size:11px;padding:8px;" id="tooltipTranscendPower">You gain 1 transcend power for every digit in your cookie count.<br>You currently have ${transcendPower} transcend power, buffing your CpS by a base +${Beautify(transcendPower * 100)}%.</div>`
+		return `<div style="min-width:300px;text-align:center;font-size:11px;padding:8px;" id="tooltipTranscendPower">You gain 1 transcend power for every digit in your cookie count.<br>You currently have ${C.transcendPower} transcend power, buffing your CpS by a base +${Beautify(C.transcendPower * 100)}% and giving +${Beautify(C.transcendPower)}% prestige multiplier.</div>`
 	}, 'top-right');
 	
 	ascendInfoCopy.childNodes[2].childNodes[0].innerHTML = 'Return';
@@ -204,6 +207,8 @@ C.onUnlockTranscend = function() {
 
 	ascendInfoCopy.childNodes[0].className = 'prompt'; //idk man it works decently
 	ascendInfoCopy.childNodes[1].className = 'prompt';
+
+	C.ascendInfoCopy = ascendInfoCopy;
 }
 C.loadTranscend = function() {
 	//l('transcendMeterContainer').style.margin='auto';
@@ -228,6 +233,6 @@ Game.registerHook('logic', function() {
 	}
 	if (C.transcendReady && Game.prestige >= 1e15) {
 		C.transcendUnlocked = true;
-		onUnlockTranscend();
+		C.onUnlockTranscend();
 	}
 });
