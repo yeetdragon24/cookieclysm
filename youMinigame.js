@@ -29,7 +29,7 @@ M.launch = function(){
                 icon:[2,0],
                 buff:'<span class="green">Greatly increases offline earnings, as well as buffs the Shimmering Veil Greatly, click buffs buff shimmering veil.</span>',
                 debuff:'<span class="red">The Garden does nothing. No touchy the garden. Especially to not overtake the Potato King.</span>',
-                quote:'The goal that all players share, which is to not have to play anymore - Technoblade'
+                quote:'"The goal that all players share, which is to not have to play anymore" - Technoblade'
 			}
 		}
 		M.devsById=[];var n=0;
@@ -58,7 +58,7 @@ M.launch = function(){
 					(me.buff?('<div class="templeEffect templeEffect1"><div class="usesIcon shadowFilter templeGem templeGem3"></div>'+me.buff+'</div>'):'')+
 					(me.debuff?('<div class="templeEffect templeEffect2"><div class="usesIcon shadowFilter templeGem templeGem2"></div>'+me.debuff+'</div>'):'')+
 					(me.descAfter?('<div class="templeEffect">'+me.descAfter+'</div>'):'')+
-					(me.quote?('<q>'+me.quote+'</q>'):'')+
+					(me.quote?('<q	>'+me.quote+'</q>'):'')+
 				'</div></div>';
 				return str;
 			};
@@ -313,7 +313,7 @@ M.launch = function(){
 			}
 			return false;
 		}
-		
+		M.effs = {};
 		M.save=function()
 	{
 		//output cannot use ",", ";" or "|"
@@ -421,7 +421,7 @@ M.launcher = function(){
 	M.parent.minigameUrl = 'https://yeetdragon24.github.io/';
 	M.parent.minigameName = 'God Complex';
 	M.parent.minigameLoaded = 1;
-	M.parent.switchMinigame(!M.parent.onMinigame);
+	M.parent.switchMinigame(M.parent.onMinigame);
 	
 	M.name = M.parent.minigameName;
 	M.savePrefix = 'minigameAmogus';
