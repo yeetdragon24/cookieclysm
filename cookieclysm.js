@@ -2,7 +2,7 @@
 let hasGodL = Game.hasGod;
 let getPlantDescL = Game.Objects['Farm'].minigame ? Game.Objects['Farm'].minigame.getPlantDesc : function() {};
 let capniL = 0;
-let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c0.6.png';
+let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c0.6.1.png';
 let Kaizo = Game.mods['Kaizo Cookies'];
 //some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
 function romanize(num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
@@ -164,18 +164,18 @@ C.load = function(str) {
 	] = spl[3].split(',').map(x => parseFloat(x) || 0);
 
 	let transcendData = spl[4].split(',');
-	C.mone = parseFloat(transcendData[0]);
-	C.moneName = transcendData[1];
-	C.transcendPower = parseFloat(transcendData[2]);
-	C.lastTranscendP = parseFloat(transcendData[3]);
-	C.moneSpent = parseFloat(transcendData[4]);
-	C.transcends = parseFloat(transcendData[5]);
-	C.transcendModifier = parseInt(transcendData[6]);
+	C.mone = parseFloat(transcendData[0]) || 0;
+	C.moneName = transcendData[1] || 'Moné';
+	C.transcendPower = parseFloat(transcendData[2]) || 0;
+	C.lastTranscendP = parseFloat(transcendData[3]) || 0;
+	C.moneSpent = parseFloat(transcendData[4]) || 0;
+	C.transcends = parseFloat(transcendData[5]) || 0;
+	C.transcendModifier = parseInt(transcendData[6]) || 0;
 
 	C.unshackleSlots = spl[5].split(',').map(x => parseInt(x));
 	let tuTiers = spl[6].split(',');
 	for (let i in tuTiers) {
-		C.transcendentUpgrades[i].tier = tuTiers[i];
+		C.transcendentUpgrades[i].tier = parseInt(tuTiers[i]) || 0;
 	}
 
 	youWrath = parseFloat(spl[7]);
@@ -287,10 +287,22 @@ order = 10070;
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Hard Pasta', desc: 'You should probably cook these. Or should you bake them?', icon: [28, 32], require: 'Box of not cookies', power: 5, price: Math.pow(10, 45) }));
 
 order = 510;
-C.upAndAchiev.push(new Game.Upgrade('Alternate reality', 'Unlocks the <b>Clone world</b> mode.<q>Not related to the Cookie Clicker update of the same name.</q>', (15 * Math.pow(10, 15)) - 1, [10, 21])); Game.last.pool = 'prestige'; Game.last.posX = 656; Game.last.posY = 787; Game.PrestigeUpgrades.push(Game.last); Game.last.buyFunction = function() { C.unlockCloneWorld() };
+C.upAndAchiev.push(new Game.Upgrade('Alternate reality', 'Unlocks the <b>Clone world</b> mode.<q>Not related to the Cookie Clicker update of the same name.</q>', (15 * Math.pow(10, 15)) - 1, [33, 21]));
+Game.last.pool = 'prestige'; Game.last.posX = 656; Game.last.posY = 787; Game.PrestigeUpgrades.push(Game.last); Game.last.buyFunction = function() { C.unlockCloneWorld() }; Game.last.parents = [Game.Upgrades['Unshackled idleverses']];
 //C.upAndAchiev.push(new Game.Upgrade('Cookieclysm', '<q>Related to the Cookie Clicker mod of the same name.</q>', 24, [21, 6])); Game.last.priceFunc = function() { return Game.Objects['You'].amount * Math.pow(10, 45) }; Game.last.pool = 'research';
 //Game.RequiresConfirmation(Game.last, '<div class="block">' + loc("<b>Warning:</b> purchasing this will have unexpected, and potentially undesirable results!<br><br><br>Purchase anyway?") + '</div>');
 C.upAndAchiev.push(new Game.Upgrade('Flaming worm', `Unlocks a <b><span style="color: ${C.transcendentPink}">special wrinkler</span></b>.`, 2, [2, 2, icons])); Game.last.priceFunc = function() { return this.bought ? 300e6 : Game.heavenlyChips * 0.8 }; Game.last.pool = 'prestige';
+
+//chocolate
+C.pantheonBG = 0;
+C.pantheonBGs = ['img/BGpantheon.jpg', 'img/pantheonBG.png'];
+C.upAndAchiev.push(new Game.Upgrade('Pantheon background switch', '', 0, [5, 6])); Game.last.descFunc = function() { return `Currently: <b>${C.pantheonBG ? 'Palace' : 'Forest'}</b> ${tinyIcon(C.pantheonBG ? [5, 6] : [16, 0])}`; };
+Game.last.buyFunction = function() {
+    C.pantheonBG = Number(!C.pantheonBG);
+    Game.Lock(this.name); Game.Unlock(this.name);
+    l('templeBG').style.backgroundImage = `url('img/shadedBorders.png'), url('${C.pantheonBGs[C.pantheonBG]}')`; l('templeBG').style.backgroundSize = C.pantheonBG ? '50%' : '100% 100%, auto';
+};
+Game.last.iconFunction = function() { return C.pantheonBG ? [5, 6] : [16, 0] }; Game.last.pool = 'toggle';
 
 order = 24000;
 C.upAndAchiev.push(new Game.Upgrade('Cataclysmic biscuit', 'Triggers <b>Cookieclysm season</b> for the next 24 hours.<br>Triggering another season will cancel this one.<br>Cost scales with unbuffed CpS and increases with every season switch.<q>please don\'t make me go back</q>', Game.seasonTriggerBasePrice, [0, 0, icons])); Game.last.season='cookieclysm'; Game.last.pool='toggle';
@@ -319,6 +331,9 @@ C.upAndAchiev.push(Game.TieredUpgrade('Hunger', '<q>You\'ve discovered hunger in
 C.upAndAchiev.push(Game.TieredUpgrade('Cookie fusion', '<q>Atoms can now push other atoms to force them to merge, and this somehow creates cookies.</q>', 'Converter', 13));
 C.upAndAchiev.push(Game.TieredUpgrade('Consumer enlargement', '<q>Not only do they have to eat more, they also can be converted into more.</q>', 'Converter', 14));
 C.upAndAchiev.push(Game.TieredUpgrade('Unsweetened quarks', '<q>Filler for your cookies. It doesn\'t taste like anything, but they won\'t notice.</q>', 'Converter', 15));
+
+order = 19000;
+C.upAndAchiev.push(Game.TieredUpgrade('Fortune #021', 'Converters are <b>7%</b> more efficient and <b>7%</b> cheaper.<q>Nothing ever stays exactly the same.</q>', 'Converter', 'fortune'));
 
 order = 5000;
 C.upAndAchiev.push(Game.SynergyUpgrade('Overgrown plants', '<q>Less maintenence required and you can turn the waste into cookies too!</q>', 'Converter', 'Farm', 'synergy1')); Game.last.icon[2] = icons;
@@ -353,20 +368,24 @@ order = 1239.120; //idk but hell hus
 
 order = 7003;
 let spaceStart = C.upAndAchiev.length;
-let spaceDesc = (amount) => `Multiplies your max space by <b>${amount}</b>.`;
-C.upAndAchiev.push(new Game.Upgrade('Shed', spaceDesc(10) + '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [0, 0])); 
-C.upAndAchiev.push(new Game.Upgrade('House', spaceDesc(10) + '<q>A nice house for grandmas to bake cookies in.</q>', 500e3, [0, 1]));
-C.upAndAchiev.push(new Game.Upgrade('Field', spaceDesc(10) + '<q>Now you can farm and dig all you want.</q>', 500e6, [0, 2]));
-C.upAndAchiev.push(new Game.Upgrade('Warehouse', spaceDesc(10) + '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e9, [0, 3]));
-C.upAndAchiev.push(new Game.Upgrade('Planet', spaceDesc(10) + '<q>It\'s about time you got yourself a place large enough to privately run your business.</q>', 500e12, [0, 4]));
-C.upAndAchiev.push(new Game.Upgrade('Distant objects', spaceDesc(10) + '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [0, 5]));
-C.upAndAchiev.push(new Game.Upgrade('Quantum optimazation', spaceDesc(10) + '<q>Almost all of an atom is empty. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [0, 6]));
-C.upAndAchiev.push(new Game.Upgrade('More hard drives', spaceDesc(10) + '<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>', 500e21, [0, 7]));
-C.upAndAchiev.push(new Game.Upgrade('Genetic restructuring', spaceDesc(10) + '<q>One way to get more space is to make everything else smaller. Like people. They won\'t notice as long as we give them enough cookies.</q>', 500e24, [0, 8]));
+let spaceDesc = (amount) => amount < 5 ** amount >= 2 ? `<b>${['Doubles', 'Triples', 'Quadruples'][amount-2]}</b> your max space.` : `Multiplies your max space by <b>${amount}</b>.`; 
+C.upAndAchiev.push(new Game.Upgrade('Shed', spaceDesc(10) + '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [7, 0, icons])); 
+C.upAndAchiev.push(new Game.Upgrade('House', spaceDesc(10) + '<q>A nice house for grandmas to bake cookies in.</q>', 500e2, [7, 1, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Field', spaceDesc(10) + '<q>Now you can farm and dig all you want.</q>', 500e4, [7, 2, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Warehouse', spaceDesc(10) + '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, 13, icons]));
+//C.upAndAchiev.push(new Game.Upgrade('Farmland', spaceDesc(10) + '<q>More space for your farms, and whatever else you do to make cookies.</q>', 500e8, [7, 4]));
+C.upAndAchiev.push(new Game.Upgrade('Glacial remnants', spaceDesc(10) + '<q>Who would live here? Perfect for preserving cookies.</q>', 500e8, [7, 14, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Planet', spaceDesc(10) + '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e10, [7, 15, icons]));
+C.upAndAchiev.push(new Game.Upgrade('The future', spaceDesc(10) + '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, 16, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Distant objects', spaceDesc(10) + '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, 17, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Quantum optimazation', spaceDesc(10) + '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, 18, icons]));
+C.upAndAchiev.push(new Game.Upgrade('More hard drives', spaceDesc(10) + '<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>', 500e21, [7, 19, icons]));
+C.upAndAchiev.push(new Game.Upgrade('Genetic restructuring', spaceDesc(10) + '<q>One way to get more space is to make everything else smaller. Like people. They won\'t notice as long as they have enough cookies.</q>', 500e24, [7, 28, icons]));
 let spaceEnd = C.upAndAchiev.length;
 
 order = 510;
-C.upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground', 'Contains... stuff.<q>I don\'t think these are edible.</q>', 400 * Math.pow(10, 15), [34, 12])); Game.last.pool = 'prestige'; Game.last.parents = [Game.Upgrades['Box of maybe cookies'], Game.Upgrades['Box of not cookies'], Game.Upgrades['Box of pastries']]; Game.last.posX = -667; Game.last.posY = -1497;
+C.upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground', 'Contains... stuff.<q>I don\'t think these are edible.</q>', 400 * Math.pow(10, 15), [34, 12])); 
+Game.PrestigeUpgrades.push(Game.last); Game.last.pool = 'prestige'; Game.last.parents = [Game.Upgrades['Box of maybe cookies'], Game.Upgrades['Box of not cookies'], Game.Upgrades['Box of pastries']]; Game.last.posX = -667; Game.last.posY = -1497;
 order = 10070;
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'The Running Enchilada', desc: 'Just plain chips, not anything special.', icon: [25, 8], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 51) }));
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Playing card', desc: 'Picking this off the floor makes you feel terrible, but not the worst.', icon: [6, 2, icons], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 54) }));
@@ -468,20 +487,21 @@ C.upAndAchiev.push(C.transcendentUpgrade('Locked in', 'After no activity for 5 m
 C.upAndAchiev.push(C.transcendentUpgrade('A light in the dark', 'Brightens the Shimmering Veil, giving an additional <b>+%%% ➡ +%%%</b> CpS while the Shimmering Veil is active.<q>The light at the end of the tunnel.</q>', 150, [2, 1, icons], { scaling: 'medium', increment: 2 })); Game.last.parents = [Game.Upgrades['Glimmering hope']];
 C.upAndAchiev.push(C.transcendentUpgrade('Multitasking', 'You can stay <b>Locked in</b> while doing everything except clicking the cookie.<q>You can\'t move, yet you are.</q>', 100000, [12,31])); Game.last.parents = [Game.Upgrades['Locked in']]; Game.last.notTiered = 1;
 
-C.upAndAchiev.push(C.transcendentUpgrade('Dark momentum', 'Every 1000 clicks grants <b>+%%% ➡ +%%% CpS</b>.<br><div class="warning">Resets on ascension.</div><q>Get higher and higher, from an unseen force.</q>', 60, [2, 4, icons], { scaling: 'medium', increment: 0.1 })); Game.last.parents = [Game.Upgrades['more']];
+C.upAndAchiev.push(C.transcendentUpgrade('Dark momentum', 'Every 1000 clicks grants <b>+%%% ➡ +%%% CpS</b>.<br><div class="warning">Resets on ascension.</div><q>To the moon.</q>', 60, [2, 4, icons], { scaling: 'medium', increment: 0.1 })); Game.last.parents = [Game.Upgrades['more']];
 C.upAndAchiev.push(C.transcendentUpgrade('Emotionless', 'not implemented', 99, [1, 1, icons], { scaling: 'hard', increment: 0.2 })); Game.last.parents = [Game.Upgrades['Eternal engagement'], Game.Upgrades['Glimmering hope']];
 Game.Upgrades['Locked in'].parents = [Game.Upgrades['Emotionless']]; Game.Upgrades['Dedicated evasion'].parents = [Game.Upgrades['Emotionless']];
-C.upAndAchiev.push(C.transcendentUpgrade('Denser minerals', 'All mouse upgrades are buffed by <b>%%% ➡ %%%</b>.<q>Use the densest Iridyum out there to force stronger clicks.</q>', 150, [0, 1, icons], { scaling: 'hard', increment: 0.1 })); Game.last.parents = [Game.Upgrades['Dark momentum']];
+C.upAndAchiev.push(C.transcendentUpgrade('Denser minerals', 'All mouse upgrades are buffed by <b>%%% ➡ %%%</b>.<q>Glossier than the shiniest Iridyum.</q>', 150, [0, 1, icons], { scaling: 'hard', increment: 0.1 })); Game.last.parents = [Game.Upgrades['Dark momentum']];
 C.upAndAchiev.push(C.transcendentUpgrade('Flexible', 'Gain <b>%%% ➡ %%%</b> <span style="color:#00FFFF">double click chance</span>.<q>Don\'t limit yourself to two fingers.</q>', 100, [2, 3, icons], { scaling: 'hard', increment: 2 })); Game.last.parents = [Game.Upgrades['Denser minerals']];
-C.upAndAchiev.push(C.transcendentUpgrade('No hesitation', `Reduces the time it takes for a golden cookie to spawn by <b>%%% ➡ %%%</b>.<q>${Math.random() < 0.01 ? 'When you see a chance, you gotta take it and run.' : 'Hesitation is defeat.'}</q>`, 17, [6, 1, icons], { scaling: 'hard', increment: 0.1 })); Game.last.parents = [Game.Upgrades['more']];
+C.upAndAchiev.push(C.transcendentUpgrade('No hesitation', `Reduces the time it takes for a golden cookie to spawn by <b>%%% ➡ %%%</b>.<q>${Math.random() < 0.01 ? 'When you see a chance, you have to take it and run.' : 'Hesitation is defeat.'}</q>`, 17, [6, 1, icons], { scaling: 'hard', increment: 0.1 })); Game.last.parents = [Game.Upgrades['more']];
 
 C.upAndAchiev.push(C.transcendentUpgrade('Useless treasure', 'Turns that useless silver into white chocolate, granting <b>+%%% ➡ +%%% Alchemy lab CpS</b>.<q>Silver found to also be transmutable into white chocolate!</q>', 3, [6, 30], { scaling: 'hard', increment: 1000 }));
 C.upAndAchiev.push(C.transcendentUpgrade('Efficient mana', 'Casting spells uses <b>%%% ➡ %%% less magic</b>.<q>Casting spells is a breeze to you now.</q>', 4, [0, 4, icons], { scaling: 'hard', increment: 0.01 })); Game.last.parents = [Game.Upgrades['Transcendent kittens']];
 Game.Upgrades['Useless treasure'].parents = [Game.Upgrades['Efficient mana']];
 C.upAndAchiev.push(C.transcendentUpgrade('Cheese', 'not implemented<q>Swiss cheese, to be exact.</q>', 40, [0, 2, icons], { scaling: 'soft', increment: 0.1 })); Game.last.parents = [Game.Upgrades['Efficient mana']];
 C.upAndAchiev.push(C.transcendentUpgrade('Finally, some rest', 'not fully implemented<q>More festivity, more regret, more cookies.</q>', 331, [1, 4, icons], { scaling: 'soft', increment: 1 })); Game.last.parents = [Game.Upgrades['Cheese']];
-C.upAndAchiev.push(C.transcendentUpgrade('Fiery storm', 'Wrinklers spawn <b>+%%% ➡ %%%</b> faster.<q>Within this lapis cookie lies the flames of pure ambition.</q>', 200, [19, 6], { scaling: 'medium', increment: 66 })); Game.last.parents = [Game.Upgrades['No hesitation']];
-C.upAndAchiev.push(C.transcendentUpgrade('Mone buff', '', 122, [12, 14], { scaling: 'medium', increment: 1 })); Game.last.parents = [Game.Upgrades['more']]; Game.last.descFunc = function() { this.dname = C.moneName + ' buff'; return `Gain <b>+%%% ➡ +%%%</b> more ${C.moneName} from Clone worlds.<q>To climb the mountain faster.</q>`; }
+C.upAndAchiev.push(C.transcendentUpgrade('Fiery storm', 'Wrinklers spawn <b>+%%% ➡ +%%%</b> faster.<q>Within this lapis cookie lies the flames of pure ambition.</q>', 200, [19, 6], { scaling: 'medium', increment: 66 })); Game.last.parents = [Game.Upgrades['No hesitation']];
+C.upAndAchiev.push(C.transcendentUpgrade('Mone buff', '', 10, [12, 14], { scaling: 'medium', increment: 1 })); Game.last.parents = [Game.Upgrades['more']]; Game.last.descFunc = function() { this.dname = C.moneName + ' buff'; return `Gain <b>+%%% ➡ +%%%</b> more ${C.moneName} from Clone worlds.<br>Every 3 tiers <b>increases the digit cap</b> of the amount of ${C.moneName} you can gain in the clone world by 1.<q>To climb the mountain faster.<br>Current digit cap: ${Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2} ${Beautify((10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1)}</q>`; };
+C.upAndAchiev.push(C.transcendentUpgrade('Puck', 'Skruuia gains some bonuses.', 14, [2, 2], { scaling: 'medium', increment: 5 })); Game.last.parents = [Game.Upgrades['Finally, some rest']]; Game.last.descFunc = function() { return this.desc + (this.bought ? '<br>These bonuses are increased by <b>+%%% ➡ +%%%</b>.' : '') };
 
 C.getEffects = function(upgrade, tier) {
 	upgrade = Game.Upgrades[upgrade];
@@ -536,7 +556,7 @@ for (let upgrade in C.upAndAchiev) {
 		i.icon[2] = icons;
 		i.iconFunction = function() {
 			let icon = [].concat(this.icon);
-			if (Game.season == 'cookieclysm') icon[0] -= 1;
+			if ((Game.season == 'cookieclysm' || Game.baseSeason == 'cookieclysm') && !isNaN(parseInt(this.tier))) icon[0] -= 1;
 			return icon;
 		}
 	}
@@ -629,9 +649,9 @@ C.getBuildingSpace = function() {
 	return buildingSpace;
 }
 
-C.spaceUnlockThresholds = [5, 20, 50, 100, 250, 500, 750, 1000, 1500];
+C.spaceUnlockThresholds = [5, 20, 50, 100, 250, 500, 750, 1000, 1500, 2500, 3000, 4000, 5000, 6000, 7500].slice(0, C.spaceUpgrades.length); //solution to not knowing how to count
 C.unlockSpaceUpgrades = function() {
-	/* i'm not using these anymore but might as well keep them to make balancing a little easier
+	/* i'm not using these anymore but might as well keep them commented to make balancing a little easier
 	if (Game.BuildingsOwned >= 5) Game.Unlock('Shed'); //50 to 100
 	if (Game.BuildingsOwned >= 20) Game.Unlock('House'); //100 to 1000
 	if (Game.BuildingsOwned >= 50) Game.Unlock('Field'); //1000 to 10,000
@@ -698,7 +718,7 @@ for (let i in Game.Objects) {
 
 C.getSpaceString = function() {
 	return `<div class="listing"><b>Building space: </b>${Beautify(C.getBuildingSpace())}/${Beautify(C.getMaxBuildingSpace())} (${Beautify(Math.floor((C.getBuildingSpace() / C.getMaxBuildingSpace()) * 100))}%)</div>
-			<div class="listing"><b>Buildings until next upgrade: </b>${SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)}</div>`;
+			<div class="listing"><b>Buildings until next upgrade: </b>${isNaN(SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)) ? 'all upgrades unlocked' : SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)}</div>`;
 }
 C.getSpaceHTML = function() {
 	return `<span id="spaceAmount">${C.getSpaceString()}</span>`;
@@ -779,6 +799,7 @@ C.setTUPos('Cheese', 50, -400); //cheese
 C.setTUPos('Finally, some rest', 160, -410); //finally, some rest
 C.setTUPos('Fiery storm', -100, 150); //fiery storm
 C.setTUPos('Mone buff', -180, 210); //Moné buff
+C.setTUPos('Puck', 170, -460); //puck
 
 Game.Upgrade.prototype.transcendBuy = function() {
 	if (this.pool != 'transcendent' /*this.id < tUSA*/) return false;
@@ -872,23 +893,35 @@ function unlockTranscend(load) { //debug
 
 eval('Game.GetHeavenlyMultiplier = ' + Game.GetHeavenlyMultiplier.toString().replace(`if (Game.Has('Heavenly key')) heavenlyMult+=0.25;`, `if (Game.Has('Heavenly key')) heavenlyMult+=0.25;\n\tif (Game.Has('more')) heavenlyMult += C.transcendPower * C.getEffects('more') / 100;`));
 
+eval('Game.Reset = ' + Game.Reset.toString().replaceAll(`me.pool!='prestige'`, `(me.pool!='prestige' && me.pool!='transcendent')`))
+
 let calcTUEffs = function() {
 	if (!Game.Objects['You'].minigame) return false;
 	let effs = Game.Objects['You'].minigame.effs;
 	//effs.cps = 1 + (C.transcendPower * C.getEffects('more') / 100);
 	effs.milk = 1 + (C.getEffects('Transcendent kittens') / 100);
 }
+
+Game.Objects['Cursor'].minigame = { effs: {} }; //idk nocap rizzibidi
 let calcDynamicTUEffs = function() {
 	if (!Game.Objects['You'].minigame) return false;
 	let effs = Game.Objects['You'].minigame.effs;
+	let boosts = [];
+    
+
 	if (Game.Has('Locked in')) {
-		let inactiveTime = Date.now() - (Game.Has('Multitasking') ? Game.lastClick : Game.lastActivity);
+		let inactiveTime = Date.now() - (Game.Has('Multitasking') ? (Game.lastClick || Date.now()) : Game.lastActivity);
 		if (inactiveTime > 1000 * 300) {
 			let afkTime = (inactiveTime - (1000 * 300)) / 1000 / 60;
-			effs.cps *= (C.getEffects('Locked in')/100) - (220 * Math.pow(1.1, -0.2 * afkTime)); //amazing equation, made on desmos
+			boosts.push((C.getEffects('Locked in')/100) - (220 * Math.pow(1.1, -0.2 * afkTime))); //amazing equation, made on desmos
 			Game.CalculateGains();
 		}
 	}
+	let totalBoost = 1;
+	for (let boost of boosts) {
+		totalBoost *= 1 + boost;
+	}
+	Game.Objects['Cursor'].minigame.effs.cps = totalBoost;
 }
 
 eval('Game.LoadSave=' + Game.LoadSave.toString().replace(`if (Game.Has('Fortune #102')) percent+=1;`, `if (Game.Has('Fortune #102')) percent+=1;\n\t\tpercent*=1+(C.getEffects('Eternal engagement')/100);\n\t\tpercent*=1+(Game.lumps*C.getEffects('Oversweetened rest')/100);`));
@@ -976,7 +1009,51 @@ Game.registerHook('click', () => {
 
 //eval('Game.Ascend='+Game.Ascend.toString().replace('Game.AscendZoom=0.2;','Game.AscendZoom=0.2;if (Game.ascensionMode==2) mone+=Game.HowMuchPrestige(Game.cookiesEarned)*C.moneMult;'));
 
+
 eval(`Game.UpdateWrinklers=` + Game.UpdateWrinklers.toString().replace(`chance*=Game.eff('wrinklerSpawn');`, `chance*=Game.eff('wrinklerSpawn'); if (Game.Has('Fiery storm')) { chance *= 1 + (C.getEffects('Fiery storm') / 100); /*chance = 1 - Math.pow(1 - chance, 1 + C.getEffects('Fiery storm') / 100);*/ }`));
+
+
+//puck
+for (let i = 0; i < 3; i++) Game.wrinklers.push({id:parseInt(i),close:0,sucked:0,phase:0,x:0,y:0,r:0,hurt:0,hp:Game.wrinklerHP,selected:0,type:0,clicks:0});
+Game.wrinklerLimit = 17;
+Game.getWrinklersMax=function() {
+    var n=10;
+    if (Game.Has('Elder spice')) n+=2;
+    n+=Math.round(Game.auraMult('Dragon Guts')*2);
+    if ( Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) n += 4 - Game.hasGod('scorn');
+    return Math.min(Game.wrinklerLimit,n);
+}
+C.puckMult = function(mult) { return 1 + ((mult || 1) * C.getEffects('Puck') * (Game.hasGod && Game.hasGod('scorn') ?  4 - Game.hasGod('scorn') : 0) * 0.01) };
+C.skruuiaT = 0;
+C.updateSkruuia = function() {
+    if (!Game.Objects['Temple'].minigameLoaded || !Game.Has('Puck')) return false;
+    let skruuia = Game.Objects['Temple'].minigame.gods['scorn'];
+    skruuia.activeDescFunc = function() {
+        let boost = Math.round(Number((C.getEffects('Puck') / 200) * (4 - Game.hasGod('scorn'))) * 1000) / 1000;
+        return `<b>Puck bonus:</b><br>
+            <div style="text-shadow: none;">
+            <span class="green">Max wrinklers: +${4 - Game.hasGod('scorn')}</span><br>
+            <span class="green">Shiny wrinkler chance: +${boost * 100}%</span><br>
+            <span class="green">Gain +${boost * 1000}% CpS for 6 seconds when popping a wrinkler</span><br>
+            <span class="green">Wrinklers digest +${boost * 100}% more cookies</span><br>
+            <span class="green">Wrinklers explode into 20 times more cookies</span><br>
+            <span class="red">Wrinklers spawn much slower</span><br>
+            <span class="red">Wrinklers no longer boost each other</span></div>`;
+    };
+    skruuia.descAfter = `Gain <b>extra bonuses</b> while slotted from your Puck <span style="color: ${C.transcendentPink};">transcendent upgrade</span>.`;
+    Game.removeHook('check', C.updateSkruuia);
+};
+Game.registerHook('check', C.updateSkruuia);
+new Game.buffType('cookie rain', function(time, pow) {
+    return {
+        name: 'Cookie rain',
+        desc: `Cookie production +${(pow*100)-100}% for ${Game.sayTime(time*Game.fps, -1)}!`,
+        time: time * Game.fps,
+        icon: [3, 5],
+        multCpS: pow,
+        aura: 2
+    };
+});
 
 C.moneNameThings = {
 	'capn': '',
@@ -1021,7 +1098,7 @@ C.unlockCloneWorld = function() {
 		Game.ascensionModes[nextAvailAscendMode] = {
 			name: 'Clone world',
 			dname: 'Clone world',
-			desc: `This is a strange copy of a world, where many of your Heavenly Upgrades will not work.<div class="line"></div>You will be able to earn <b>${C.moneName}</b> in this world.`,
+			desc: `This is a strange copy of a world only loosely bound to heaven, where many of your Heavenly Upgrades will not work.<div class="line"></div>You will be able to earn <b>${C.moneName}</b> in this world, instead of heavenly chips.`,
 			icon: [10, 21]
 		}
 	}
@@ -1059,18 +1136,18 @@ Game.CalculateGains = new Function(getFuncDef(Game.CalculateGains).replaceAll('G
 Game.Has = new Function('what', getFuncDef(Game.Has).replace('Game.ascensionMode==1', 'Game.ascensionMode>=1'));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`(Game.Has('Legacy') && Game.ascensionMode!=1)`, `(Game.Has('Legacy') && Game.ascensionMode<1)`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Your prestige level is currently <b>%1</b>.<br>(CpS +%2%)",[Beautify(Game.prestige),Beautify(Game.prestige)]);`,
-	`(Game.ascensionMode<2?'Your prestige level is currently <b>'+Beautify(Game.prestige)+'</b>.<br>(CpS +'+Beautify(Game.prestige)+'%)':'You currently have '+C.mone+' '+C.moneName+'.');`));
+	`(Game.ascensionMode<2?'Your prestige level is currently <b>'+Beautify(Game.prestige)+'</b>.<br>(CpS +'+Beautify(Game.prestige)+'%)':'You currently have <b>'+Beautify(C.mone)+' '+C.moneName+'</b>.');`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you no prestige.");`, `loc("Ascending now would grant you no "+(Game.ascensionMode<2?'prestige':C.moneName)+".");`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you<br><b>1 prestige level</b> (+1% CpS)<br>and <b>1 heavenly chip</b> to spend.")`,
-	`loc("Ascending now would grant you<br><b>1 "+(Game.ascensionMode<2?'prestige levels':C.moneName)+"</b>"+(Game.ascensionMode<2?' (+1% CpS)<br>and <b>1 heavenly chip</b> to spend':'')+".")`));
-Game.Logic = new Function(getFuncDef(Game.Logic).replace(`var chipsOwned=Game.HowMuchPrestige(Game.cookiesReset);`, `var chipsOwned=(Game.ascensionMode<2?Game.HowMuchPrestige(Game.cookiesReset):0);`));
+	`loc("Ascending now would grant you<br><b>1 "+(Game.ascensionMode<2?'prestige levels':C.moneName)+"</b>"+(Game.ascensionMode<2?' (+1% CpS)<br>and <b>1 heavenly chip</b> to spend':'.'))`));
+Game.Logic = new Function(getFuncDef(Game.Logic).replace(`var chipsOwned=Game.HowMuchPrestige(Game.cookiesReset);`, `var maxAmount = (10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1; var chipsOwned=(Game.ascensionMode<2?Game.HowMuchPrestige(Game.cookiesReset):0);`));
 Game.UpdateAscendIntro = new Function(getFuncDef(Game.UpdateAscendIntro).replace(`Game.EarnHeavenlyChips(Game.cookiesEarned);`,
-	`if (Game.ascensionMode<2)Game.EarnHeavenlyChips(Game.cookiesEarned);else C.mone+=Math.floor(Game.HowMuchPrestige(Game.cookiesEarned))*C.moneMult`));
+	`if (Game.ascensionMode<2)Game.EarnHeavenlyChips(Game.cookiesEarned);else C.mone+=Math.min((10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1, Math.floor(Game.HowMuchPrestige(Game.cookiesEarned))*C.moneMult)`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you<br><b>%1 prestige levels</b> (+%2% CpS)<br>and <b>%3 heavenly chips</b> to spend.",[Beautify(ascendNowToGet),Beautify(ascendNowToGet),Beautify(ascendNowToGet)]);`,
 	`"Ascending now would grant you<br><b>"+Beautify(ascendNowToGet)+" "+(Game.ascensionMode<2?'prestige levels':C.moneName)+"</b> "+(Game.ascendMode < 2 ? '(+%2% CpS)<br>and <b>%3 heavenly chips</b> to spend.' : '');`
 ));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace('var ascendNowToOwn=Math.floor(Game.HowMuchPrestige(Game.cookiesReset+Game.cookiesEarned));',
-	'var ascendNowToOwn=Math.floor(Game.HowMuchPrestige((Game.ascensionMode<2?Game.cookiesReset:0)+Game.cookiesEarned));'
+	'var ascendNowToOwn=Math.min(Game.ascensionMode < 2 ? Infinity : maxAmount, Math.floor(Game.HowMuchPrestige((Game.ascensionMode<2?Game.cookiesReset:0)+Game.cookiesEarned)));'
 ));
 //probably a better way to do this but im lazy
 Game.Logic = new Function(getFuncDef(Game.Logic).replace('var cookiesToNext=Game.HowManyCookiesReset(ascendNowToOwn+1)-(Game.cookiesEarned+Game.cookiesReset);',
@@ -1200,7 +1277,7 @@ C.cookieFallingAnimation = function(frame) {
 	} else if (frame == 120) {
 		Game.wrapper.style.removeProperty('left');
 		Game.wrapper.style.removeProperty('top');
-	} else if (frame == 150) {
+	} else if (frame == 150 && !Game.Upgrades['Flaming worm'].bought) {
 		C.transcend(1);
 		C.toggleBigCookie(0);
 		Game.milkH = 0;
@@ -1296,18 +1373,23 @@ C.getAdjacentWrinklers = function(id) {
 
 Game.ResetWrinklers = function() {
 	for (var i in Game.wrinklers) {
-		Game.wrinklers[i]={id:parseInt(i),close:parseInt(Game.wrinklers[i].type)==2?2:0,sucked:0,phase:parseInt(Game.wrinklers[i].type)==2?2:0,x:0,y:0,r:0,hurt:0,hp:Game.wrinklerHP,selected:0,type:parseInt(Game.wrinklers[i].type)==2?2:0,clicks:0};
+		Game.wrinklers[i]={id:parseInt(i),close:parseInt(Game.wrinklers[i].type)==2?2:0,sucked:0,phase:parseInt(Game.wrinklers[i].type)==2?2:0,x:0,y:0,r:0,hurt:0,hp:parseInt(Game.wrinklers[i].type)==2?Game.wrinklers[i].hp:Game.wrinklerHP,selected:0,type:parseInt(Game.wrinklers[i].type)==2?2:0,clicks:0};
 	}
 }
 
-eval(`Game.SpawnWrinkler = ` + Game.SpawnWrinkler.toString().replace(`//shiny wrinkler`, `//shiny wrinkler\n\t\t\tif (Game.Has('Flaming worm') && Math.random() < 0.5) { me.type = 2; C.getAdjacentWrinklers(me.id).forEach(x => x.hp = 0); }`));
+eval(`Game.SpawnWrinkler = ` + Game.SpawnWrinkler.toString().replace(`if (Math.random()<0.0001) me.type=1;//shiny wrinkler`, `if (Math.random()<0.0001*C.puckMult()) me.type=1;//shiny wrinkler\n\t\t\tif (Game.Has('Flaming worm') && Math.random() < 0.005) { me.type = 2; C.getAdjacentWrinklers(me.id).forEach(x => x.hp = 0); }`));
 eval(`Game.UpdateWrinklers = ` + Game.UpdateWrinklers.toString().replace(`else if (me.type==1)`, `else if (me.type==2) {\n\t\t\t\t\t\tif (me.hp == Game.wrinklerHP) me.hp = 100 * Math.max(C.transcendPower, 1) + 0.5;\n\t\t\t\t\t}\n\t\t\t\t\telse if (me.type==1)`)
-		.replace(`if (me.type==1) toSuck*=3;`, `if (me.type==1) toSuck*=3;\n\t\t\t\t\tif (me.type == 2) toSuck *= 1.5;`)
+		.replace(`if (me.type==1) toSuck*=3;`, `if (me.type==1) toSuck*=3;\n\t\t\t\t\tif (me.type == 2) toSuck *= 1.5;\n\t\t\t\t\tif (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) toSuck *= 20;`)
 		.replace(`if (Game.prefs.particles)`, `if (Game.prefs.particles && me.type != 2)`)
 		.replace(`Game.Win('Last Chance to See');`, `Game.Win('Last Chance to See')\n\t\t\t\t\tif (me.type == 2) { Game.Win('Magenta worm'); }`)
 		.replace(`!(me.hp<=0.5 && me.phase>0)`, `!(me.hp<=0.5 && me.phase>0) && me.type != 2`)
 		.replace(`me.hp-=0.75;`, `if (me.type == 2) { if (Math.random() < 0.2) Game.Popup('<span style="font-size:80%">Blocked!</span>', Game.mouseX, Game.mouseY); else me.hp--; } else { me.hp -= 0.75 }`)
 		.replace(`Math.random()<chance`, `Math.random()<chance && !(C.bigCookieGone || C.cookieFallingTimer > 0) && !C.getAdjacentWrinklers(me.id).find(x => x.type == 2)`)
+        .replace(`if (Game.season=='halloween')`, `if (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) Game.gainBuff('cookie rain', 6, C.puckMult(2));\n\t\t\t\t\t\tif (Game.season=='halloween')`)
+        .replace(`(((Game.cookiesPs/Game.fps)*Game.cpsSucked))`, `(Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) ? (((Game.cookiesPs/Game.fps)*Game.cpsSucked)) : (Game.cookiesPs/Game.fps)*0.05*C.puckMult()`)
+        .replace(`if (Game.Has('Wrinkler doormat')) chance=0.1;`, `if (Game.Has('Wrinkler doormat')) chance=0.1;\n\t\t\t\t\tif (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) chance = Math.pow(Math.max(0,(C.wrinklerT-(Game.fps*60))/((Game.fps*300)-(Game.fps*60))),5)`)
+        .replace(`var xBase=0;`, `C.wrinklerT++;\n\t\t\tvar xBase=0;`)
+        .replace(`Game.SpawnWrinkler(me);`, `Game.SpawnWrinkler(me);\n\t\t\t\t\t\tC.wrinklerT = 0;`)
 );
 eval(`Game.DrawWrinklers = ` + Game.DrawWrinklers.toString().replace(`'winterWrinkler.png';`, `'winterWrinkler.png';\n\t\t\t\t\tif (me.type == 2) pic = 'https://yeetdragon24.github.io/cookieclysm/img/superWrinkler2.png'`)
 		.replace(`if (Game.prefs.fancy)`, `if (me.type == 2) { sw *= 1.25; sh *= 1.25; }\n\t\t\t\t\tif (Game.prefs.fancy)`)
@@ -1360,14 +1442,14 @@ Game.shimmerTypes['clysm'] = {
 
 		list.push('ruin', 'ruin', 'lucky');
 		list.push('righteous cataclysm', 'building rust');
-		if (Math.random() < 0.15) list.push('ascend');
-		if (Math.random() < (C.clysmClicks == 1 ? 0.8 : 0.2)) list.push('big cookie toggle');
+		if (Math.random() < 0.3) list.push('ascend');
+		if (Math.random() < 0.7) list.push('big cookie toggle');
 
 		let choice = choose(list);
 		this.last = choice;
 		console.log(choice);
 
-		let popup, buff;
+		let popup = '', buff;
 
 		if (choice == 'ruin') {
 			let moni = Math.min(Game.cookies*0.15,Game.cookiesPs*60*30)+13;//lose 15% of cookies owned (-13), or 30 minutes of cookie production - whichever is lowest
@@ -1378,9 +1460,9 @@ Game.shimmerTypes['clysm'] = {
 			let moni = Math.min(Game.cookies*0.05,Game.cookiesPs*60*5)+13;//add 5% to cookies owned (+13), or 5 minutes of cookie production - whichever is lowest
 			Game.Earn(moni);
 			popup = 'Lucky!<br><small>+' + Beautify(moni) + ' cookies!</small>';
-		} else if (choice == 'righteous catalcysm') {
+		} else if (choice == 'righteous cataclysm') {
 			if (Game.Objects['Portal'].amount > 0) {
-				buff = Game.gainBuff('building buff', 30, Game.Objects['Portal'].amount / 100 + 1, Game.Objects['Portal']);
+				buff = Game.gainBuff('building buff', 30, Game.Objects['Portal'].amount / 100 + 1, Game.Objects['Portal'].id);
 			} else {
 				let building = choose(Object.values(Game.Objects));
 				buff = Game.gainBuff('building debuff', 30, building.amount / 100 + 1, building.id);
@@ -1390,26 +1472,27 @@ Game.shimmerTypes['clysm'] = {
 			buff = Game.gainBuff('building debuff', 30, building.amount / 100 + 1, building.id);
 		} else if (choice == 'ascend') {
 			popup = 'Cataclysm!<br><small>The world breaks apart.</small>';
+            Game.SparkleAt(me.x + 48, me.y + 48);
+		    PlaySound('snd/shimmerClick.mp3');
+            me.die();
 			if (Game.bigCookieGone) {
 				PlaySound('snd/charging.mp3');
-				setTimeout(Game.Ascend, Game.AscendBreakPoint / 30 * 1000, 1);
+				setTimeout(Game.Ascend, (Game.AscendBreakPoint / 30) * 1000, 1);
 			} else Game.Ascend(1);
 		} else if (choice == 'big cookie toggle') {
 			if (C.bigCookieGone) {
-				C.toggleBigCookie();
+				C.toggleBigCookie(true);    
 				popup = 'Cataclysm!<br><small>The big cookie formulates again.</small>';
 			} else {
 				C.doCookieFalling = true;
 				popup = 'Cataclysm!<br><small>The big cookie crumbles beneath your fingers.</small>';
 			}
 		}
-		console.log(buff);
-
 		if (popup == '' && buff && buff.name && buff.desc) popup = buff.dname + '<div style="font-size:65%;">' + buff.desc + '</div>';
 		if (popup != '') Game.Popup(popup, me.x + me.l.offsetWidth / 2, me.y);
 		Game.SparkleAt(me.x + 48, me.y + 48);
 		PlaySound('snd/shimmerClick.mp3');
-		me.die();
+		if (me.l) me.die();
 	},
 	missFunc: function(me) {
 		console.log('bro missed the clysm cookie');
@@ -1722,6 +1805,7 @@ Game.crateTooltip = function(me, context) {
 				(me.priceLumps > 0 ? (' lump') : '') +
 				(me.pool == 'prestige' ? (Game.heavenlyChips >= cost ? ' heavenly' : ' heavenly disabled') : '') +
 				(me.pool == 'transcendent' ? (C.mone >= cost ? ' transcendent' : ' transcendent disabled') : '') +
+				(me.pool == 'chocolate' ? (canBuy ? ' chocolate' : ' chocolate disabled') : '') +
 				(context == 'store' ? (canBuy ? '' : ' disabled') : '') +
 				'">' + Beautify(Math.round(cost)) + '</span>' + ((me.pool != 'prestige' && me.priceLumps == 0) ? Game.costDetails(cost) : '') + '</div>';
 
