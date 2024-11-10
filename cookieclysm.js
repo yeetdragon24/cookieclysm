@@ -87,9 +87,9 @@ Game.registerHook('logic', function() {
 
 	if (Game.T % 3 == 0) calcDynamicTUEffs();
 
-	if (C.toLoad) {
-		C.toLoad = false;
-		C.load(Game.modSaveData['Cookieclysm']);
+	if (Game.mods['Cookieclysm'].toLoad && Game.mods['Cookieclysm'].loaded) {
+		Game.mods['Cookieclysm'].toLoad = false;
+		C.load(Game.mods['Cookieclysm'].loadStr);
 	}
 	if (Game.Has('Clone sacrifice')) C.updateYoupocalypse();
 	if (Game.AscendTimer > 0 && C.bigCookieGone) Game.AscendTimer = Game.AscendDuration;
@@ -97,7 +97,7 @@ Game.registerHook('logic', function() {
 
 C.save = function() {
 	let str = '';
-
+    
 	//main
 	str += C.version + '/';
 	let upgrades = [], achievements = [];
@@ -144,7 +144,7 @@ C.save = function() {
 }
 C.load = function(str) {
 	let spl = str.split('/');
-
+    console.log(`Loading cookieclysm save`);
 	let version = spl[0];
 
 	let upgrades = spl[1].split('');
@@ -162,6 +162,7 @@ C.load = function(str) {
 		converter.amount, converter.bought, converter.totalCookies,
 		converter.level, converter.muted, converter.highest, converter.free
 	] = spl[3].split(',').map(x => parseFloat(x) || 0);
+    Game.Objects['Converter'].refresh();
 
 	let transcendData = spl[4].split(',');
 	C.mone = parseFloat(transcendData[0]) || 0;
@@ -357,9 +358,9 @@ C.upAndAchiev.push(Game.TieredAchievement('Socially accepted delicacy', '', 'Con
 C.upAndAchiev.push(Game.TieredAchievement('Atomic chair', '', 'Converter', 13));
 C.upAndAchiev.push(Game.TieredAchievement('What\'s the cookie with you', '', 'Converter', 14));
 C.upAndAchiev.push(Game.TieredAchievement('Always within grasp', '', 'Converter', 15));
-C.upAndAchiev.push(Game.ProductionAchievement('Small is never enough', 'Converter', 1));
-C.upAndAchiev.push(Game.ProductionAchievement('Limitedly large', 'Converter', 2));
-C.upAndAchiev.push(Game.ProductionAchievement('Hexadecimal', 'Converter', 3));
+C.upAndAchiev.push(Game.ProductionAchievement('Small is never enough', 'Converter', 1)); Game.last.buildingTie = Game.Objects['Converter'];
+C.upAndAchiev.push(Game.ProductionAchievement('Limitedly large', 'Converter', 2)); Game.last.buildingTie = Game.Objects['Converter'];
+C.upAndAchiev.push(Game.ProductionAchievement('Hexadecimal', 'Converter', 3)); Game.last.buildingTie = Game.Objects['Converter'];
 C.upAndAchiev.push(new Game.Achievement('Chubby hadrons', '', [5, 26])); converter.levelAchiev10 = Game.last; Game.last.ddesc = '';
 let converterEnd = C.upAndAchiev.length;
 
@@ -1127,7 +1128,7 @@ Game.attachTooltip(l('heralds'), function() {
 
 	return '<div style="padding:8px;width:300px;text-align:center;" class="prompt" id="tooltipHeralds"><h3>' + loc("Heralds") + '</h3><div class="block">' + str + '</div></div>';
 }, 'this');
-Game.LoadSave = new Function('data', 'ignoreVersionIssues', getFuncDef(Game.LoadSave).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
+eval('Game.LoadSave = ' + Game.LoadSave.toString().replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
 Game.Reset = new Function('hard', getFuncDef(Game.Reset).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
 Game.loadLumps = new Function('time', getFuncDef(Game.loadLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
 Game.canLumps = new Function(getFuncDef(Game.canLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
@@ -1377,13 +1378,13 @@ Game.ResetWrinklers = function() {
 	}
 }
 
-eval(`Game.SpawnWrinkler = ` + Game.SpawnWrinkler.toString().replace(`if (Math.random()<0.0001) me.type=1;//shiny wrinkler`, `if (Math.random()<0.0001*C.puckMult()) me.type=1;//shiny wrinkler\n\t\t\tif (Game.Has('Flaming worm') && Math.random() < 0.005) { me.type = 2; C.getAdjacentWrinklers(me.id).forEach(x => x.hp = 0); }`));
-eval(`Game.UpdateWrinklers = ` + Game.UpdateWrinklers.toString().replace(`else if (me.type==1)`, `else if (me.type==2) {\n\t\t\t\t\t\tif (me.hp == Game.wrinklerHP) me.hp = 100 * Math.max(C.transcendPower, 1) + 0.5;\n\t\t\t\t\t}\n\t\t\t\t\telse if (me.type==1)`)
-		.replace(`if (me.type==1) toSuck*=3;`, `if (me.type==1) toSuck*=3;\n\t\t\t\t\tif (me.type == 2) toSuck *= 1.5;\n\t\t\t\t\tif (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) toSuck *= 20;`)
-		.replace(`if (Game.prefs.particles)`, `if (Game.prefs.particles && me.type != 2)`)
-		.replace(`Game.Win('Last Chance to See');`, `Game.Win('Last Chance to See')\n\t\t\t\t\tif (me.type == 2) { Game.Win('Magenta worm'); }`)
-		.replace(`!(me.hp<=0.5 && me.phase>0)`, `!(me.hp<=0.5 && me.phase>0) && me.type != 2`)
-		.replace(`me.hp-=0.75;`, `if (me.type == 2) { if (Math.random() < 0.2) Game.Popup('<span style="font-size:80%">Blocked!</span>', Game.mouseX, Game.mouseY); else me.hp--; } else { me.hp -= 0.75 }`)
+eval(`Game.SpawnWrinkler = ` + Game.SpawnWrinkler.toString().replace(`if (Math.random()<0.0001) me.type=1;//shiny wrinkler`, `if (Math.random()<0.0001*C.puckMult()) me.type=1;//shiny wrinkler\n\t\t\tif (Game.Has('Flaming worm') && Math.random() < 0.005) { me.super = true; C.getAdjacentWrinklers(me.id).forEach(x => x.hp = 0); }`));
+eval(`Game.UpdateWrinklers = ` + Game.UpdateWrinklers.toString().replace(`else if (me.type==1)`, `else if (me.super) {\n\t\t\t\t\t\tif (me.hp == Game.wrinklerHP) me.hp = 100 * Math.max(C.transcendPower, 1) + 0.5;\n\t\t\t\t\t}\n\t\t\t\t\telse if (me.type==1)`)
+		.replace(`if (me.type==1) toSuck*=3;`, `if (me.type==1) toSuck*=3;\n\t\t\t\t\tif (me.super) toSuck *= 1.5;\n\t\t\t\t\tif (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) toSuck *= 20;`)
+		.replace(`if (Game.prefs.particles)`, `if (Game.prefs.particles && !me.super)`)
+		.replace(`Game.Win('Last Chance to See');`, `Game.Win('Last Chance to See')\n\t\t\t\t\tif (me.super) { Game.Win('Magenta worm'); }`)
+		.replace(`!(me.hp<=0.5 && me.phase>0)`, `!(me.hp<=0.5 && me.phase>0) && !me.super`)
+		.replace(`me.hp-=0.75;`, `if (me.super) { if (Math.random() < 0.2) Game.Popup('<span style="font-size:80%">Blocked!</span>', Game.mouseX, Game.mouseY); else me.hp--; } else { me.hp -= 0.75 }`)
 		.replace(`Math.random()<chance`, `Math.random()<chance && !(C.bigCookieGone || C.cookieFallingTimer > 0) && !C.getAdjacentWrinklers(me.id).find(x => x.type == 2)`)
         .replace(`if (Game.season=='halloween')`, `if (Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) Game.gainBuff('cookie rain', 6, C.puckMult(2));\n\t\t\t\t\t\tif (Game.season=='halloween')`)
         .replace(`(((Game.cookiesPs/Game.fps)*Game.cpsSucked))`, `(Game.Has('Puck') && Game.hasGod && Game.hasGod('scorn')) ? (((Game.cookiesPs/Game.fps)*Game.cpsSucked)) : (Game.cookiesPs/Game.fps)*0.05*C.puckMult()`)
@@ -1391,12 +1392,12 @@ eval(`Game.UpdateWrinklers = ` + Game.UpdateWrinklers.toString().replace(`else i
         .replace(`var xBase=0;`, `C.wrinklerT++;\n\t\t\tvar xBase=0;`)
         .replace(`Game.SpawnWrinkler(me);`, `Game.SpawnWrinkler(me);\n\t\t\t\t\t\tC.wrinklerT = 0;`)
 );
-eval(`Game.DrawWrinklers = ` + Game.DrawWrinklers.toString().replace(`'winterWrinkler.png';`, `'winterWrinkler.png';\n\t\t\t\t\tif (me.type == 2) pic = 'https://yeetdragon24.github.io/cookieclysm/img/superWrinkler2.png'`)
-		.replace(`if (Game.prefs.fancy)`, `if (me.type == 2) { sw *= 1.25; sh *= 1.25; }\n\t\t\t\t\tif (Game.prefs.fancy)`)
-		.replace(`ctx.fillRect(x-width/2-8-10,y-23,width+16+20,38);`, `ctx.fillRect(x-width/2-8-10,y-23,width+16+20,selected.type == 2 ? 38 * 2 : 38);`)
-		.replace(`ctx.strokeRect(x-width/2-8-10+1.5,y-23+1.5,width+16+20-3,38-3);`, `ctx.strokeRect(x-width/2-8-10+1.5,y-23+1.5,width+16+20-3,(selected.type == 2 ? 38 * 2 : 38)-3);`)
-		.replace(`selected.sucked),x+10,y+8);`, `selected.sucked),x+10,y+8);\n\t\t\t\tif (selected.type == 2) {\n\t\t\t\t\tctx.fillText('Health:', x+14, y+24);\n\t\t\t\t\tctx.fillText(Beautify(selected.hp - 0.5, 1), x+10, y+40);\n\t\t\t\t}`)
-		.replace(`ctx.drawImage(Pic('icons.png'),27*48,26*48,48,48,x-width/2-16-s/2,y-4-s/2,s,s);`, `ctx.drawImage(Pic('icons.png'),27*48,26*48,48,48,x-width/2-16-s/2,y-4-s/(selected.type == 2 ? 5 : 2),s,s);`)
+eval(`Game.DrawWrinklers = ` + Game.DrawWrinklers.toString().replace(`'winterWrinkler.png';`, `'winterWrinkler.png';\n\t\t\t\t\tif (me.super) pic = 'https://yeetdragon24.github.io/cookieclysm/img/superWrinkler2.png'`)
+		.replace(`if (Game.prefs.fancy)`, `if (me.super) { sw *= 1.25; sh *= 1.25; }\n\t\t\t\t\tif (Game.prefs.fancy)`)
+		.replace(`ctx.fillRect(x-width/2-8-10,y-23,width+16+20,38);`, `ctx.fillRect(x-width/2-8-10,y-23,width+16+20,selected.super ? 38 * 2 : 38);`)
+		.replace(`ctx.strokeRect(x-width/2-8-10+1.5,y-23+1.5,width+16+20-3,38-3);`, `ctx.strokeRect(x-width/2-8-10+1.5,y-23+1.5,width+16+20-3,(selected.super ? 38 * 2 : 38)-3);`)
+		.replace(`selected.sucked),x+10,y+8);`, `selected.sucked),x+10,y+8);\n\t\t\t\tif (selected.super) {\n\t\t\t\t\tctx.fillText('Health:', x+14, y+24);\n\t\t\t\t\tctx.fillText(Beautify(selected.hp - 0.5, 1), x+10, y+40);\n\t\t\t\t}`)
+		.replace(`ctx.drawImage(Pic('icons.png'),27*48,26*48,48,48,x-width/2-16-s/2,y-4-s/2,s,s);`, `ctx.drawImage(Pic('icons.png'),27*48,26*48,48,48,x-width/2-16-s/2,y-4-s/(selected.super ? 5 : 2),s,s);`)
 );
 
 C.clysmClicks = 0;
