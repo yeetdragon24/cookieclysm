@@ -10,6 +10,7 @@ Game.registerMod('Cookieclysm', {
 	},
 	load: function(str) {
 		Game.mods['Cookieclysm'].loadStr = str;
+        	Game.mods['Cookieclysm'].toLoad = true;
 	},
 	save: function() {
 		if (typeof C !== 'undefined' && C.save) return C.save();
@@ -22,7 +23,7 @@ Game.registerMod('Cookieclysm', {
 		LoadScript(path + 'transcensions.js', function() {
         LoadScript(path + 'youMinigame.js', function() {
         LoadScript(path + 'sniperGold.js', function() {
-		LoadScript(path + 'wizardPortal.js', function() { C.toLoad = true; Mod.load(Game.modSaveData['Cookieclysm']); })
+		LoadScript(path + 'wizardPortal.js', function() { Game.mods['Cookieclysm'].loaded = true; Mod.load(Game.modSaveData['Cookieclysm']); })
 		})})})});
 	}, 	
 	switchSave: function() {
