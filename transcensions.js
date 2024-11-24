@@ -76,6 +76,12 @@ C.buildTranscendTree = function() {
 		let parentsOwned = 0;
 		for (let ii of i.parents) if (ii.bought) parentsOwned++;
 		if (parentsOwned == i.parents.length) i.canBePurchased = 1;
+
+        if (GU[i.id][0] < C.transcendBounds.left) C.transcendBounds.left = GU[i.id][0];
+        if (GU[i.id][0] > C.transcendBounds.right) C.transcendBounds.right = GU[i.id][0];
+        if (GU[i.id][1] < C.transcendBounds.top) C.transcendBounds.top = GU[i.id][1];
+        if (GU[i.id][1] > C.transcendBounds.bottom) C.transcendBounds.bottom = GU[i.id][1];
+
 		if (i.canBePurchased) str += Game.crate(i, 'ascend', 'Game.Upgrades[\'' + i.name + '\'].transcendBuy();', `heavenlyUpgrade${i.id}`, `position:absolute; top: ${GU[i.id][1]}px; left: ${GU[i.id][0]}px; z-index: 4534225;opacity: ${(shown ? 0.5 : 0.05)};`);
 		//orteil doesnt like it but it works because game.crate doesnt yet support custom classes and lack of tooltips
 		else str += `<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade${i.id}" style="position:absolute; left: ${GU[i.id][0]}px; top: ${GU[i.id][1]}px;opacity:0.1; background: url('https://orteil.dashnet.org/cookieclicker/img/icons.png'); ${writeIcon(i.icon)}"></div>`;
@@ -109,10 +115,10 @@ C.updateTranscend = function() {
 	if (Game.keys[39]) C.transcendOffXT -= 16 * (1 / C.transcendZoomT);
 	if (Game.keys[40]) C.transcendOffYT -= 16 * (1 / C.transcendZoomT);
 
-	//if (transcendOffXT>-C.transcendBounds.left) transcendOffXT=-C.transcendBounds.left;
-	//if (transcendOffXT<-C.transcendBounds.right) transcendOffXT=-C.transcendBounds.right;
-	//if (transcendOffXT>-C.transcendBounds.top) transcendOffYT=-C.transcendBounds.top;
-	//if (transcendOffYT<-C.transcendBounds.bottom) transcendOffYT=-C.transcendBounds.bottom;
+	if (C.transcendOffXT > -C.transcendBounds.left) C.transcendOffXT = -C.transcendBounds.left;
+    if (C.transcendOffXT < -C.transcendBounds.right) C.transcendOffXT = -C.transcendBounds.right;
+	if (C.transcendOffYT > -C.transcendBounds.top) C.transcendOffYT = -C.transcendBounds.top;
+	if (C.transcendOffYT < -C.transcendBounds.bottom) C.transcendOffYT = -C.transcendBounds.bottom;
 	C.transcendOffX += (C.transcendOffXT - C.transcendOffX) * 0.5;
 	C.transcendOffY += (C.transcendOffYT - C.transcendOffY) * 0.5;
 	C.transcendZoom += (C.transcendZoomT - C.transcendZoom) * 0.25;
