@@ -1,5 +1,6 @@
 Game.registerMod('Cookieclysm', {
 	init: function() {
+        window.Cookieclysm = this;
 		if (localStorage.getItem('cclysmGame') === null) {
 			this.startingPrompt();
 		}
@@ -9,8 +10,7 @@ Game.registerMod('Cookieclysm', {
 		}
 	},
 	load: function(str) {
-		Game.mods['Cookieclysm'].loadStr = str;
-        	Game.mods['Cookieclysm'].toLoad = true;
+        if (!Cookieclysm.loadStr) Cookieclysm.loadStr = str;
 	},
 	save: function() {
 		if (typeof C !== 'undefined' && C.save) return C.save();
@@ -23,7 +23,7 @@ Game.registerMod('Cookieclysm', {
 		LoadScript(path + 'transcensions.js', function() {
         LoadScript(path + 'youMinigame.js', function() {
         LoadScript(path + 'sniperGold.js', function() {
-		LoadScript(path + 'wizardPortal.js', function() { Game.mods['Cookieclysm'].loaded = true; Mod.load(Game.modSaveData['Cookieclysm']); })
+		LoadScript(path + 'wizardPortal.js', function() { Game.mods['Cookieclysm'].loaded = true; Mod.toLoad = true; })
 		})})})});
 	}, 	
 	switchSave: function() {
@@ -34,6 +34,11 @@ Game.registerMod('Cookieclysm', {
 	wipeCookieclysm: function(){
 		localStorage.removeItem('cclysmGame');
 	},
+    unloadCookieclysm: function() {
+        delete Game.mods['Cookieclysm'];
+        delete window.Cookieclysm;
+        delete window.C;
+    },
 	startingPrompt: function() {
 		Game.Prompt(`<id CheckCclysm>
 			<h3>Cookieclysm</h3>
@@ -43,7 +48,9 @@ Game.registerMod('Cookieclysm', {
 				Cookieclysm creates save data using the existing save data, so you'll start off where you left off in vanilla Cookie Clicker.
 				<div class="line"></div>
 				Clicking "Got it" will save the game, create the new save data, and start using the new save data.
+                <div class="line"></div>
+                Join our <a href="https://discord.gg/bR4qKSJuCS">Discord server</a>!
 			</div>`,
-		[['Got it','Game.mods[\'Cookieclysm\'].switchSave();Game.mods[\'Cookieclysm\'].loadScripts();Game.ClosePrompt();'], ['No','delete Game.mods[\'Cookieclysm\']; console.log(\'Mod "Cookieclysm" removed.\'); Game.ClosePrompt();']]);
+		[['Got it','Cookieclysm.switchSave(); Cookieclysm.loadScripts();Game.ClosePrompt();'], ['No','Cookieclysm.unloadCookieclysm(); console.log(\'Mod "Cookieclysm" removed.\'); Game.ClosePrompt();']]);
 	}
 });
