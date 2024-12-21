@@ -20,7 +20,7 @@ M.launch = function(){
 			'sniper':{
                 name:'Stream Sniper',
                 icon:[1,0],
-                buff:'<span class="green">Increases chance of getting positive effects from golden and wrath cookies by <b>'+3*Game.Objects['You'].level+'</b>%</span>.',
+                buff:'<span class="green">Increases chance of getting positive effects from golden and wrath cookies by <b>%%</b>%</span>.',
                 debuff:'<span class="red">Decrease effectiveness of Temple Pantheon</span>',
                 quote:'Cookie good. Me no likey <b><u>those</u></b> spirits'
 			},
@@ -33,7 +33,7 @@ M.launch = function(){
 			}
 		}
 		M.devsById=[];var n=0;
-		for (var i in M.developers){M.developers[i].id=n+11;M.developers[i].slot=-1;M.devsById[n+11]=M.developers[i];n++;}
+		for (var i in M.developers){M.developers[i].id=n+11;M.developers[i].slot=-1;M.devsById[n+11]=M.developers[i];n++;M.developers[i].baseDesc=[M.developers[i].buff,M.developers[i].debuff]}
 		//console.log(M.devsById);
 		M.slot=[];
 		M.slot[0]=-1;
@@ -104,9 +104,16 @@ M.launch = function(){
 			{
 				M.devsById[M.slot[slot]].slot=god.slot;//swap
 				M.slot[god.slot]=M.slot[slot];
+                if (god.slot == -1) M.onSlot(god.id);
 			}
-			else if (god.slot!=-1) M.slot[god.slot]=-1;
-			if (slot!=-1) M.slot[slot]=god.id;
+			else if (god.slot!=-1) {
+                M.slot[god.slot]=-1;
+                M.onUnslot(god.id);
+            }
+			if (slot!=-1) {
+                M.slot[slot]=god.id;
+                if (god.slot == -1) M.onSlot(god.id);
+            }
 			god.slot=slot;
 			Game.recalculateGains=true;
 			
@@ -199,7 +206,24 @@ M.launch = function(){
 				PlaySound('snd/clickb'+Math.floor(Math.random()*7+1)+'.mp3',0.75);
 			}
 		}
-		
+
+        M.onLevel = function() {
+            M.developers['sniper'].buff = M.devs['sniper'].baseDesc[0].replace('%%', 3 * Game.Objects['You'].level);
+        }
+
+        M.onSlot = function(id) {
+            if (id == 1) {
+                Game.gainBuff('spirit sniped');
+                Game.hasGod = function() { };
+            }
+        }
+        M.onUnslot = function(id) {
+            if (id == 1) {
+                Game.killBuff('Spirits sniped');
+                Game.hasGod = hasGodL;
+            }
+        }
+        		
 		var str = '';
 		str+='<style>'+
 		'#templeBG{background:url(img/shadedBorders.png),url(img/BGpantheon.jpg);background-size:100% 100%,auto;position:absolute;left:0px;right:0px;top:0px;bottom:16px;}'+
@@ -364,13 +388,11 @@ M.launch = function(){
 	{
 		//console.log(M.dragging);
 		//run each frame
-		var t=1000*60*60;
-		if (M.swaps==0) t=1000*60*60*16;
-		else if (M.swaps==1) t=1000*60*60*4;
-		var t2=M.swapT+t-Date.now();
-		if (t2<=0 && M.swaps<3) {M.swaps++;M.swapT=Date.now();}
-		//M.lastSwapT++;
 		
+
+		
+        //RIP inefficient snipergold thing: 11/11/23 - 12/14/24
+        /*
 		if (Game.hasDev('sniper')) {
 			for (var i in Game.shimmers) {
 				shimmersL=Game.shimmers[i];
@@ -385,6 +407,7 @@ M.launch = function(){
 		} else {
 			Game.killBuff('Spirits sniped');
 		}
+        */
 	}
 	M.draw=function()
 	{
@@ -408,7 +431,6 @@ M.launch = function(){
 		var t2=M.swapT+t-Date.now();
 		//M.swapsL.innerHTML='Worship swaps : <span class="titleFont" style="color:'+(M.swaps>0?'#fff':'#c00')+';">'+M.swaps+'/'+(3)+'</span>'+((M.swaps<3)?' (next in '+Game.sayTime((t2/1000+1)*Game.fps,-1)+')':'');
 	}
-
 	
 
 	M.init(l('rowSpecial' + M.parent.id));
