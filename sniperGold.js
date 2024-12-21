@@ -337,15 +337,8 @@ missFunc:function(me)
 	
 	if (me.spawnLead) Game.missedGoldenClicks++;
 },
-spawnsOnTimer:true,
-spawnConditions:function()
-{
-	if (!Game.Has('Golden switch [off]')) return true; else return false;
-},
+spawnsOnTimer:false,
 spawned:0,
-time:0,
-minTime:0,
-maxTime:0,
 getTimeMod:function(me,m)
 {
 	if (Game.Has('Lucky day')) m/=2;
