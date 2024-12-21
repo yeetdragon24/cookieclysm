@@ -1121,6 +1121,7 @@ C.updateTemple = function() {
         <span class="red">???</span><br>
         ???<br>`;
     }
+    selebrak.descAfter = `Gain <b>extra bonuses while slotted from <span style="color:${C.transcendentPink};">Finally, some rest</span>.`;
 
     hasGodL = Game.hasGod;
 
