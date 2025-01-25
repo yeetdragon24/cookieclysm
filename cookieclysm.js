@@ -1023,12 +1023,11 @@ C.calcDynamicTUEffs = function() {
 }
 
 eval('Game.LoadSave=' + Game.LoadSave.toString().replace(`if (Game.Has('Fortune #102')) percent+=1;`, `if (Game.Has('Fortune #102')) percent+=1;\n\t\tpercent*=C.calcOfflineMults();`));
-Game.calcOfflineMults = function() {
+C.calcOfflineMults = function() {
     let mult = 1;
     if (Game.Has('Eternal engagement')) mult *= C.getEffects('Eternal engagement')/100;
     if (Game.Has('Oversweetened rest')) mult *= 1 + (Math.min(Game.lumps, 555) * C.getEffects('Oversweetened rest') / 100);
     if (Game.hasDev && Game.hasDev('capn')) mult *= 1 + (Game.Objects['You'].level * 3);
-
 }
 
 eval(`Game.shimmerTypes['golden'].popFunc=` + Game.shimmerTypes['golden'].popFunc.toString().replace(`if (Game.forceUnslotGod('asceticism')) Game.useSwap(1000000);`, `if (Game.Objects['Temple'].minigame.gods['asceticism'].slot>-1) {if (Math.random() < C.getEffects('Relaxed asceticism') &&  Game.forceUnslotGod('asceticism')) { Game.useSwap(1000000); } else { Game.Notify('Not so dedicated','Your <b>Relaxed Asceticism</b> prevented Holobore from being yeeted from your pantheon.',[21,18]); } }`));
@@ -1395,6 +1394,7 @@ Game.registerHook('draw', function() {
 C.youWrath = 0; //i honestly have no idea why i am using youWrath beyond 2
 
 C.cookieclysm = false;
+C.cloneSacInterval = 30;
 
 function inRect(x, y, rect) {
 	//find out if the point x,y is in the rotated rectangle rect{w,h,r,o} (width,height,rotation in radians,y-origin) (needs to be normalized)
@@ -1416,13 +1416,13 @@ Game.getWrinklersMax = function() {
 C.updateYoupocalypse = function() {
 	if (C.youWrath == 0) {
 		if (Game.Has('Clone sacrifice')) {
-			if (Game.T % (Game.fps * 30) == 0) {
+			if (Game.T % (Game.fps * C.cloneSacInterval) == 0) {
 				if (C.sacrificeClone()) C.youWrath = 1;
 				return;
 			}
 		}
 	} else if (C.youWrath >= 1 && C.youWrath < 2) {
-		if (Game.T % (Game.fps * 30) == 0) {
+		if (Game.T % (Game.fps * C.cloneSacInterval) == 0) {
 			if (C.sacrificeClone()) C.youWrath += 0.02;
 			l('productName' + Game.Objects['You'].id).style.color = `rgba(255, ${255-((C.youWrath-1)*255)}, ${255-((C.youWrath-1)*255)}, 1)`;
 		}
