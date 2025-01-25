@@ -107,6 +107,7 @@ Game.registerHook('logic', function() {
 	if (Cookieclysm.toLoad && Cookieclysm.loaded && Cookieclysm.loadStr) {
 		Cookieclysm.toLoad = false;
 		C.load(Cookieclysm.loadStr);
+        Cookieclysm.loadStr = '';
 	}
 	if (Game.Has('Clone sacrifice')) C.updateYoupocalypse();
 	if (Game.AscendTimer > 0 && C.bigCookieGone) Game.AscendTimer = Game.AscendDuration;
@@ -743,7 +744,13 @@ C.unlockSpaceUpgrades = function() {
 }
 
 C.getMaxCursors = function() {
-    return 50 * C.cursorUpgrades.filter(x => x.bought).length;
+    return 50 * (C.cursorUpgrades.filter(x => x.bought).length + 1);
+}
+C.unlockCursorUpgrades = function() {
+    for (let i in C.cursorUpgrades) {
+        if (C.cursorUpgrades[i].unlocked || Game.Objects['Cursor'].amount >= 50 * (parseInt(i) + 1)) Game.Unlock(C.cursorUpgrades[i].name);
+        else return false;
+    }
 }
 
 //no longer used
@@ -787,7 +794,8 @@ for (let i in Game.Objects) {
     let building = Game.Objects[i];
     if (i == 'Cursor') {
         eval('building.buy = ' + building.buy.toString().replace(`this.bought++;`,
-            `this.bought++;\n\t\t\t\tif (this.amount > C.getMaxCursors()) { PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75); Game.Popup('Next ring not unlocked!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; this.refresh(); return false; }`));
+            `this.bought++;\n\t\t\t\tif (this.amount > C.getMaxCursors()) { PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75); Game.Popup('Next ring not unlocked!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; this.refresh(); return false; }`)
+            .replace('success=1;', 'success=1; C.unlockCursorUpgrades();'));
     }
     else {
         eval('building.buy = ' + building.buy.toString().replace(`this.bought++;`,
@@ -1022,7 +1030,8 @@ C.calcDynamicTUEffs = function() {
 	Game.Objects['Cursor'].minigame.effs.cps = totalBoost;
 }
 
-eval('Game.LoadSave=' + Game.LoadSave.toString().replace(`if (Game.Has('Fortune #102')) percent+=1;`, `if (Game.Has('Fortune #102')) percent+=1;\n\t\tpercent*=C.calcOfflineMults();`));
+eval('Game.LoadSave=' + Game.LoadSave.toString().replace(`if (Game.Has('Fortune #102')) percent+=1;`, `if (Game.Has('Fortune #102')) percent+=1;\n\t\tpercent*=C.calcOfflineMults();`)
+    .replace('Game.loadModData();', 'Game.loadModData(); Cookieclysm.toLoad = true;'));
 C.calcOfflineMults = function() {
     let mult = 1;
     if (Game.Has('Eternal engagement')) mult *= C.getEffects('Eternal engagement')/100;
