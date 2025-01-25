@@ -19,12 +19,14 @@ Game.registerMod('Cookieclysm', {
 	loadScripts: function() {
 		const Mod = this;
 		const path = 'https://raw.githack.com/yeetdragon24/cookieclysm/testing/';
-		LoadScript(path + 'cookieclysm.js', function() {
+		LoadScript('https://raw.githack.com/CursedSliver/Crumbs-engine/main/Crumbs.js', function() {
+        l('CrumbsEngineVersion').innerHTML = '';
+        LoadScript(path + 'cookieclysm.js', function() {
 		LoadScript(path + 'transcensions.js', function() {
         LoadScript(path + 'youMinigame.js', function() {
         LoadScript(path + 'sniperGold.js', function() {
 		LoadScript(path + 'wizardPortal.js', function() { Game.mods['Cookieclysm'].loaded = true; Mod.toLoad = true; })
-		})})})});
+		})})})})});
 	}, 	
 	switchSave: function() {
 		Game.WriteSave();
