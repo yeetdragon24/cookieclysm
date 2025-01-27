@@ -429,16 +429,16 @@ order = 1239.120; //idk but hell hus
 order = 7003;
 let spaceDesc = (amount) => amount < 5 ** amount >= 2 ? `<b>${['Doubles', 'Triples', 'Quadruples'][amount-2]}</b> your max space.` : `Multiplies your max space by <b>${amount}</b>.`; 
 C.spaceUpgrades = [];
-C.upAndAchiev.push(C.spaceUpgrade('Shed', 10, '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [7, 0, icons])); 
-C.upAndAchiev.push(C.spaceUpgrade('House', 10, '<q>A nice house for grandmas to bake cookies in.</q>', 500e2, [7, 1, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Field', 10,'<q>Now you can farm and dig all you want.</q>', 500e4, [7, 2, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Warehouse', 10, '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, 13, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Shed', 5, '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [7, 0, icons])); 
+C.upAndAchiev.push(C.spaceUpgrade('House', 2, '<q>A nice house for grandmas to bake cookies in.</q>', 500e2, [7, 1, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Field', 5,'<q>Now you can farm and dig all you want.</q>', 500e4, [7, 2, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Warehouse', 2, '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, 13, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Farmland', spaceDesc(10) + '<q>More space for your farms, and whatever else you do to make cookies.</q>', 500e8, [7, 4]));
 //C.upAndAchiev.push(new Game.Upgrade('Glacial remnants', spaceDesc(10) + '<q>Who would live here? Perfect for preserving cookies.</q>', 500e8, [7, 14, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Planet', 10, '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e9, [7, 15, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('The future', 10, '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, 16, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Distant objects', 10, '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, 17, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 10, '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, 18, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Planet', 5, '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e9, [7, 15, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('The future', 2, '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, 16, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Distant objects', 5, '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, 17, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 2, '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, 18, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('More hard drives', spaceDesc(10) + '<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>', 500e21, [7, 19, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Genetic restructuring', spaceDesc(10) + '<q>One way to get more space is to make everything else smaller. Like people. They won\'t notice as long as they have enough cookies.</q>', 500e24, [7, 28, icons]));
 
@@ -667,7 +667,7 @@ C.maxSpace  = 50; //neither of these two are used because the things just get pu
 
 //C.spaceValues[i] is the space taken up by a single building of id i
 C.spaceValues = [
-	1, 10, 50, 25, 25, 10, 25, 10, 25, 25, 15,
+	1, 10, 30, 25, 25, 10, 25, 10, 25, 25, 15,
 	25, 25, 10, Math.floor(Math.random() * 15) + 10,
 	25, 5, 100, 250, 10, 25
 ];
@@ -685,11 +685,16 @@ C.getMaxBuildingSpace = function() {
 	if (Game.Has('More hard drives')) buildingSpace *= 10;
 	if (Game.Has('Genetic restructuring')) buildingSpace *= 10;
     */
-   for (let i in C.spaceUpgrades) {
-        if (Game.Has(C.spaceUpgrades[i].name)) buildingSpace *= 10;
-   }
+    /*
+    for (let i in C.spaceUpgrades) {
+            if (Game.Has(C.spaceUpgrades[i].name)) buildingSpace *= 10;
+    }*/
+    //attempt #3
+    for (let i in C.spaceUpgrades) {
+        if (Game.Has(C.spaceUpgrades[i].name)) buildingSpace *= C.spaceUpgrades[i].power;
+    }
 
-	return buildingSpace;
+    return buildingSpace;
 }
 C.getBuildingSpace = function() {
 	let buildingSpace = 0;
@@ -738,10 +743,11 @@ C.unlockSpaceUpgrades = function() {
 			highest = Number(i);
 			continue;
 		}
-		if (Game.BuildingsOwned >= C.spaceUnlockThresholds[i]) Game.Unlock(C.spaceUpgrades[i].name);
+		if (Game.BuildingsOwned - Game.Objects['Cursor'].amount >= C.spaceUnlockThresholds[i]) Game.Unlock(C.spaceUpgrades[i].name);
 	}
 	C.nextSpaceUnlock = C.spaceUnlockThresholds[highest + 1] - Game.BuildingsOwned > 0 ? C.spaceUnlockThresholds[highest + 1] : C.spaceUnlockThresholds[highest + 2];
 }
+Game.registerHook('reincarnate', C.unlockSpaceUpgrades);
 
 C.getMaxCursors = function() {
     return 50 * (C.cursorUpgrades.filter(x => x.bought).length + 1);
@@ -807,7 +813,8 @@ for (let i in Game.Objects) {
 eval('Game.Upgrade.prototype.buy = ' + Game.Upgrade.prototype.buy.toString().replace(`var cancelPurchase=0;`, `var cancelPurchase=0; if (this.canBuy() && !this.bought) { if ((this.bought = 1) && C.getBuildingSpace() > C.getMaxBuildingSpace()) { cancelPurchase = 1; Game.Popup('Out of space!', Game.mouseX, Game.mouseY); } else { C.updateSpaceStat(); } this.bought = 0; } else { }`));
 
 C.getSpaceString = function() {
-	return `<div class="listing"><b>Building space: </b>${Beautify(C.getBuildingSpace())}/${Beautify(C.getMaxBuildingSpace())} (${Beautify(Math.floor((C.getBuildingSpace() / C.getMaxBuildingSpace()) * 100))}%)</div>
+	return `<div class="listing"><b>Maximum cursor rings: </b>${C.getMaxCursors() / 50}</div>
+            <div class="listing"><b>Building space: </b>${Beautify(C.getBuildingSpace())}/${Beautify(C.getMaxBuildingSpace())} (${Beautify(Math.floor((C.getBuildingSpace() / C.getMaxBuildingSpace()) * 100))}%)</div>
 			<div class="listing"><b>Buildings until next upgrade: </b>${isNaN(SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)) ? 'all upgrades unlocked' : SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)}</div>`;
 }
 C.getSpaceHTML = function() {
