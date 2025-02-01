@@ -125,9 +125,9 @@ M.launch = function(){
 			M.dragging=what;
 			var div=l('templeGod'+what.id);
 			var box=div.getBoundingClientRect();
-			var box2=l('templeDrag').getBoundingClientRect();
-			div.className='ready templeGod titleFont templeDragged';
-			l('templeDrag').appendChild(div);
+			var box2=l('complexDrag').getBoundingClientRect();
+			div.className='ready templeGod titleFont complexDragged';
+			l('complexDrag').appendChild(div);
 			var x=box.left-box2.left;
 			var y=box.top-box2.top;
 			div.style.transform='translate('+(x)+'px,'+(y)+'px)';
@@ -208,8 +208,9 @@ M.launch = function(){
 		}
 
         M.onLevel = function() {
-            M.developers['sniper'].buff = M.devs['sniper'].baseDesc[0].replace('%%', 3 * Game.Objects['You'].level);
+            M.developers['sniper'].buff = M.developers['sniper'].baseDesc[0].replace('%%', 3 * Game.Objects['You'].level);
         }
+        M.onLevel(); //set the descriptions properly
 
         M.onSlot = function(id) {
             if (id == 1) {
@@ -234,7 +235,7 @@ M.launch = function(){
 		'.templeGod{box-shadow:4px 4px 4px #000;cursor:pointer;position:relative;color:#f33;opacity:0.8;text-shadow:0px 0px 4px #000,0px 0px 6px #000;font-weight:bold;font-size:12px;display:inline-block;width:60px;height:74px;background:url(img/spellBG.png);}'+
 		'.templeGod.ready{color:rgba(255,255,255,0.8);opacity:1;}'+
 		'.templeGod.ready:hover{color:#fff;}'+
-		'.templeGod:hover,.templeDragged{box-shadow:6px 6px 6px 2px #000;z-index:1000000001;top:-1px;}'+
+		'.templeGod:hover,.complexDragged{box-shadow:6px 6px 6px 2px #000;z-index:1000000001;top:-1px;}'+
 		'.templeGod:active{top:1px;}'+
 		'.templeGod.ready .templeIcon{opacity:1;}'+
 		'.templeGod:hover{background-position:0px -74px;} .templeGod:active{background-position:0px 74px;}'+
@@ -260,10 +261,10 @@ M.launch = function(){
 		
 		'.templeSlotDrag{position:absolute;left:0px;top:0px;right:0px;bottom:0px;background:#999;opacity:0;cursor:pointer;}'+
 		
-		'#templeDrag{position:absolute;left:0px;top:0px;z-index:1000000000000;}'+
+		'#complexDrag{position:absolute;left:0px;top:0px;z-index:1000000000000;}'+
 		'.templeGod{transition:transform 0.1s;}'+
-		'#templeDrag .templeGod{position:absolute;left:0px;top:0px;}'+
-		'.templeDragged{pointer-events:none;}'+
+		'#complexDrag .templeGod{position:absolute;left:0px;top:0px;}'+
+		'.complexDragged{pointer-events:none;}'+
 		
 		'.templeGodPlaceholder{background:red;opacity:0;display:none;width:60px;height:74px;}'+
 		
@@ -272,11 +273,11 @@ M.launch = function(){
 		'#templeSlot1{top:0px;}'+
 		'#templeSlot2{top:4px;}'+
 		
-		'#templeInfo{position:relative;display:inline-block;margin:8px auto 0px auto;padding:8px 16px;padding-left:32px;text-align:center;font-size:11px;color:rgba(255,255,255,0.75);text-shadow:-1px 1px 0px #000;background:rgba(0,0,0,0.75);border-radius:16px;}'+
+		'#gcomplexInfo{position:relative;display:inline-block;margin:8px auto 0px auto;padding:8px 16px;text-align:center;font-size:11px;color:rgba(255,255,255,0.75);text-shadow:-1px 1px 0px #000;background:rgba(0,0,0,0.75);border-radius:16px;}'+
 		'</style>';
 		str+='<div id="templeBG"></div>';
 		str+='<div id="templeContent">';
-			str+='<div id="templeDrag"></div>';
+			str+='<div id="complexDrag"></div>';
 			str+='<div id="templeSlots">';
 			for (var i in M.slot)
 			{
@@ -284,7 +285,7 @@ M.launch = function(){
 				str+='<div class="ready templeGod templeGod'+parseInt(i)+' templeSlot titleFont" id="templeSlot'+i+3+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.slotTooltip('+i+')','this')+'><div class="usesIcon shadowFilter templeGem templeGem'+(parseInt(i)+1)+'"></div></div>';
 			}
 			str+='</div>';
-			str+='<div id="templeInfo"><div>lump cooldowns were here</div></div>';
+			str+='<div id="gcomplexInfo"><div>Choose a developer to gain their effects.</div></div>';
 			str+='<div id="templeGods">';
 			for (var i in M.developers)
 			{
@@ -346,7 +347,7 @@ M.launch = function(){
 		{str+=parseFloat(M.slot[i])+'/';}
 		str=str.slice(0,-1);
 		str+=' '+parseFloat(M.swaps)+' '+parseFloat(M.swapT);
-		str+=' '+parseInt(M.parent.onMinigame?'1':'0');
+		str+=' '+parseInt(Number(M.parent.onMinigame));
 		return str;
 	}
 	M.load=function(str)
@@ -388,7 +389,6 @@ M.launch = function(){
 	{
 		//console.log(M.dragging);
 		//run each frame
-		
 
 		
         //RIP inefficient snipergold thing: 11/11/23 - 12/14/24
@@ -414,7 +414,7 @@ M.launch = function(){
 		//run each draw frame
 		if (M.dragging)
 		{
-			var box=l('templeDrag').getBoundingClientRect();
+			var box=l('complexDrag').getBoundingClientRect();
 			var x=Game.mouseX-box.left-60/2;
 			var y=Game.mouseY-box.top;
 			if (M.slotHovered!=-1)//snap to slots
