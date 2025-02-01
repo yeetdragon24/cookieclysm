@@ -2,7 +2,7 @@
 let hasGodL = Game.hasGod;
 let getPlantDescL = Game.Objects['Farm'].minigame ? Game.Objects['Farm'].minigame.getPlantDesc : function() {};
 let capniL = 0;
-let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c1.1.png';
+let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c1.0.2.png';
 let Kaizo = Game.mods['Kaizo Cookies'];
 //some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
 function romanize(num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
@@ -260,7 +260,6 @@ NewBuilding(
 	},
 	function() {
 		Game.UnlockTiered(this);
-        if (this.amount > 125) Game.Unlock('Clone sacrifice');
 		if (this.amount >= Game.SpecialGrandmaUnlock && Game.Objects['Grandma'].amount > 0) Game.Unlock(this.grandma.name);
 	},
 	{
@@ -313,9 +312,7 @@ C.spaceUpgrade = function(name, power, quote, price, icon) {
 }
 C.cursorUpgrades = [];
 C.cursorUpgrade = function(name, quote, price, power) {
-    let icon = [0, 0];
-    if (C.cursorUpgrades.length == 0) icon = [1, 6];
-    let upgrade = new Game.Upgrade(name, `You have <b>${power} more</b> available cursor ring${power==1?'':'s'}.<q>${quote}</q>`, price, icon);
+    let upgrade = new Game.Upgrade(name, `You have <b>${power} more</b> available cursor ring${power==1?'':'s'}.<q>${quote}</q>`, price, [9, C.cursorUpgrades.length, icons]);
     upgrade.power = power;
     C.cursorUpgrades.push(upgrade);
     return upgrade;
@@ -349,8 +346,7 @@ C.upAndAchiev.push(new Game.Upgrade('Alternate reality', 'Unlocks the <b>Clone w
 Game.last.pool = 'prestige'; Game.last.posX = 656; Game.last.posY = 787; Game.PrestigeUpgrades.push(Game.last); Game.last.buyFunction = function() { C.unlockCloneWorld() }; Game.last.parents = [Game.Upgrades['Unshackled idleverses']];
 //C.upAndAchiev.push(new Game.Upgrade('Cookieclysm', '<q>Related to the Cookie Clicker mod of the same name.</q>', 24, [21, 6])); Game.last.priceFunc = function() { return Game.Objects['You'].amount * Math.pow(10, 45) }; Game.last.pool = 'research';
 //Game.RequiresConfirmation(Game.last, '<div class="block">' + loc("<b>Warning:</b> purchasing this will have unexpected, and potentially undesirable results!<br><br><br>Purchase anyway?") + '</div>');
-C.upAndAchiev.push(new Game.Upgrade('Rift', 'Begins the Cookieclysm.<q>It begins.</q>', 300e6, [31, 2])); Game.last.posX = -830; Game.last.posY = -628; Game.last.pool = 'prestige'; Game.last.buyFunction = function() { C.clysmUpgrades.forEach(x => Game.PrestigeUpgrades.push(x)); C.cookieclysm = true; }; Game.last.parents = [Game.Upgrades['Legacy']];
-Game.PrestigeUpgrades.push(Game.last);
+C.upAndAchiev.push(new Game.Upgrade('Rift', 'Begins the Cookieclysm.<q>It begins.</q>', 300e6, [31, 2])); Game.last.posX = -830; Game.last.posY = -628; Game.last.pool = 'prestige'; Game.last.buyFunction = function() { C.clysmUpgrades.forEach(x => Game.PrestigeUpgrades.push(x)); C.cookieclysm = true; }; // Game.last.parents = [Game.Upgrades['Legacy']];
 //C.upAndAchiev.push(new Game.Upgrade('Flaming worm', `Unlocks a <b><span style="color: ${C.transcendentPink}">special wrinkler</span></b>.`, 2, [2, 2, icons])); Game.last.priceFunc = function() { return this.bought ? 300e6 }; Game.last.pool = 'prestige';
 
 //chocolate
@@ -397,7 +393,7 @@ C.upAndAchiev.push(Game.TieredUpgrade('Fortune #021', '<q>Nothing ever stays exa
 
 order = 5000;
 C.upAndAchiev.push(Game.SynergyUpgrade('Overgrown plants', '<q>Less maintenence required and you can turn the waste into cookies too!</q>', 'Converter', 'Farm', 'synergy1')); Game.last.icon[2] = icons;
-C.upAndAchiev.push(Game.SynergyUpgrade('Clone sacrifice', `</q>Converts one of your clones into <b>one tenth of its cost</b> worth of cookies, every 30 seconds.<q>${Math.random() < 0.1 ? 'How bad can this possibly be?' : 'What could go wrong?'}</q>`, 'Converter', 'You', 'synergy2')); Game.last.icon[2] = icons;
+C.upAndAchiev.push(Game.SynergyUpgrade('Clone sacrifice', `</q><br>Converts one of your clones into <b>one tenth of its cost</b> worth of cookies, every 30 seconds.<q>${Math.random() < 0.1 ? 'How bad can this possibly be?' : 'What could go wrong?'}</q>`, 'Converter', 'You', 'synergy2')); Game.last.icon[2] = icons;
 Game.last.buyFunction = function() { Game.Notify('Clone sacrifice', `Conversion of your clones into cookies has began following your purchase of <b>Clone Sacrifice</b>.`, [5, 3, icons]); };
 Game.last.tier = 'synergy2';
 
@@ -429,21 +425,21 @@ order = 1239.120; //idk but hell hus
 order = 7003;
 let spaceDesc = (amount) => amount < 5 ** amount >= 2 ? `<b>${['Doubles', 'Triples', 'Quadruples'][amount-2]}</b> your max space.` : `Multiplies your max space by <b>${amount}</b>.`; 
 C.spaceUpgrades = [];
-C.upAndAchiev.push(C.spaceUpgrade('Shed', 5, '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [7, 0, icons])); 
-C.upAndAchiev.push(C.spaceUpgrade('House', 2, '<q>A nice house for grandmas to bake cookies in.</q>', 500e2, [7, 1, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Field', 5,'<q>Now you can farm and dig all you want.</q>', 500e4, [7, 2, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Warehouse', 2, '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, 13, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Shed', 5, '<q>You can\'t live here, but this will be able to shelter quite a few mice.</q>', 500, [7, Game.Tiers[1].iconRow, icons])); 
+C.upAndAchiev.push(C.spaceUpgrade('House', 2, '<q>A nice house for grandmas to bake cookies in.</q>', 500e2, [7, Game.Tiers[2].iconRow, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Field', 5,'<q>Now you can farm and dig all you want.</q>', 500e4, [7, Game.Tiers[3].iconRow, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Warehouse', 2, '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, Game.Tiers[4].iconRow, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Farmland', spaceDesc(10) + '<q>More space for your farms, and whatever else you do to make cookies.</q>', 500e8, [7, 4]));
 //C.upAndAchiev.push(new Game.Upgrade('Glacial remnants', spaceDesc(10) + '<q>Who would live here? Perfect for preserving cookies.</q>', 500e8, [7, 14, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Planet', 5, '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e9, [7, 15, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('The future', 2, '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, 16, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Distant objects', 5, '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, 17, icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 2, '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, 18, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Planet', 5, '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e9, [7, Game.Tiers[5].iconRow, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('The future', 2, '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, Game.Tiers[6].iconRow, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Distant objects', 5, '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, Game.Tiers[7].iconRow, icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 2, '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, Game.Tiers[8].iconRow, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('More hard drives', spaceDesc(10) + '<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>', 500e21, [7, 19, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Genetic restructuring', spaceDesc(10) + '<q>One way to get more space is to make everything else smaller. Like people. They won\'t notice as long as they have enough cookies.</q>', 500e24, [7, 28, icons]));
 
 order = 510;
-C.upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground', 'Contains... stuff.<q>I don\'t think these are edible.</q>', 400 * Math.pow(10, 15), [34, 12])); 
+C.upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground', 'Contains... stuff.<q>I don\'t think these are edible.</q>', 400 * Math.pow(10, 12), [34, 12])); 
 Game.PrestigeUpgrades.push(Game.last); Game.last.pool = 'prestige'; Game.last.parents = [Game.Upgrades['Box of maybe cookies'], Game.Upgrades['Box of not cookies'], Game.Upgrades['Box of pastries']]; Game.last.posX = -667; Game.last.posY = -1497;
 order = 10070;
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'The Running Burrito', desc: 'Just plain chips, not anything special.', icon: [6, 5, icons], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 51) }));
@@ -452,7 +448,7 @@ C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Jealousy', desc: 'It\'s unclea
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Pure black and white cookies', desc: 'You didn\'t eat any of these. So why is one missing?', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 60) }));
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Snow', desc: 'Let it snow, let it snow, let it snow', icon: [30, 22], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 60) }));
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'American cheese', desc:'Not legally cheese, likely plastic.', icon: [6, 4, icons], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 57) }));
-C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Eclipse crisps', desc: 'Crispier than 4/8.', icon: [0, 4], require: 'Box of randoms stuff we found on the ground.', power: 5, price: Math.pow(10, 54) }));
+C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Eclipse crisps', desc: 'Crispier than 4/8.', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 54) }));
 
 //C.upAndAchiev.push(new Game.Upgrade('Switchblade and bleach','Makes you look different enough to hide from the cops in a church, somehow giving you <b>+10%</b> cookie production.<q>Oh Ponyboy, your hair... your tuff, tuff, hair...</q>',420,[2,2]));
 //C.upAndAchiev.push(new Game.Upgrade('Cookieclysm','Gain <b>+100%</b> cookie production.<q>The beginninng.</q>',1,[2,2]));
@@ -552,7 +548,7 @@ C.upAndAchiev.push(C.transcendentUpgrade('Mutation', 'Mokalsium gains some bonus
 
 //post-release upgrades
 order = 10070
-C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'RMS Carpathia', desc: 'The RMS <i>Carpathia</i> was a passenger steamship built between 190&zwnj;2 and 190&zwnj;3. The <i>Carpathia</i> is most famous for saving 705 passengers of the RMS <i>Titanic</i> on April 15th, 191&zwnj;2. Unfortunately, the <i>Carpathia</i> was sunk on July 17th, 191&zwnj;8, during World War I. The <i>Carpathia</i> is named after the Carpathian Mountains, found in central Europe.', icon: [0, 4], require: 'Box of randoms stuff we found on the ground.', power: 5, price: Math.pow(10, 48) }));
+C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'RMS Carpathia', desc: 'The RMS <i>Carpathia</i> was a passenger steamship built between 190&zwnj;2 and 190&zwnj;3. The <i>Carpathia</i> is most famous for saving 705 passengers of the RMS <i>Titanic</i> on April 15th, 191&zwnj;2. Unfortunately, the <i>Carpathia</i> was sunk on July 17th, 191&zwnj;8, during World War I. The <i>Carpathia</i> is named after the Carpathian Mountains, found in central Europe.', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 48) }));
 C.upAndAchiev.push(C.transcendentUpgrade('Brighter gloves', 'Buffs Aura gloves by <b>+%%% ➡ +%%%</b>.<q>Create a world of light.</q>', 30, [3, 3, icons], { scaling: 'soft', increment: 0.2 })); Game.last.parents = [Game.Upgrades['more']];
 
 order = 8000;
@@ -565,21 +561,30 @@ C.upAndAchiev.push(C.cursorUpgrade('Jupiter', 'Jupiter is pretty large.', 5e18, 
 C.upAndAchiev.push(C.cursorUpgrade('Saturn', 'People always credit Saturn for its beautiful rings even though all the gas giants have rings.', 5e21, 1));
 C.upAndAchiev.push(C.cursorUpgrade('Uranus', 'Uranus is flipped on its side. This would be cool if the planet was not the subject of many unfortunate jokes.', 5e25, 1));
 C.upAndAchiev.push(C.cursorUpgrade('Neptune', 'Neptune is more pale greenish-blue than the usual deep blue depiction.', 5e28, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Pluto', 'A runt among giants.', 5e31, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Haumea', 'The faster it spins, the more oval it becomes.', 5e34, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Makemake', 'Time to makemake some cookies.', 5e37, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Eris', 'Eris is the Greek goddess of discord.', 5e40, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Oort cloud', 'Your cursors reach this far.', 5e46, 1));
-C.upAndAchiev.push(C.cursorUpgrade('Cookie planet', 'The one that all the shipments go to.', 5e50, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Pluto', 'A runt among giants.', 5e32, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Haumea', 'The faster it spins, the more oval it becomes.', 5e35, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Makemake', 'Time to makemake some cookies.', 5e38, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Eris', 'Eris is the Greek goddess of discord.', 5e41, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Planet X', 'Does it exist?', 5e44, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Oort cloud', 'Your cursors reach this far.', 5e47, 1));
+C.upAndAchiev.push(C.cursorUpgrade('Cookie planet', 'The one that all the shipments go to.', 5e51, 1));
+order = 254;
+C.upAndAchiev.push(new Game.Upgrade('Ring gloves', 'You have <b>3 more</b> available cursor rings.', 555555555555555, [9, 16, icons])); Game.last.pool = 'prestige'; Game.PrestigeUpgrades.push(Game.last);
+Game.last.posX = -127 - (23*1.75); Game.last.posY = -415 - (216*1.75); Game.last.parents = [Game.Upgrades['Luminous gloves']];
+C.upAndAchiev.push(C.transcendentUpgrade('Lord of the Rings', 'Gain <b>+%% ➡ +%%</b> available cursor rings.<q>One Ring to rule them all, One Ring to find them, One Ring to bring them all, and in the darkness click them.</q>', 3, [2, 6, icons], { scaling: 'hard', increment: 1 })); Game.last.parents = [Game.Upgrades['Brighter gloves']];
 
 order = 10500;
 C.upAndAchiev.push(new Game.Achievement('Spender', '', [3, 0, icons])); Game.last.descFunc = function() { this.dname = 'Sp&eacute;nder'; return `Spend <b>100</b> ${C.moneName}.`; };
-C.upAndAchiev.push(new Game.Achievement('Bezos', '', [3, 0, icons])); Game.last.descFunc = function() { this.dname = 'B&eacute;zos'; return `Spend <b>10000</b> ${C.moneName}.`; }; Game.last.pool = 'shadow';
+C.upAndAchiev.push(new Game.Achievement('Bezos', '', [3, 0, icons])); Game.last.descFunc = function() { this.dname = 'B&eacute;zos'; return `Spend <b>10,000</b> ${C.moneName}.`; }; Game.last.pool = 'shadow';
 
 C.clysmUpgrades = [];
-C.upAndAchiev.push(new Game.Upgrade('Strawberry-flavored worm bait', `Wrinklers appear <b>twice</b> as fast and eat <b>+50%</b> more cookies.<br>You can now attract <b><span style="color: ${C.transcendentPink}">super wrinklers</span></b>.<q>According to legend, super wrinklers are large that are capable of traveling through worlds.</q>`, 1e9, [24, 22])); Game.last.pool = 'prestige';
+order = 878;
+C.upAndAchiev.push(new Game.Upgrade('Strawberry-flavored worm bait', `Wrinklers appear <b>twice</b> as fast and eat <b>+50%</b> more cookies.<br>You can now attract <b><span style="color: ${C.transcendentPink}">super wrinklers</span></b>.<q>According to legend, super wrinklers are large that are capable of traveling through worlds.</q>`, 1e9, [8, 2, icons])); Game.last.pool = 'prestige';
 Game.last.parents = [Game.Upgrades['Rift']]; Game.last.posX = -1125; Game.last.posY = -724;
-C.clysmUpgrades = [Game.Upgrades['Strawberry-flavored worm bait']]; //use better implementation later
+C.clysmUpgrades = [Game.Upgrades['Rift'], Game.Upgrades['Strawberry-flavored worm bait']]; //use better implementation later
+
+order = 21025;
+C.upAndAchiev.push(new Game.Achievement('Youpocalaypse', 'Trigger the Youpocalypse for the first time.', [8, 3, icons]));
 
 C.getEffects = function(upgrade, tier) {
 	upgrade = Game.Upgrades[upgrade];
@@ -630,6 +635,7 @@ for (let upgrade in C.upAndAchiev) {
 	}
 }
 LocalizeUpgradesAndAchievs();
+for (var i in Game.UnlockAt){Game.Upgrades[Game.UnlockAt[i].name].unlockAt=Game.UnlockAt[i];}
 C.stylesheet = document.createElement('link');
 C.stylesheet.id = 'cookieclysmCss';
 C.stylesheet.rel = 'stylesheet';
@@ -755,7 +761,7 @@ C.getMaxCursors = function() {
 C.unlockCursorUpgrades = function() {
     for (let i in C.cursorUpgrades) {
         if (C.cursorUpgrades[i].unlocked || Game.Objects['Cursor'].amount >= 50 * (parseInt(i) + 1)) Game.Unlock(C.cursorUpgrades[i].name);
-        else return false;
+        else return i;
     }
 }
 
@@ -882,7 +888,7 @@ C.setTUPos('Oversweetened rest', -800, -224); //Oversweetened rest
 C.setTUPos('Glimmering hope', -900, -100); //glimmering hope
 C.setTUPos('Dedicated evasion', -1100, 333); //dedicated evasion
 C.setTUPos('Locked in', -1400, 0); //locked in
-C.setTUPos('A light in the dark', -1400, 120); //a light in the dark
+C.setTUPos('A light in the dark', -1300, 20); //a light in the dark
 C.setTUPos('Emotionless', -1150, 150); //Emotionless
 C.setTUPos('Multitasking', -1420, 50);
 
@@ -901,6 +907,7 @@ C.setTUPos('Puck', 170, -460); //puck
 C.setTUPos('Mutation', -50, -620); //mutation
 
 C.setTUPos('Brighter gloves', 120, 40);
+C.setTUPos('Lord of the Rings', 240, 65);
 
 Game.Upgrade.prototype.transcendBuy = function() {
 	if (this.pool != 'transcendent' /*this.id < tUSA*/) return false;
@@ -1320,31 +1327,31 @@ Game.attachTooltip(l('heralds'), function() {
 
 	return '<div style="padding:8px;width:300px;text-align:center;" class="prompt" id="tooltipHeralds"><h3>' + loc("Heralds") + '</h3><div class="block">' + str + '</div></div>';
 }, 'this');
-eval('Game.LoadSave = ' + Game.LoadSave.toString().replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
-Game.Reset = new Function('hard', getFuncDef(Game.Reset).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
-Game.loadLumps = new Function('time', getFuncDef(Game.loadLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
-Game.canLumps = new Function(getFuncDef(Game.canLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
-Game.doLumps = new Function(getFuncDef(Game.doLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
-Game.CalculateGains = new Function(getFuncDef(Game.CalculateGains).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode<1'));
+eval('Game.LoadSave = ' + Game.LoadSave.toString().replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
+Game.Reset = new Function('hard', getFuncDef(Game.Reset).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
+Game.loadLumps = new Function('time', getFuncDef(Game.loadLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
+Game.canLumps = new Function(getFuncDef(Game.canLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
+Game.doLumps = new Function(getFuncDef(Game.doLumps).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
+Game.CalculateGains = new Function(getFuncDef(Game.CalculateGains).replaceAll('Game.ascensionMode!=1', 'Game.ascensionMode != 1 && Game.ascensionMode != 1017'));
 Game.Has = new Function('what', getFuncDef(Game.Has).replace('Game.ascensionMode==1', 'Game.ascensionMode>=1'));
-Game.Logic = new Function(getFuncDef(Game.Logic).replace(`(Game.Has('Legacy') && Game.ascensionMode!=1)`, `(Game.Has('Legacy') && Game.ascensionMode<1)`));
+Game.Logic = new Function(getFuncDef(Game.Logic).replace(`(Game.Has('Legacy') && Game.ascensionMode!=1)`, `(Game.Has('Legacy') && Game.ascensionMode != 1 && Game.ascensionMode != 1017)`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Your prestige level is currently <b>%1</b>.<br>(CpS +%2%)",[Beautify(Game.prestige),Beautify(Game.prestige)]);`,
-	`(Game.ascensionMode<2?'Your prestige level is currently <b>'+Beautify(Game.prestige)+'</b>.<br>(CpS +'+Beautify(Game.prestige)+'%)':'You currently have <b>'+Beautify(C.mone)+' '+C.moneName+'</b>.');`));
-Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you no prestige.");`, `loc("Ascending now would grant you no "+(Game.ascensionMode<2?'prestige':C.moneName)+".");`));
+	`(Game.ascensionMode != 1017?'Your prestige level is currently <b>'+Beautify(Game.prestige)+'</b>.<br>(CpS +'+Beautify(Game.prestige)+'%)':'You currently have <b>'+Beautify(C.mone)+' '+C.moneName+'</b>.');`));
+Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you no prestige.");`, `loc("Ascending now would grant you no "+(Game.ascensionMode != 1017?'prestige':C.moneName)+".");`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you<br><b>1 prestige level</b> (+1% CpS)<br>and <b>1 heavenly chip</b> to spend.")`,
-	`loc("Ascending now would grant you<br><b>1 "+(Game.ascensionMode<2?'prestige levels':C.moneName)+"</b>"+(Game.ascensionMode<2?' (+1% CpS)<br>and <b>1 heavenly chip</b> to spend':'.'))`));
-Game.Logic = new Function(getFuncDef(Game.Logic).replace(`var chipsOwned=Game.HowMuchPrestige(Game.cookiesReset);`, `var maxAmount = (10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1; var chipsOwned=(Game.ascensionMode<2?Game.HowMuchPrestige(Game.cookiesReset):0);`));
+	`loc("Ascending now would grant you<br><b>1 "+(Game.ascensionMode != 1017?'prestige levels':C.moneName)+"</b>"+(Game.ascensionMode != 1017?' (+1% CpS)<br>and <b>1 heavenly chip</b> to spend':'.'))`));
+Game.Logic = new Function(getFuncDef(Game.Logic).replace(`var chipsOwned=Game.HowMuchPrestige(Game.cookiesReset);`, `var maxAmount = (10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1; var chipsOwned=(Game.ascensionMode != 1017?Game.HowMuchPrestige(Game.cookiesReset):0);`));
 Game.UpdateAscendIntro = new Function(getFuncDef(Game.UpdateAscendIntro).replace(`Game.EarnHeavenlyChips(Game.cookiesEarned);`,
-	`if (Game.ascensionMode<2)Game.EarnHeavenlyChips(Game.cookiesEarned);else C.mone+=Math.min((10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1, Math.floor(Game.HowMuchPrestige(Game.cookiesEarned))*C.moneMult)`));
+	`if (Game.ascensionMode != 1017)Game.EarnHeavenlyChips(Game.cookiesEarned);else C.mone+=Math.min((10 ** (Math.floor(Game.Upgrades['Mone buff'].tier/3) + 2)) - 1, Math.floor(Game.HowMuchPrestige(Game.cookiesEarned))*C.moneMult)`));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`loc("Ascending now would grant you<br><b>%1 prestige levels</b> (+%2% CpS)<br>and <b>%3 heavenly chips</b> to spend.",[Beautify(ascendNowToGet),Beautify(ascendNowToGet),Beautify(ascendNowToGet)]);`,
-	`"Ascending now would grant you<br><b>"+Beautify(ascendNowToGet)+" "+(Game.ascensionMode<2?'prestige levels':C.moneName)+"</b> "+(Game.ascendMode < 2 ? '(+%2% CpS)<br>and <b>%3 heavenly chips</b> to spend.' : '');`
+	`"Ascending now would grant you<br><b>"+Beautify(ascendNowToGet)+" "+(Game.ascensionMode != 1017?'prestige levels':C.moneName)+"</b> "+(Game.ascensionMode != 1017 ? '(+'+Beautify(ascendNowToGet)+'% CpS)<br>and <b>'+Beautify(ascendNowToGet)+' heavenly chips</b> to spend.' : '');`
 ));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace('var ascendNowToOwn=Math.floor(Game.HowMuchPrestige(Game.cookiesReset+Game.cookiesEarned));',
-	'var ascendNowToOwn=Math.min(Game.ascensionMode < 2 ? Infinity : maxAmount, Math.floor(Game.HowMuchPrestige((Game.ascensionMode<2?Game.cookiesReset:0)+Game.cookiesEarned)));'
+	'var ascendNowToOwn=Math.min(Game.ascensionMode < 2 ? Infinity : maxAmount, Math.floor(Game.HowMuchPrestige((Game.ascensionMode != 1017?Game.cookiesReset:0)+Game.cookiesEarned)));'
 ));
 //probably a better way to do this but im lazy
 Game.Logic = new Function(getFuncDef(Game.Logic).replace('var cookiesToNext=Game.HowManyCookiesReset(ascendNowToOwn+1)-(Game.cookiesEarned+Game.cookiesReset);',
-	'var cookiesToNext=Game.HowManyCookiesReset(ascendNowToOwn+1)-(Game.cookiesEarned+0);'
+	'var cookiesToNext=Game.HowManyCookiesReset(ascendNowToOwn+1)-(Game.cookiesEarned+(Game.ascensionMode != 1017?Game.cookiesReset:0));'
 ));
 Game.Logic = new Function(getFuncDef(Game.Logic).replace(`(EN?'Ascending! ':(loc("Ascending")+' | '))`,`(Game.OnAscend == 1?(EN?'Ascending! ':(loc("Ascending")+' | ')):'Transcending | ')`));
 //now that i think about it, all of this code couldve been made in a better well but its too late now i guess
@@ -1430,6 +1437,7 @@ Game.getWrinklersMax = function() {
 	return C.bigCookieGone ? 0 : Game.oldWrinklerMax();
 }
 C.updateYoupocalypse = function() {
+    if (Game.OnAscend) return false;
 	if (C.youWrath == 0) {
 		if (Game.Has('Clone sacrifice')) {
 			if (Game.T % (Game.fps * C.cloneSacInterval) == 0) {
