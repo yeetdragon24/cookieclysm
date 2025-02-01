@@ -438,7 +438,7 @@ C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 2, '<q>Almost all of a
 //C.upAndAchiev.push(new Game.Upgrade('More hard drives', spaceDesc(10) + '<q>This is a video game, so maybe you can give more space to your buildings by increasing your digital storage space.</q>', 500e21, [7, 19, icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Genetic restructuring', spaceDesc(10) + '<q>One way to get more space is to make everything else smaller. Like people. They won\'t notice as long as they have enough cookies.</q>', 500e24, [7, 28, icons]));
 
-order = 510;
+order = 550;
 C.upAndAchiev.push(new Game.Upgrade('Box of random stuff we found on the ground', 'Contains... stuff.<q>I don\'t think these are edible.</q>', 400 * Math.pow(10, 12), [34, 12])); 
 Game.PrestigeUpgrades.push(Game.last); Game.last.pool = 'prestige'; Game.last.parents = [Game.Upgrades['Box of maybe cookies'], Game.Upgrades['Box of not cookies'], Game.Upgrades['Box of pastries']]; Game.last.posX = -667; Game.last.posY = -1497;
 order = 10070;
@@ -578,13 +578,13 @@ C.upAndAchiev.push(new Game.Achievement('Spender', '', [3, 0, icons])); Game.las
 C.upAndAchiev.push(new Game.Achievement('Bezos', '', [3, 0, icons])); Game.last.descFunc = function() { this.dname = 'B&eacute;zos'; return `Spend <b>10,000</b> ${C.moneName}.`; }; Game.last.pool = 'shadow';
 
 C.clysmUpgrades = [];
-order = 878;
+order = 510;
 C.upAndAchiev.push(new Game.Upgrade('Strawberry-flavored worm bait', `Wrinklers appear <b>twice</b> as fast and eat <b>+50%</b> more cookies.<br>You can now attract <b><span style="color: ${C.transcendentPink}">super wrinklers</span></b>.<q>According to legend, super wrinklers are large that are capable of traveling through worlds.</q>`, 1e9, [8, 2, icons])); Game.last.pool = 'prestige';
 Game.last.parents = [Game.Upgrades['Rift']]; Game.last.posX = -1125; Game.last.posY = -724;
 C.clysmUpgrades = [Game.Upgrades['Rift'], Game.Upgrades['Strawberry-flavored worm bait']]; //use better implementation later
 
 order = 21025;
-C.upAndAchiev.push(new Game.Achievement('Youpocalaypse', 'Trigger the Youpocalypse for the first time.', [8, 3, icons]));
+C.upAndAchiev.push(new Game.Achievement('Youpocalypse', 'Trigger the Youpocalypse for the first time.', [8, 3, icons]));
 
 C.getEffects = function(upgrade, tier) {
 	upgrade = Game.Upgrades[upgrade];
