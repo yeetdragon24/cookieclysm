@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
     entry: "./src/main.js",
     
     output: {
-      filename: 'cookieclysm.bundle.js',
+      filename: 'cookieclysm.js',
       path: path.resolve(__dirname, 'dist'),
       clean: true,
       library: {
@@ -49,7 +49,8 @@ module.exports = (env, argv) => {
               drop_debugger: isProduction
             },
             mangle: {
-              keep_fnames: true
+              keep_fnames: true,
+              reserved: ['Game', 'Crumbs']
             },
             format: {
               comments: false
