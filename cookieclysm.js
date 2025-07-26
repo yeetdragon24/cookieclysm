@@ -2,7 +2,7 @@
 let hasGodL = Game.hasGod;
 let getPlantDescL = Game.Objects['Farm'].minigame ? Game.Objects['Farm'].minigame.getPlantDesc : function() {};
 let capniL = 0;
-let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c1.0.2.png';
+let icons = 'https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c1.0.3.png';
 let Kaizo = Game.mods['Kaizo Cookies'];
 //some roman numeral function i found on stack overflow https://stackoverflow.com/questions/9083037/convert-a-number-into-a-roman-numeral-in-javascript
 // function romanize(num) { if (isNaN(num)) return NaN; var digits = String(+num).split(""), key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM", "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"], roman = "", i = 3; while (i--) roman = (key[+digits.pop() + (i * 10)] || "") + roman; return Array(+digits.join("") + 1).join("M") + roman; }
@@ -489,7 +489,7 @@ C.upAndAchiev.push(C.transcendentUpgrade('Dark momentum', 'Every 1000 clicks gra
 C.upAndAchiev.push(C.transcendentUpgrade('Emotionless', '<q>Why are we still here? Just to suffer...</q>', 99, [1, 1, icons], { scaling: 'hard', increment: 0.2 }));
 C.upAndAchiev.push(C.transcendentUpgrade('Denser minerals', 'All mouse upgrades are buffed by <b>%%% ➡ %%%</b>.<q>Glossier than the shiniest Iridyum.</q>', 150, [0, 1, icons], { scaling: 'hard', increment: 0.1 }));
 C.upAndAchiev.push(C.transcendentUpgrade('Flexible', 'Gain <b>%%% ➡ %%%</b> <span style="color:#00FFFF">double click chance</span>.<q>Don\'t limit yourself to two fingers.</q>', 100, [2, 3, icons], { scaling: 'hard', increment: 2 }));
-C.upAndAchiev.push(C.transcendentUpgrade('No hesitation', `Reduces the time it takes for a golden cookie to spawn by <b>%%% ➡ %%%</b>.<q>${Math.random() < 0.1 ? 'When you see a chance, you have to take it and run.' : 'Hesitation is defeat.'}</q>`, 17, [6, 1, icons], { scaling: 'hard', increment: 0.1 }));
+C.upAndAchiev.push(C.transcendentUpgrade('No hesitation', `Reduces the time it takes for a golden cookie to spawn by <b>%%% ➡ %%%</b>.<q>${Math.random() < 0.1 ? 'When you see a chance, you have to take it and run.' : 'Hesitation is defeat.'}</q>`, 17, [0, 6, icons], { scaling: 'hard', increment: 0.1 }));
 
 C.upAndAchiev.push(C.transcendentUpgrade('Useless treasure', 'Turns that useless silver into white chocolate, granting <b>+%%% ➡ +%%% Alchemy lab CpS</b>.<q>Silver found to also be transmutable into white chocolate!</q>', 3, [6, 30], { scaling: 'hard', increment: 1000 }));
 C.upAndAchiev.push(C.transcendentUpgrade('Efficient mana', 'Casting spells uses <b>%%% ➡ %%% less magic</b>.<q>Casting spells is a breeze to you now.</q>', 4, [0, 4, icons], { scaling: 'hard', increment: 0.01 }));
@@ -533,11 +533,11 @@ C.upAndAchiev.push(new Game.Achievement('Spender', '', [3, 0, icons])); Game.las
 C.upAndAchiev.push(new Game.Achievement('Bezos', '', [3, 0, icons])); Game.last.descFunc = function() { this.dname = 'B&eacute;zos'; return `Spend <b>10,000</b> ${C.moneName}.`; }; Game.last.pool = 'shadow';
 
 order = 510;
-C.upAndAchiev.push(C.clysmUpgrade('Strawberry-flavored worm bait', `Wrinklers appear <b>twice</b> as fast and eat <b>+50%</b> more cookies.<br>You can now attract <b><span style="color: ${C.cookieclysmPink}">super wrinklers</span></b>.<q>According to legend, super wrinklers are massive beasts that are capable of traveling through worlds.</q>`, 1e9, [8, 2, icons]));
+C.upAndAchiev.push(C.clysmUpgrade('Strawberry-flavored worm bait', `Wrinklers appear <b>twice</b> as fast and eat <b>+50%</b> more cookies.<br>You can now attract <b><span style="color: ${C.cookieclysmPink}">super wrinklers</span></b>.<q>According to legend, super wrinklers are massive beasts that are capable of traveling through worlds.</q>`, 1e9, [10, 0, icons]));
 Game.last.parents = [Game.Upgrades['Rift']]; Game.last.posX = -1125; Game.last.posY = -724;
 
 order = 21025;
-C.upAndAchiev.push(new Game.Achievement('Youpocalypse', 'Trigger the Youpocalypse for the first time.', [8, 3, icons]));
+C.upAndAchiev.push(new Game.Achievement('Youpocalypse', 'Trigger the Youpocalypse for the first time.', [10, 1, icons]));
 
 order = 510;
 C.upAndAchiev.push(C.clysmUpgrade('Ants', '<b>Ants</b> can appear on wrinklers. Click them to take back the cookies they steal.', 600e6, [8, 0, icons])); //Ants exist from this upgrade
@@ -547,7 +547,7 @@ C.upAndAchiev.push(C.clysmUpgrade('Antfestation', 'Each ant increases the chance
 C.upAndAchiev.push(C.clysmUpgrade('Red ants #2', 'Red ants are <b>50%</b> more common. Ants have a <b>5%</b> chance to instantly leave wrinklers.<q>Natural selection.</q>', 600e6, [8, 1, icons]));
 
 C.upAndAchiev.push(C.clysmUpgrade('Some bees', '<b>Bees</b> can appear on wrinklers instead of ants<br>Bees will never leave their spot on a wrinkler.', 600e6, [8, 0, icons]));
-C.upAndAchiev.push(C.clysmUpgrade('Cataclysm', '<b>Clysm cookies</b> will be able to appear and provide positive and negative effects.<q>Maybe even a catastrophe.</q>', 600e6, [0, 0]));
+C.upAndAchiev.push(C.clysmUpgrade('Cataclysm', '<b>Clysm cookies</b> will be able to appear and provide positive and negative effects.<q>Maybe even a catastrophe.</q>', 600e6, [10, 2, icons]));
 
 C.upAndAchiev.push(C.clysmUpgrade('Barons', '<span style="display:none">rockefeller</span>Unlocks the <b>Barons</b> upgrades.<q>Capitalize more than ever before.</q>', 600e6, [18, 33]));
 C.upAndAchiev.push(C.clysmUpgrade('Captains', '<span style="display:none">Vanderbilt</span>Unlocks the <b>Captains</b> upgrades.<q>Pushing society forward with monumental advancements in industry</q>', 600e6, [12, 33]));
