@@ -82,7 +82,7 @@ C.buildTranscendTree = function() {
         if (GU[i.id][1] < C.transcendBounds.top) C.transcendBounds.top = GU[i.id][1];
         if (GU[i.id][1] > C.transcendBounds.bottom) C.transcendBounds.bottom = GU[i.id][1];
 
-		if (i.canBePurchased) str += Game.crate(i, 'ascend', 'Game.Upgrades[\'' + i.name + '\'].transcendBuy();', `heavenlyUpgrade${i.id}`, `position:absolute; top: ${GU[i.id][1]}px; left: ${GU[i.id][0]}px; z-index: 4534225;opacity: ${(shown ? 0.5 : 0.05)};`);
+		if (i.canBePurchased) str += Game.crate(i, 'ascend', `Game.UpgradesById['${i.id}'].transcendBuy();`, `heavenlyUpgrade${i.id}`, `position:absolute; top: ${GU[i.id][1]}px; left: ${GU[i.id][0]}px; z-index: 4534225;opacity: ${(shown ? 0.5 : 0.05)};`);
 		//orteil doesnt like it but it works because game.crate doesnt yet support custom classes and lack of tooltips
 		else str += `<div class="crate upgrade heavenly ghosted" id="heavenlyUpgrade${i.id}" style="position:absolute; left: ${GU[i.id][0]}px; top: ${GU[i.id][1]}px;opacity:0.1; background: url('https://orteil.dashnet.org/cookieclicker/img/icons.png'); ${writeIcon(i.icon)}"></div>`;
 		i.l = l(`heavenlyUpgrade${i.id}`);
@@ -98,7 +98,7 @@ C.buildTranscendTree = function() {
 				var rot = -(Math.atan((targY - origY) / (origX - targX)) / Math.PI) * 180;
 				if (targX <= origX) rot += 180;
 				var dist = Math.floor(Math.sqrt((targX - origX) * (targX - origX) + (targY - origY) * (targY - origY)));
-				str += '<div class="parentLink" id="heavenlyLink' + i.id + '-' + ii + '" style="opacity:' + (ghosted ? '0.25;' : '0.05; ') + 'width:' + dist + 'px;-webkit-transform:rotate(' + rot + 'deg);-moz-transform:rotate(' + rot + 'deg);-ms-transform:rotate(' + rot + 'deg);-o-transform:rotate(' + rot + 'deg);transform:rotate(' + rot + 'deg);left:' + (origX) + 'px;top:' + (origY) + 'px;"></div>';
+				str += `<div class="parentLink" id="heavenlyLink' ${i.id + '-' + ii} + '" style="opacity: ${(ghosted ? '0.25;' : '0.05; ')}; left: ${origX}px; top: ${origY}px; width: ${dist}px; -webkit-transform: rotate(${rot}deg); -moz-transform: rotate(${rot}deg); -ms-transform: rotate(${rot}deg); -o-transform: rotate(${rot}deg); transform: rotate(${rot}deg);"></div>`;
 			}
 		}
 	}
@@ -150,25 +150,27 @@ C.updateTranscend = function() {
 	}
 	let transcendContent = l('transcendContent');
 	let transcendZoomable = l('transcendZoomable');
-	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px';
-	//Game.ascendl.style.backgroundPosition=Math.floor(Game.AscendOffX/2)+'px '+Math.floor(Game.AscendOffY/2)+'px,'+Math.floor(Game.AscendOffX/4)+'px '+Math.floor(Game.AscendOffY/4)+'px';
-	//transcendUl.style.left=Math.floor(Game.AscendOffX)+'px';
-	//transcendUl.style.top=Math.floor(Game.AscendOffY)+'px';
-	transcendContent.style.webkitTransform = 'translate(' + Math.floor(C.transcendOffX) + 'px,' + Math.floor(C.transcendOffY) + 'px)';
-	transcendContent.style.msTransform = 'translate(' + Math.floor(C.transcendOffX) + 'px,' + Math.floor(C.transcendOffY) + 'px)';
-	transcendContent.style.oTransform = 'translate(' + Math.floor(C.transcendOffX) + 'px,' + Math.floor(C.transcendOffY) + 'px)';
-	transcendContent.style.mozTransform = 'translate(' + Math.floor(C.transcendOffX) + 'px,' + Math.floor(C.transcendOffY) + 'px)';
-	transcendContent.style.transform = 'translate(' + Math.floor(C.transcendOffX) + 'px,' + Math.floor(C.transcendOffY) + 'px)';
+
+    let translate = `translate(${Math.floor(C.transcendOffX)}px, ${Math.floor(C.transcendOffY)}px)`;
+	transcendContent.style.webkitTransform = translate;
+	transcendContent.style.msTransform = translate;
+	transcendContent.style.oTransform = translate;
+	transcendContent.style.mozTransform = translate;
+	transcendContent.style.transform = translate;
+
 	transcendZoomable.style.webkitTransform = 'scale(' + (C.transcendZoom) + ',' + (C.transcendZoom) + ')';
+
 	transcendZoomable.style.marginLeft = (Game.windowW / 2) + 'px';
 	transcendZoomable.style.marginTop = (Game.windowH / 2) + 'px';
-	transcendZoomable.style.msTransform += ' scale(' + (C.transcendZoom) + ',' + (C.transcendZoom) + ')';
-	transcendZoomable.style.oTransform += ' scale(' + (C.transcendZoom) + ',' + (C.transcendZoom) + ')';
-	transcendZoomable.style.mozTransfor += ' scale(' + (C.transcendZoom) + ',' + (C.transcendZoom) + ')';
-	transcendZoomable.style.transform += ' scale(' + (C.transcendZoom) + ',' + (C.transcendZoom) + ')';
+
+    let scale = ` scale(${C.transcendZoom}, ${C.transcendZoom})`;
+	transcendZoomable.style.msTransform += scale;
+	transcendZoomable.style.oTransform += scale;
+	transcendZoomable.style.mozTransfor += scale;
+	transcendZoomable.style.transform += scale;
 
 	//if (Game.Scroll!=0) Game.ascendContentl.style.transformOrigin=Math.floor(Game.windowW/2-Game.mouseX)+'px '+Math.floor(Game.windowH/2-Game.mouseY)+'px';
-	if (Game.Scroll < 0 && !Game.promptOn) { C.transcendZoomT = 0.8; }
+    if (Game.Scroll < 0 && !Game.promptOn) { C.transcendZoomT = 0.8; }
 	if (Game.Scroll > 0 && !Game.promptOn) { C.transcendZoomT = 1; }
 }
 
@@ -191,11 +193,13 @@ C.onUnlockTranscend = function() {
 	ascendInfoCopy = l('ascendInfo').cloneNode(true);
 	ascendInfoCopy.id = 'ascendInfoCopy';
 	ascendInfoCopy.style.position = 'absolute';
-	ascendInfoCopy.style.right = '0px'; ascendInfoCopy.style.left = '0px';
-	ascendInfoCopy.style.margin = 'auto'; ascendInfoCopy.style.marginBottom = '0px';
-	ascendInfoCopy.style.opacity = '50%';
+	ascendInfoCopy.style.right = ascendInfoCopy.style.left = '0px';
+	ascendInfoCopy.style.margin = 'auto';
+    ascendInfoCopy.style.marginBottom = '0px';
+	ascendInfoCopy.style.opacity = '0.5';
 	ascendInfoCopy.style.backgroundImage = '';
-	ascendInfoCopy.className = 'ascendCopy'; ascendInfoCopy.childNodes[0].className += ' ascendCopy';
+	ascendInfoCopy.className = 'ascendCopy';
+    ascendInfoCopy.childNodes[0].className += ' ascendCopy';
 	///*screw it im just doing this*/ ascendInfoCopy.innerHTML='<div id="transcensionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 24px; position: relative;"><h3>Transcend Power:</h3><br><h3 style="all:initial"><span id="transcendPower" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">15</span>\x3C!--</h3>--><div class="smallFramed meterContainer" id="transcendMeterContainer" style="width: 70%; margin: auto;"><div id="transcendMeter" class="meter filling" style="background-position: -9519px center; width: 0%;"></div></div></h3></div><div id="transcensionBox1" style="width: 60%; rotate: 180deg; margin: auto; top: 26px; position: relative;"><h3>Moné:</h3><br><h3 style="all:initial;"><span class="price transcendent" id="mone" style="text-align:center;font-weight:bold;font-size:14px;position:relative;font-variant:small-caps;display:inline-block;color:#ece2b6; text-shadow:0px 1px 0px #733726,0px 2px 0px #875626,0px 2px 1px #000,0px 2px 3px #000; font-family:Georgia,serif; font-size:15px;">0</span></h3><br></div>';
 	l('transcend').appendChild(ascendInfoCopy);
 	Game.attachTooltip(l('transcensionBox1'), function() {
@@ -210,17 +214,14 @@ C.onUnlockTranscend = function() {
 		PlaySound('snd/tick.mp3');
 		C.leaveTranscend();
 	});
-
-	ascendInfoCopy.childNodes[0].className = 'prompt'; //idk man it works decently
-	ascendInfoCopy.childNodes[1].className = 'prompt';
+	ascendInfoCopy.childNodes[0].className = ascendInfoCopy.childNodes[1].className = 'prompt'; //idk man it works decently
 
 	C.ascendInfoCopy = ascendInfoCopy;
 }
 C.loadTranscend = function() {
 	//l('transcendMeterContainer').style.margin='auto';
-	l('topBar').style.zIndex = `${2**31}`;
+	l('topBar').style.zIndex = 2**31 - 1;
 	transcendHTML = l('transcend').innerHTML;
-
 	C.transcendReady = 1;
 }
 C.transcendOnResize = function() {
@@ -232,13 +233,14 @@ window.addEventListener('resize', C.transcendOnResize);
 
 C.transcendUnlocked = false;
 
-Game.registerHook('logic', function() {
-	if (Game.T % 2 == 0 || C.transcendUnlocked) return;
+Game.registerHook('logic', function transcendCheck() {
+	if (Game.T % 10 == 0 || C.transcendUnlocked) return;
 	if(!C.transcendReady) {
 		C.loadTranscend();
 	}
 	if (C.transcendReady && Game.prestige >= 1e15) {
 		C.transcendUnlocked = true;
 		C.onUnlockTranscend();
+        Game.removeHook('logic', transcendCheck);
 	}
 });
