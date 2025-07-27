@@ -17,17 +17,29 @@ Game.registerMod('Cookieclysm', {
 		else return '';
 	},
 	loadScripts: function() {
-		const Mod = this;
 		const path = 'https://yeetdragon24.github.io/cookieclysm/';
-		LoadScript('https://raw.githack.com/CursedSliver/Crumbs-engine/main/Crumbs.js', function() {
-        l('CrumbsEngineVersion').innerHTML = '';
-        LoadScript(path + 'cookieclysm.js', function() {
-		LoadScript(path + 'transcensions.js', function() {
-        LoadScript(path + 'youMinigame.js', function() {
-        LoadScript(path + 'sniperGold.js', function() {
-		LoadScript(path + 'wizardPortal.js', function() { Game.mods['Cookieclysm'].loaded = true; Mod.toLoad = true; })
-		})})})})});
-	}, 	
+        window.icons = path + 'img/icons.png';
+		LoadScript('https://cursedsliver.github.io/Crumbs-engine/Crumbs.js', function() {
+            l('CrumbsEngineVersion').innerHTML = '';
+            setTimeout(function loadModScripts() {
+                if (!CrumbsEngineLoaded) setTimeout(loadModScripts, 500);
+                LoadScript(path + 'cookieclysm.js', function() {
+                    //no particular loading order needed;
+                    LoadScript(path + 'transcensions.js');
+                    LoadScript(path + 'youMinigame.js');
+                    LoadScript(path + 'sniperGold.js');
+                    LoadScript(path + 'crumbs.js');
+                    LoadScript(path + 'wizardPortal.js');
+                    C.stylesheet = document.createElement('link');
+                    C.stylesheet.id = 'cookieclysmCss';
+                    C.stylesheet.rel = 'stylesheet';
+                    C.stylesheet.type = 'text/css';
+                    C.stylesheet.href = path + 'cookieclysmStyles.css';
+                    document.head.appendChild(C.stylesheet);
+                });
+            }, 250);
+        });  
+	},
 	switchSave: function() {
 		Game.WriteSave();
 		Game.SaveTo = 'cclysmGame';

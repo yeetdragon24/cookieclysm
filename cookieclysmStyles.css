@@ -7,6 +7,10 @@
 	background-position:-48px 0px;
 	background-size: 1000%;
 }
+.chocolate.price:before {
+	background-image:url('img/icons.png');
+	background-position:-1488px -144px;
+}
 
 .devQuote q:before{
   content:""!important;
@@ -17,8 +21,6 @@
 
 #puck {
 	transform: scale(2);
-	background-position: -96px -96px;
-	background-image:url('https://yeetdragon24.github.io/cookieclysm/img/iconsheet-c0.6.png')!important;
 	filter: none!important;
 	opacity: 0.5;
 	cursor: pointer;
