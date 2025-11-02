@@ -22,8 +22,16 @@ Game.registerMod('Cookieclysm', {
 		LoadScript('https://cursedsliver.github.io/Crumbs-engine/Crumbs.js', function() {
             l('CrumbsEngineVersion').innerHTML = '';
             setTimeout(function loadModScripts() {
-                if (!CrumbsEngineLoaded) setTimeout(loadModScripts, 500);
+                // if (!CrumbsEngineLoaded) setTimeout(loadModScripts, 500);
                 LoadScript(path + 'cookieclysm.js', function() {
+                    C.images = { //this NEEDS to be early on in the file
+                        icons: icons,
+                        superWrinkler: Game.mods['Cookieclysm'].dir + '/img/superWrinkler2.png',
+                        superWrinklerShiny: Game.mods['Cookieclysm'].dir + '/img/superWrinkler.png',
+                        transcendLink: Game.mods['Cookieclysm'].dir + '/img/transcendLink.png',
+                        converterStore: Game.mods['Cookieclysm'].dir + '/img/converterIcon.png',
+                        converter: Game.mods['Cookieclysm'].dir + '/img/building.png'
+                    };
                     //no particular loading order needed;
                     LoadScript(path + 'transcensions.js');
                     LoadScript(path + 'youMinigame.js');

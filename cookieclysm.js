@@ -1617,7 +1617,8 @@ Game.registerHook('cps', function(cps) {
 });
 
 C.spawnAnt = function(wrinkler) {
-    let ant = C.findAnt(wrinkler);
+    let ant = C.findFreeAntSlot(wrinkler);
+    if (!ant) return;
     ant.life = 1;
     ant.positions = choose(C.antPositions.filter(pos => ant.parent.getChildren('ant').every(a => a.positions != pos)));
     ant.cookies = 0;
@@ -1627,7 +1628,7 @@ C.spawnAnt = function(wrinkler) {
     else if (Game.Has('Some bees') && Math.random() < 0.1) ant.type = 2;
 }
 C.loseAnt = function(wrinkler, id, real) {
-    let ant = C.findAnt(wrinkler, id);
+    let ant = C.getAnt(wrinkler, id);
     if (real) {
         ant.enabled = false; //real
         return;
@@ -1635,12 +1636,16 @@ C.loseAnt = function(wrinkler, id, real) {
     ant.life = -1;
     let message = 'An ant just took <b>' + Beautify(ant.cookies) + ' cookies</b> from a wrinkler and left.';
     if (ant.type = 1) {
-        message = 'A red ant just took <b>' + Beautify(ant.cookies) + ' from a wrinkler and directly returned ' + Beautify(ant.cookies / 2) + ' cookies to you.';
+		let money = ant.cookies / 2;
+        message = 'A red ant just took <b>' + Beautify(ant.cookies) + ' cookies </b>from a wrinkler and directly returned ' + Beautify(money) + ' cookies to you.';
         Game.Earn(money);
     }
-    Game.Notify('Ant', message, [8, 1, icons], 6);
+    Game.Notify('Ant', message, [8, 1, C.images.icons], 6);
 }
-C.findAnt = function(wrinkler, id) {
+C.getAnt = function(wrinkler, id) {
+	return Game.wrinklers[wrinkler].crumbsObj.getChildren('ant')[id];
+}
+C.findFreeAntSlot = function(wrinkler) {
     return Game.wrinklers[wrinkler].crumbsObj.getChildren('ant')[Game.wrinklers[wrinkler].crumbsObj.getChildren('ant').findIndex(ant => !ant.enabled)];
 }
 C.killAnt = function(ant) { 
