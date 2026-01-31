@@ -163,45 +163,104 @@ for (let i in Game.wrinklers) {
 broken cookie stuff
 */
 
-C.brokenCookieObject = Crumbs.findObject('brokenCookie');
-C.brokenCookieChunks = C.brokenCookieObject.children.slice(2, 12);
+//broken cookie chunks
+C.brokenCookieChunks = [];
+C.createAlternateBrokenCookie = function() {
+    C.brokenCookieChunksContainer = Crumbs.spawn({
+        id: 'brokenCookieChunks',
+        scope: 'left',
+        order: 10,
+        // behaviors: Crumbs.objectBehaviors.centerOnBigCookie
+    });
+
+    
+    let h = [ //hardcoded values for where the chunks are visually (sx, sy, swidth, sheight)
+        [32, 18, 67, 60],
+        [40, 6, 108, 126],
+        [130, 7, 116, 130],
+        [143, 116, 106, 99],
+        [161, 154, 53, 79],
+        [109, 170, 102, 80],
+        [106, 127, 65, 58],
+        [11, 134, 115, 113],
+        [7, 46, 125, 111],
+        [81, 81, 58, 54  ]
+    ]
+
+    for (let i = 0; i < 10; i++) {
+        let chunk = C.brokenCookieChunksContainer.spawnChild({
+            id: i,
+            imgs: 'brokenCookie.png',
+            order: i,
+            sx: 256 * i + h[i][0],
+            sy: h[i][1],
+            width: h[i][2],
+            height: h[i][3],
+            behaviors: new Crumbs.behaviorInstance(C.brokenCookieToyBehavior, { s: Math.min(h[i][2], h[i][3]), id: i }),
+            components: new Crumbs.component.pointerInteractive(),
+        });
+        C.brokenCookieChunks.push(chunk);
+    }
+}
 
 C.brokenCookieReset = function() {
-    C.brokenCookieChunks.forEach(x => { x.x = x.y = 0; x.rotation = 0; x.alpha = 1; x.behaviors.at(-1).yd = 0; } )
-    C.brokenCookieObject.enabled = false;
+    C.brokenCookieChunks.forEach(x => { x.x = x.y = 0; x.rotation = 0; x.alpha = 1; x.behaviors.find(b => b[Crumbs.behaviorSym] == C.brokenCookieToyBehavior).yd = 0; } )
+    // C.brokenCookieObject.enabled = false;
 }
-C.brokenCookieBehavior = new Crumbs.behavior(function() {
-    if ((!Game.AscendTimer || C.bigCookieGone) && !C.doCookieFalling && C.youWrath < 2.5) { this.enabled = false; }
-    else {
-        var shake = Game.AscendTimer/Game.AscendBreakpoint;
-        if (shake < 1) {
-            this.x+=(Math.random()*2-1)*10*shake;
-            this.y+=(Math.random()*2-1)*10*shake;
-        }
-    }
-});
-C.brokenCookieObject.behaviors[1] = new Crumbs.behaviorInstance(C.brokenCookieBehavior);
-C.brokenCookieObject.order = 1;
 
-C.brokenHaloBehavior = new Crumbs.behavior(function() {
-    this.noDraw = Game.AscendTimer > Game.AscendBreakpoint;
-    if (this.noDraw) { return; }
-    // if (C.doCookieFalling) {
-    //     this.alpha = C.cookieFallingTimer < 90 ? Math.min(C.cookieFallingTimer / Game.AscendBreakpoint, 1) : 0;
-    // }
-    else this.alpha = Game.AscendTimer / Game.AscendBreakpoint;
-});
-C.brokenCookieObject.findChild('brokenCookieHalo').behaviors[0] = new Crumbs.behaviorInstance(C.brokenHaloBehavior);
 
-C.chunkFall = new Crumbs.behavior(function(p) {
-    if (!this.shouldFall) return false;
-    if (this.y > 1.5 * this.scope.c.canvas.height) {
-        this.shouldFall = false;
+
+C.brokenCookieToyBehavior = new Crumbs.behavior(function(p) {
+    // if (!C.cookieShattered) { return; }
+
+    
+
+    let height = this.scope.c.canvas.height;
+    let width = this.scope.c.canvas.width;
+    p.rd *= 0.75;
+    p.yd += 1.5;
+    
+    if (this.y >= height - (Game.milkHd * height) + 8) {
+        // p.xd *= 0.85;
+        p.yd *= 0.85;
+        if (Math.abs(p.rd) > 0.01) p.rd *= 0.35;
+        p.yd -= 1;
+        // p.xd += (this.id % 2 - 0.5) * 0.3;
+        // p.yd += (this.id % 2 - 0.5) * 0.05;
+    } else {
+        p.rd += (this.id % 2 - 0.5) * 0.01;
     }
-    this.y += p.yV;
-    p.yV += 0.6;
-});
-C.brokenCookieChunks.forEach(chunk => chunk.behaviors.push(new Crumbs.behaviorInstance(C.chunkFall, { yV: Math.random() * 5 + 3 })));
+    
+    p.yd *= Math.min(1, Math.abs(this.y + this.parent.y - (height - (Game.milkHd) * height) / 16));
+    // p.rd += p.xd * 0.006 / (p.s / 64);
+    
+    if (this.x < p.s / 2 && p.xd < 0) { p.rd = p.xd / 100; p.xd = -p.xd * 0.57; } //0.57 decided by hr
+    else if (this.x < p.s / 2) { p.xd = 0; this.x = p.s / 2; } 
+    
+    if (this.x > width - p.s / 2 && p.xd > 0) { p.rd = p.xd / 100; p.xd = -p.xd * 0.57; }
+    else if (this.x > width - p.s / 2) { p.xd = 0; this.x = width - p.s / 2; }
+    
+    p.xd = Math.min(Math.max(p.xd, -30), 30);
+    p.yd = Math.min(Math.max(p.yd, -30), 30);
+    // p.rd = Math.min(Math.max(p.rd, -0.5), 0.5);
+    
+    this.x += p.xd;
+    this.y += p.yd;
+    this.y = Math.min(this.y, height - p.s / 2);
+    this.rotation += p.rd;
+    
+    let comp = this.getComponent('pointerInteractive');
+    if (comp.click) {
+        this.x = Game.mouseX;
+        this.y = Game.mouseY;
+        p.xd += ((Game.mouseX - Game.mouseX2) * 3 - p.xd) * 0.5;
+        p.yd += ((Game.mouseY - Game.mouseY2) * 3 - p.yd) * 0.5
+    }
+}, { xd: 0, yd: 0, rd: 0, s: 256 });
+C.brokenCookieChunks.forEach(chunk => chunk.behaviors.push(new Crumbs.behaviorInstance(C.brokenCookieToyBehavior, { xd: 0, yd: 0, rd: 0, s: 256 })));
+C.brokenCookieChunks.forEach(chunk => chunk.anchor = Crumbs.defaultAnchors.center);
+
+C.brokenCookieChunks.forEach(chunk => chunk.addComponent(new Crumbs.component.text({ content: chunk.id.at(-1), outline: 2, size: 30 })));
 
 C.dropChunk = function(id) {
     let chunk = C.brokenCookieChunks[id];
@@ -217,6 +276,7 @@ C.dropRemainingChunks = function() {
 /*
 background clones
 */
+/*
 C.cloneBGBehavior = new Crumbs.behavior(function(p) {
     this.alpha = Math.max(0, Math.min(C.youWrath - 3, 1));
 });
@@ -260,7 +320,7 @@ C.ascendBlack = {
         this.alpha = Math.min(1, (Game.AscendOffX + Game.AscendOffY - 4000) / 1600);
     }
 }
-
+*/
 /*
 transcend
 */
@@ -326,3 +386,30 @@ C.transcendRiftUpgrade = {
     })
 }
 */
+
+C.riftVisualBehavior = new Crumbs.behavior(function() {
+    if (C.transcendModifier != 1) {
+        this.noDraw = true;
+        return;
+    }
+    this.noDraw = false;
+});
+
+C.riftBorders = {
+    anchor: 'top-left',
+    scope: 'foreground',
+    imgs: C.images.riftBorders,
+    order: 1,
+    id: 'riftBorders',
+    alpha: 0.25,
+    behaviors: [
+        new Crumbs.behaviorInstance(C.riftVisualBehavior),
+        function() {
+            this.scaleX = Game.bounds.width / 256;
+            this.scaleY = Game.bounds.height / 256;
+        }
+    ]
+}
+Crumbs.spawn(C.riftBorders);
+
+

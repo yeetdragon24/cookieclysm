@@ -1,6 +1,9 @@
 Game.registerMod('Cookieclysm', {
 	init: function() {
         window.Cookieclysm = this;
+        if (!App) {
+            this.dir = 'https://cookieclysm.getgood.us';
+        }
 		if (localStorage.getItem('cclysmGame') === null) {
 			this.startingPrompt();
 		}
@@ -17,21 +20,12 @@ Game.registerMod('Cookieclysm', {
 		else return '';
 	},
 	loadScripts: function() {
-		const path = 'https://yeetdragon24.github.io/cookieclysm/';
-        window.icons = path + 'img/icons.png';
+		const path = this.dir + '/';
 		LoadScript('https://cursedsliver.github.io/Crumbs-engine/Crumbs.js', function() {
-            l('CrumbsEngineVersion').innerHTML = '';
+            // l('CrumbsEngineVersion').innerHTML = '';
             setTimeout(function loadModScripts() {
-                // if (!CrumbsEngineLoaded) setTimeout(loadModScripts, 500);
-                LoadScript(path + 'cookieclysm.js', function() {
-                    C.images = { //this NEEDS to be early on in the file
-                        icons: icons,
-                        superWrinkler: Game.mods['Cookieclysm'].dir + '/img/superWrinkler2.png',
-                        superWrinklerShiny: Game.mods['Cookieclysm'].dir + '/img/superWrinkler.png',
-                        transcendLink: Game.mods['Cookieclysm'].dir + '/img/transcendLink.png',
-                        converterStore: Game.mods['Cookieclysm'].dir + '/img/converterIcon.png',
-                        converter: Game.mods['Cookieclysm'].dir + '/img/building.png'
-                    };
+                if (!CrumbsEngineLoaded) setTimeout(loadModScripts, 500);
+                else LoadScript(path + 'cookieclysm.js', function() {
                     //no particular loading order needed;
                     LoadScript(path + 'transcensions.js');
                     LoadScript(path + 'youMinigame.js');
