@@ -15,7 +15,7 @@ else {
     Game.Notify(`Mod identifier already in use! Cookieclysm is only compatible with ${Cookieclysm.compatibleMods.join(', ')}`);
     Game.WriteSave = function() { };
 }
-C.version = '1.0.4';
+C.version = '1.0.5';
 /*
 Main logic hook (all other logic stuff should go in here eventually)
 */
@@ -80,10 +80,14 @@ Game.registerHook('logic', function() {
 	if (Game.mods['Cookieclysm'].loadStr) {
 		try {
 		    C.load(Game.mods['Cookieclysm'].loadStr);
+            Game.WriteSave()
         } catch (error) {
+            console.error(error);
             Game.Prompt('<noClose><h3>Error</h3><div class="line"></div><div>For some reason, your save could not be loaded.<div class="line"></div>Check the browser console if you need your save file.</div><br>', [], 0, 'widePrompt');
-            console.warn('=========================\nSave file: (right-click and click "copy object")');
+            console.warn('=========================\nCOOKIECLYSM');
+            console.warn('Save file: (right-click and click "copy object")');
             console.warn(Game.WriteSave(1));
+            console.warn('Make sure to include your save file and the red error message above when you report this')
             console.warn('=========================');
             Game.Loop = function() { };
         }
@@ -143,22 +147,29 @@ C.save = function() {
 
     //chocolate shop
     str += C.chocolate;
+    str += '/';
+
+    //building space queue
+    str += C.buildingSpace.removalQueue.toCompressedString();
+    str += '/';
 
 	return str;
 }
 C.load = function(str) {
-    console.log(str);
+    // console.log(str);
 	let spl = str.split('/');
 	let version = spl[0];
 
 	let upgrades = spl[1].split('');
+    let cUpgrades = C.upAndAchiev.filter(x => x.type == 'upgrade');
 	for (let i in upgrades) {
-		C.upAndAchiev[C.upAndAchiev.indexOf(C.upAndAchiev.filter(x => x.type == 'upgrade')[i])].unlocked = ((parseInt(upgrades[i]) || 0) >>1)&1;
-		C.upAndAchiev[C.upAndAchiev.indexOf(C.upAndAchiev.filter(x => x.type == 'upgrade')[i])].bought = (parseInt(upgrades[i]) || 0) & 1;
+		cUpgrades[i].unlocked = ((parseInt(upgrades[i]) || 0) >> 1) & 1;
+		cUpgrades[i].bought = (parseInt(upgrades[i]) || 0) & 1;
 	}
 	let achievements = spl[2].split('');
+    let cAchiev =  C.upAndAchiev.filter(x => x.type == 'achievement')
 	for (let i in achievements) {
-		C.upAndAchiev[C.upAndAchiev.indexOf(C.upAndAchiev.filter(x => x.type == 'achievement')[i])].won = parseInt(achievements[i]) || 0;
+		cAchiev[i].won = parseInt(achievements[i]) || 0;
 	}
 
 	let converter = Game.Objects['Converter'];
@@ -189,9 +200,12 @@ C.load = function(str) {
 	    C.youWrath = parseFloat(clysmData[0]) || 0;
 	}
 
+    let buildingQueue = spl[9]
+    C.buildingSpace.removeFromCompressedQueue(buildingQueue || '');
+
     if (Game.Has('Alternate reality')) Game.Upgrades['Alternate reality'].buyFunction(); //fix later
     Game.Objects['Converter'].refresh();
-    // C.unlockSpaceUpgrades();
+    C.buildingSpace.unlockUpgrades();
     Game.upgradesToRebuild = true;
     if (Game.Has('Season switcher')) Game.Unlock('Cataclysmic biscuit');
 
@@ -323,7 +337,7 @@ C.clysmUpgrades = [];
 C.clysmUpgrade = function(name, desc, price, icon) {
     let upgrade = new Game.Upgrade(name, desc, price, icon);
     C.clysmUpgrades.push(upgrade);
-    Game.PrestigeUpgrades.push(upgrade);
+    // Game.PrestigeUpgrades.push(upgrade);
     upgrade.pool = 'prestige';
     return upgrade;
 }
@@ -444,7 +458,7 @@ C.upAndAchiev.push(C.spaceUpgrade('Field', 5,'<q>Now you can farm and dig all yo
 C.upAndAchiev.push(C.spaceUpgrade('Warehouse', 2, '<q>A large empty building, ready to be populated with your cookie-creating machines.</q>', 500e6, [7, Game.Tiers[4].iconRow, C.images.icons]));
 //C.upAndAchiev.push(new Game.Upgrade('Farmland', spaceDesc(10) + '<q>More space for your farms, and whatever else you do to make cookies.</q>', 500e8, [7, 4]));
 //C.upAndAchiev.push(new Game.Upgrade('Glacial remnants', spaceDesc(10) + '<q>Who would live here? Perfect for preserving cookies.</q>', 500e8, [7, 14, C.images.icons]));
-C.upAndAchiev.push(C.spaceUpgrade('Planet', 5, '<q>It\'s about time you got yourself a place large enough to run your business with more privacy.</q>', 500e9, [7, Game.Tiers[5].iconRow, C.images.icons]));
+C.upAndAchiev.push(C.spaceUpgrade('Planet', 5, '<q>A large, private place to run your business and avoid regulations.</q>', 500e9, [7, Game.Tiers[5].iconRow, C.images.icons]));
 C.upAndAchiev.push(C.spaceUpgrade('The future', 2, '<q>Running out of space? Make it a problem for future you instead!</q>', 500e12, [7, Game.Tiers[6].iconRow, C.images.icons]));
 C.upAndAchiev.push(C.spaceUpgrade('Distant objects', 5, '<q>If very distant objects are moving away from us faster than the speed of light, why not use them to go past the observable universe so you can store more things?</q>', 500e15, [7, Game.Tiers[7].iconRow, C.images.icons]));
 C.upAndAchiev.push(C.spaceUpgrade('Quantum optimazation', 2, '<q>Almost all of an atom is empty space. Instead of wasting this space, you squeeze down the subatomic particles until cookies are substantially smaller.</q>', 500e18, [7, Game.Tiers[8].iconRow, C.images.icons]));
@@ -461,7 +475,7 @@ C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Jealousy', desc: 'It\'s unclea
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Pure black and white cookies', desc: 'You didn\'t eat any of these. So why is one missing?', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 60) }));
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Snow', desc: 'Let it snow, let it snow, let it snow', icon: [30, 22], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 60) }));
 C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'American cheese', desc:'Not legally cheese, likely plastic.', icon: [6, 4, C.images.icons], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 57) }));
-C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Eclipse crisps', desc: 'Crispier than 4/8.', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 54) }));
+C.upAndAchiev.push(Game.NewUpgradeCookie({ name: 'Eclipse crisps', desc: 'Crispier than 4 out of 8 other cookies.', icon: [0, 4], require: 'Box of random stuff we found on the ground', power: 5, price: Math.pow(10, 54) }));
 
 //C.upAndAchiev.push(new Game.Upgrade('Switchblade and bleach','Makes you look different enough to hide from the cops in a church, somehow giving you <b>+10%</b> cookie production.<q>Oh Ponyboy, your hair... your tuff, tuff, hair...</q>',420,[2,2]));
 //C.upAndAchiev.push(new Game.Upgrade('Cookieclysm','Gain <b>+100%</b> cookie production.<q>The beginninng.</q>',1,[2,2]));
@@ -667,49 +681,169 @@ new Game.buffType('cookie rain', function(time, pow) {
 });
 
 
+C.getFakeCps = function() {
+    let buildingCps = Game.buildingCps;
+    let egg = 9;
+    let global = Game.globalCpsMult;
+
+    let add = 0;
+    let mult = 1;
+
+    return (egg + buildingCps) * global * mult + add;
+}
+
+// eval('Game.Draw = ' + Game.Draw.toString().replace('Game.cookiesPs', 'C.getFakeCps()'));
+
+
 /*
 building space (and cursor rings)
-*/
 
-C.ignoreSpace = false; //testing
-C.spaceValues = [ //the space taken up by a single building of id i
-	1, 10, 30, 25, 25, 10, 25, 10, 25, 25, 15,
-	25, 25, 10, Math.floor(Math.random() * 15) + 10,
-	25, 5, 100, 250, 10, 25
+buying buildings over the space limit doesn't immediately get rid of them
+instead it adds it to a queue
+while your building space is over the limit, every n frames the first element in the queue is dequeued and that building loses 1
+n decreases the more building space you are taking up over the limit
+every check hook, give a notif showing how many buildings you lost (like sacks gain/loss chat message in skyblock)
+*/
+C.buildingSpace = {};
+(function() {
+    function QueueNode(data, next) {
+        this.data = data;
+        this.next = next;
+    }
+    function Queue() {
+        this.length = 0;
+    }
+    Queue.prototype.enqueue = function(data) {
+            if (!this.first) {
+                this.first = this.last = new QueueNode(data);
+                this.length++;
+            }
+            else {
+                this.last.next = new QueueNode(data);
+                this.last = this.last.next;
+                this.length++;
+            }
+        }
+    Queue.prototype.dequeue = function() {
+            if (!this.first) {
+                throw "Queue has no elements!"
+            }
+            else if (this.first == this.last) {
+                let dequeued = this.first.data;
+                this.first = this.last = undefined;
+                this.length--;
+                return dequeued;
+            }
+            else {
+                let dequeued = this.first.data;
+                this.first = this.first.next;
+                this.length--;
+                return dequeued;
+            }
+    }
+    Queue.prototype.clear = function() {
+        this.first = this.last = undefined;
+    }
+    Queue.prototype.toCompressedString = function() {
+        let map = {};
+        let h = this.first;
+        while (h) {
+            map[h.data] = (map[h.data] ?? 0) + 1
+
+            h = h.next;
+        }
+        return Object.entries(map).toString();
+    }
+    
+
+    C.buildingSpace.removalQueue = new Queue(); //contains the IDs of the buildings
+})();
+
+C.buildingSpace.timeUntilNextRemoval = 0;
+
+C.buildingSpace.getRemovalTime = function() {
+    let time = (1 * Game.fps) / (1 + C.buildingSpace.removalQueue.length);
+    // time = Math.ceil(time);
+    return time;
+}
+
+C.buildingSpace.onBuy = function(id) {
+    if (!(C.buildingSpace.getSpace() > C.buildingSpace.getMaxSpace())) return;
+    if (C.buildingSpace.removalQueue.length == 0 || C.buildingSpace.timeUntilNextRemoval > C.buildingSpace.getRemovalTime()) {
+        C.buildingSpace.timeUntilNextRemoval = Math.ceil(C.buildingSpace.getRemovalTime());
+    }
+    C.buildingSpace.removalQueue.enqueue(id);
+}
+
+C.buildingSpace.removeFromCompressedQueue = function(compressedQueueString) {
+    let compressedQueue = compressedQueueString ? compressedQueueString.split(',') : [];
+    for (let i = 0; i < compressedQueue.length; i += 2) {
+        let id = compressedQueue[i];
+        let amount = compressedQueue[i + 1];
+        Game.ObjectsById[id].sacrifice(amount);
+    }
+}
+
+C.buildingSpace.logic = function() {
+    if (C.buildingSpace.removalQueue.length > 0) {
+        C.buildingSpace.timeUntilNextRemoval--;
+        if (C.buildingSpace.timeUntilNextRemoval <= 0) {
+            //if n<1 frames per sell then sell 1/n buildings per frame
+            if (C.buildingSpace.getRemovalTime() < 1) {
+                for (let i = 0; i < 1 / C.buildingSpace.getRemovalTime(); i++) {
+                    // if (C.buildingSpace.removalQueue.length <= 0) continue;
+                    let id = C.buildingSpace.removalQueue.dequeue();
+                    Game.ObjectsById[id].sacrifice();
+                }
+            }
+            else {
+                let id = C.buildingSpace.removalQueue.dequeue();
+                Game.ObjectsById[id].sacrifice();
+            }
+            C.buildingSpace.timeUntilNextRemoval = Math.ceil(C.buildingSpace.getRemovalTime());
+        }
+    }
+}
+Game.registerHook('logic', C.buildingSpace.logic);
+
+C.buildingSpace.ignoreSpace = false; //testing
+C.buildingSpace.spaceValues = [ //the space taken up by a single building of id i
+	1, 10, 15, 15, 15, 15, 20, 15, 20, 25, 15,
+	20, 30, 10, 15/*Math.floor(Math.random() * 15) + 10*/,
+	25, 20, 50, 50, 25, 50
 ];
 
-C.getMaxBuildingSpace = function() {
-	if (C.ignoreSpace) return Number.MAX_VALUE;
+C.buildingSpace.getMaxSpace = function() {
+	if (C.buildingSpace.ignoreSpace) return Number.MAX_VALUE;
 	let buildingSpace = 50;
     C.spaceUpgrades.forEach(function(upgrade) { if (Game.Has(upgrade.name)) buildingSpace *= upgrade.power; });
     return buildingSpace;
 }
-C.getBuildingSpace = function() {
+C.buildingSpace.getSpace = function() {
 	let buildingSpace = 0;
 	for (let i in Game.ObjectsById) {
-		if (i > 0 && !Game.ObjectsById[i].muted) {
-			 buildingSpace += C.spaceValues[i] * Game.ObjectsById[i].amount;
+		if (Game.ObjectsById[i].name != "Cursor" && !Game.ObjectsById[i].muted) {
+			 buildingSpace += C.buildingSpace.spaceValues[i] * Game.ObjectsById[i].amount;
 		}
 	}
 	return buildingSpace;
 }
 
-C.spaceUnlockThresholds = [5, 20, 50, 100, 250, 500, 750, 1000, 1500, 2500, 3000, 4000, 5000, 6000, 7500];
-C.unlockSpaceUpgrades = function() {
-	let highest = -1;
-	for (let i = 0; i < C.spaceUpgrades.length; i++) {
-		if (Game.HasUnlocked(C.spaceUpgrades[i].name)) {
-			highest = i;
-			continue;
-		}
-		if (C.spaceUpgrades[i] && Game.BuildingsOwned - Game.Objects['Cursor'].amount >= C.spaceUnlockThresholds[i]) {
-            Game.Unlock(C.spaceUpgrades[i].name);
-        }
-	}
-	C.nextSpaceUnlock = C.spaceUnlockThresholds[highest + 1] - Game.BuildingsOwned > 0 ? C.spaceUnlockThresholds[highest + 1] : C.spaceUnlockThresholds[highest + 2];
+C.buildingSpace.upgradeUnlockThresholds = [5, 20, 50, 150, 300, 500, 750, 1000, 1500, 2500, 3000, 4000, 5000, 6000, 7500];
+C.buildingSpace.unlockUpgrades = function() {
+    let i = 0;
+    while (C.spaceUpgrades[i] && (C.spaceUpgrades[i].bought || C.spaceUpgrades[i].unlocked)) {
+        i++
+    }
+    while (Game.BuildingsOwned - Game.Objects['Cursor'].amount >= C.buildingSpace.upgradeUnlockThresholds[i]) {
+        if (C.spaceUpgrades[i]) C.spaceUpgrades[i].unlock();
+        i++;
+    }
+    C.buildingSpace.nextUpgrade = C.spaceUpgrades[i] ? C.buildingSpace.upgradeUnlockThresholds[i] : -1;
 }
 
 C.getMaxCursors = function() {
+    if (C.buildingSpace.ignoreSpace) return Number.MAX_VALUE;
     return 50 * (C.cursorUpgrades.filter(x => x.bought).length + 1);
 }
 C.unlockCursorUpgrades = function() {
@@ -723,7 +857,7 @@ document.querySelectorAll('.productButton.productMute').forEach(function(button)
 	Game.attachTooltip(button, '<div style="width:150px;text-align:center;font-size:11px;" id="tooltipMuteBuilding"><b>Mute</b><br>Disable this building, giving you a little bit of extra space.</div>');
 	button.addEventListener('click', function() { Game.recalculateGains = 1; });
 });
-for (let i in Game.Objects) eval(`Game.Objects['${i}'].cps = ` + Game.Objects[i].cps.toString().replace(`return `, `return Number(!this.muted) * `));
+
 Game.mutedBuildingTooltip = function(id) {
 	return function() {
 		var me=Game.ObjectsById[id];
@@ -731,7 +865,7 @@ Game.mutedBuildingTooltip = function(id) {
 	}
 }
 document.querySelectorAll('.tinyProductIcon').forEach(x => x.addEventListener('click', function() {
-	if (C.getBuildingSpace() > C.getMaxBuildingSpace()) {
+	if (C.buildingSpace.getSpace() > C.buildingSpace.getMaxSpace()) {
 		Game.ObjectsById[parseInt(this.id.replace('mutedProduct', ''))].mute(1);
 		Game.Popup('Out of space!', Game.mouseX, Game.mouseY);
 		return;
@@ -742,23 +876,32 @@ document.querySelectorAll('.tinyProductIcon').forEach(x => x.addEventListener('c
 for (let i in Game.Objects) {
     let building = Game.Objects[i];
     if (i == 'Cursor') {
-        eval('building.buy = ' + building.buy.toString().replace(`this.bought++;`,
-            `this.bought++;\n\t\t\t\tif (this.amount > C.getMaxCursors()) { PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75); Game.Popup('Next ring not unlocked!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; this.refresh(); return false; }`)
-            .replace('success=1;', 'success=1; C.unlockCursorUpgrades();'));
+        eval('building.buy = ' + building.buy.toString()
+            .replace(`this.bought++;`, `this.bought++; C.unlockCursorUpgrades();\n\t\t\t\tif (this.amount > C.getMaxCursors()) { PlaySound('snd/clickOff.mp3'); Game.Popup('Next ring not unlocked!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; Game.Spend(-moni); this.refresh(); return false; }`)
+        );  
     }
     else {
-        eval('building.buy = ' + building.buy.toString().replace(`this.bought++;`,
-            `this.bought++;\n\t\t\t\tif (!C.ignoreSpace && C.getBuildingSpace() > C.getMaxBuildingSpace()) { PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75); Game.Popup('Out of space!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; this.refresh(); C.unlockSpaceUpgrades(); return false; }`)
-            .replace(`this.refresh();}`, `this.refresh();\n\t\t\t\t\tC.unlockSpaceUpgrades();\n\t\t\t\t\tif (Game.onMenu == 'stats') l('spaceAmount').innerHTML = C.getSpaceString();\n\t\t\t\t}`));
-        eval('building.sell = ' + building.sell.toString().replace(`this.refresh();}`, `this.refresh();\n\t\t\t\t\tif (Game.onMenu == 'stats') l('spaceAmount').innerHTML = C.getSpaceString();\n\t\t\t\t}`));
+        //check for space on purchase (also unlock space upgrades)
+        
+        eval('building.buy = ' + building.buy.toString()
+            // .replace(`this.bought++;`, `this.bought++; C.buildingSpace.unlockUpgrades();\n\t\t\t\tif (C.buildingSpace.getSpace() > C.buildingSpace.getMaxSpace()) { PlaySound('snd/clickOff.mp3'); Game.Popup('Out of space!', Game.mouseX, Game.mouseY); bought--; this.bought--; this.amount--; Game.Spend(-moni); this.refresh(); return false; }`)
+            .replace(`this.bought++;`, `this.bought++;\n\t\t\t\tC.buildingSpace.onBuy(this.id);`)
+            .replace(`Game.BuildingsOwned++;`, `Game.BuildingsOwned++;\n\t\t\t\tC.buildingSpace.unlockUpgrades();`)
+        );
+    
+        //set cps to 0 while muted
+        eval(`building.cps = ` + building.cps.toString().replace(`return `, `return Number(!this.muted) * `));
+
+        //include space value in tooltip
+        // eval(`building.tooltip = ` + building.tooltip.toString().replace());
     }
 }
 
 C.getSpaceHTML = function() {
 	return `<span id="spaceAmount">
 			<div class="listing"><b>Maximum cursor rings: </b>${C.getMaxCursors() / 50}</div>
-			<div class="listing"><b>Building space: </b>${Beautify(C.getBuildingSpace())}/${Beautify(C.getMaxBuildingSpace())} (${Beautify(Math.floor((C.getBuildingSpace() / C.getMaxBuildingSpace()) * 100))}%)</div>
-			<div class="listing"><b>Buildings until next upgrade: </b>${isNaN(SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)) ? 'all upgrades unlocked' : SimpleBeautify(C.nextSpaceUnlock - Game.BuildingsOwned)}</div>
+			<div class="listing"><b>Building space: </b>${Beautify(C.buildingSpace.getSpace())}/${Beautify(C.buildingSpace.getMaxSpace())} (${Beautify(Math.floor((C.buildingSpace.getSpace() / C.buildingSpace.getMaxSpace()) * 100))}%)</div>
+			<div class="listing"><b>Buildings until next upgrade: </b>${C.buildingSpace.nextUpgrade == -1 ? 'all upgrades unlocked' : SimpleBeautify(C.buildingSpace.nextUpgrade - (Game.BuildingsOwned - Game.Objects['Cursor'].amount))}</div>
 			</span>`;
 }
 
@@ -1245,7 +1388,7 @@ C.reset = function(hard) {
 	}
 
 	C.calcTUEffs();
-	C.unlockSpaceUpgrades();
+	C.buildingSpace.unlockUpgrades();
 };
 
 
@@ -1391,7 +1534,7 @@ C.initClysmHUs = function() {
 
     //conveniencemaxxing: `{${C.clysmUpgrades.reduce((a, b) => a + (`${b.id}:[${b.posX},${b.posY}],`), '')}}`
     Object.entries(
-        {877:[0,0],960:[-6,-376],961:[-7,-614],962:[-14,-1133],963:[273,-1211],964:[-265,-1479],965:[-179,-1859],966:[204,-1826],967:[-8,-852],968:[-31,-2381],969:[-477,-2085],970:[-31,-2581],971:[-219,-2729],972:[-31,-2799],973:[177,-2729],974:[-31,-3061],975:[-809,-2205],976:[-1025,-2447],977:[-1117,-2735],978:[-1117,-3071],979:[441,-1402],980:[413,-1681],}
+        {878:[0,0],879:[-830,-628],962:[-7,-614],963:[-14,-1133],964:[273,-1211],965:[-265,-1479],966:[-179,-1859],967:[204,-1826],968:[-8,-852],969:[-31,-2381],970:[-477,-2085],971:[-31,-2581],972:[-219,-2729],973:[-31,-2799],974:[177,-2729],975:[-31,-3061],976:[-809,-2205],977:[-1025,-2447],978:[-1117,-2735],979:[-1117,-3071],980:[441,-1402],981:[413,-1681],}
     ).forEach(x => { Game.UpgradesById[x[0]].posX = x[1][0]; Game.UpgradesById[x[0]].posY = x[1][1]; }); 
 }
 C.initClysmHUs();
