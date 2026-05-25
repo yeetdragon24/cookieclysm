@@ -2,7 +2,7 @@ Game.registerMod('Cookieclysm', {
 	init: function() {
         window.Cookieclysm = this;
         if (!App) {
-            this.dir = 'https://cookieclysm.getgood.us';
+            this.dir = 'https://yeetdragon24.github.io';
         }
 		if (localStorage.getItem('cclysmGame') === null) {
 			this.startingPrompt();
